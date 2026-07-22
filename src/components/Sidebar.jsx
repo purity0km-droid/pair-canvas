@@ -14,9 +14,7 @@ export default function Sidebar(props) {
         page={props.page}
         updatePage={props.updatePage}
         saveProject={props.saveProject}
-        loadProject={(e) =>
-          props.loadProject(e.target.files[0])
-        }
+        loadProject={props.loadProject}
         fileInputRef={props.fileInputRef}
         savePng={props.savePng}
       />
