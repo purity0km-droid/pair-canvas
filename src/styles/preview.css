@@ -56,6 +56,9 @@
     transform:scale(.55);
     transform-origin:top center;
 }
+.preview{
+    overflow:auto;
+}
 
 }
 
@@ -100,7 +103,7 @@
     display:grid;
     grid-template-columns:1fr 1fr;
     gap: 24px;
-    margin-top:28px;
+    margin-top:48px;
 }
 
 /* 4枚 */
