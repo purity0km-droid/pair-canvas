@@ -1,0 +1,309 @@
+.relation-card{
+
+    width:100%;
+    min-width:0;
+
+    box-sizing:border-box;
+
+    overflow:hidden;
+
+    padding:24px;
+
+    background:#fcfcfc;
+
+    border:1px solid #ececec;
+    border-radius:22px;
+
+}
+
+/* ===========================
+   キャラクターエリア
+=========================== */
+
+.characterArea{
+
+    display:grid;
+
+    grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);
+
+    align-items:start;
+
+    gap:28px;
+
+}
+
+.character{
+
+    min-width:0;
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+
+}
+
+/* ===========================
+   画像
+=========================== */
+
+.imageBox {
+
+    position: relative;
+
+    background: #efefef;
+
+    border-radius: 18px;
+
+    overflow: hidden;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    color: #888;
+
+}
+/* ===== Large ===== */
+
+.relation-card.large .imageBox{
+
+    width:320px;
+
+    height:280px;
+
+}
+
+.relation-card.large .subInfo{
+
+    width:320px;
+
+}
+
+/* ===== Medium ===== */
+
+.relation-card.medium .imageBox{
+
+    width:320px;
+
+    height:320px;
+
+}
+
+.relation-card.medium .subInfo{
+
+    width:240px;
+
+}
+
+/* ===== Small ===== */
+
+.relation-card.small .imageBox{
+
+    width:150px;
+
+    height:200px;
+
+}
+
+.relation-card.small .subInfo{
+
+    width:150px;
+
+}
+.cardImage{
+
+    width:100%;
+    height:100%;
+
+    object-fit:cover;
+
+    display:block;
+
+}
+
+.imageEmpty{
+
+    width:100%;
+    height:100%;
+
+    display:flex;
+
+    justify-content:center;
+    align-items:center;
+
+    color:#999;
+
+    background:#efefef;
+
+    font-size:14px;
+
+}
+
+/* ===========================
+   名前帯
+=========================== */
+
+.nameOverlay {
+
+    position:absolute;
+
+    bottom:8px;
+
+    padding:8px 14px;
+
+    width:fit-content;
+    max-width:85%;
+
+    background:rgba(0,0,0,.65);
+    backdrop-filter:blur(6px);
+
+    color:#fff;
+
+    font-size:13px;
+
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+
+}
+
+.nameOverlay.left {
+
+    left: 8px;
+
+    text-align: left;
+
+    border-radius: 14px;
+
+}
+
+.nameOverlay.right {
+
+    right: 8px;
+
+    text-align: right;
+
+    border-radius: 14px;
+
+}
+
+/* ===========================
+   補足
+=========================== */
+
+.subInfo {
+
+    width: 150px;
+
+    margin-top: 10px;
+
+    font-size: 11px;
+    color: #666;
+
+    text-align: left;
+
+    line-height: 1.5;
+
+    white-space: pre-wrap;
+
+}
+
+.subInfo.right {
+
+    text-align: right;
+
+}
+
+/* ===========================
+   中央
+=========================== */
+
+.relationCenter {
+
+    height: 200px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+
+.relationOverlay {
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+
+    gap: 8px;
+
+}
+
+.relationLabel {
+
+    padding: 8px 22px;
+
+    background: rgba(0, 0, 0, .65);
+
+    backdrop-filter: blur(6px);
+
+    border-radius: 999px;
+
+    color: #fff;
+
+    font-size: 13px;
+    font-weight: 400;
+
+    white-space: nowrap;
+
+    box-shadow: 0 2px 10px rgba(0,0,0,.08);
+
+}
+
+.arrow {
+
+    font-size: 30px;
+
+    font-weight: bold;
+
+    color: #666;
+
+}
+
+/* ===========================
+   物語タイトル
+=========================== */
+
+.storyTitle {
+
+    margin-top: 34px;
+
+    padding: 12px 18px;
+
+    text-align: center;
+
+    background: rgba(0,0,0,.7);
+
+    border-radius: 12px;
+
+    font-size: 14px;
+    font-weight: 700;
+    color: white;
+
+}
+
+/* ===========================
+   説明
+=========================== */
+
+.description {
+
+    margin-top: 24px;
+    min-height: 150px;
+    line-height: 1.9;
+
+    white-space: pre-wrap;
+    font-size: 12px;
+    font-weight: 400;
+
+}

@@ -1,0 +1,221 @@
+.preview{
+
+    min-height:100vh;
+
+    padding:60px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:flex-start;
+
+    background:#f4f5fb;
+
+}
+.paper *{
+
+    pointer-events:none;
+
+}
+
+.paper{
+
+    --paper-color:#ffffff;
+
+    width:1000px;
+
+    min-height:1400px;
+
+    padding:40px;
+
+    background-color:var(--paper-color);
+
+    border-radius:26px;
+
+    box-shadow:0 20px 60px rgba(0,0,0,.08);
+
+}
+
+.paper h1{
+
+    margin:0 0 40px;
+
+    text-align:center;
+
+    font-size:35px;
+
+    font-weight:700;
+
+    letter-spacing:.05em;
+
+}
+
+/* =====================================
+   Card Layout
+===================================== */
+.cardGrid{
+
+    display:grid;
+
+    gap:28px;
+
+}
+
+/* 1枚 */
+
+.cardGrid.one{
+
+    grid-template-columns:1fr;
+
+}
+
+/* 2枚（上下） */
+
+.cardGrid.two{
+
+    grid-template-columns:1fr;
+
+}
+
+/* 3枚 */
+
+.cardGrid.threeTop{
+
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
+
+    gap:28px;
+
+    margin-bottom:28px;
+
+}
+
+.cardGrid.threeBottom{
+
+    display:grid;
+
+    grid-template-columns:1fr;
+
+}
+
+/* 4枚 */
+
+.cardGrid.four{
+
+    grid-template-columns:1fr 1fr;
+
+}
+
+/* =====================================
+   Background Pattern
+===================================== */
+
+/* 無地 */
+
+.pattern-solid{
+
+    background-color:var(--paper-color);
+
+}
+
+/* なし */
+
+.pattern-none{
+
+    background:none;
+
+    background-color:transparent;
+
+}
+
+/* 斜線 */
+
+.pattern-stripe{
+
+    background-color:var(--paper-color);
+
+    background-image:
+
+    repeating-linear-gradient(
+
+        -45deg,
+
+        rgba(255,255,255,.18) 0,
+
+        rgba(255,255,255,.18) 2px,
+
+        transparent 2px,
+
+        transparent 16px
+
+    );
+
+}
+
+/* チェック */
+
+.pattern-check{
+
+    background-color:var(--paper-color);
+
+    background-image:
+
+    linear-gradient(
+        rgba(255,255,255,.28) 1px,
+        transparent 1px
+    ),
+
+    linear-gradient(
+        90deg,
+        rgba(255,255,255,.28) 1px,
+        transparent 1px
+    );
+
+    background-size:24px 24px;
+
+}
+
+/* ドット */
+
+.pattern-dot{
+
+    background-color:var(--paper-color);
+
+    background-image:
+
+    radial-gradient(
+
+        rgba(255,255,255,.35) 1.6px,
+
+        transparent 1.6px
+
+    );
+
+    background-size:18px 18px;
+
+}
+
+/* 格子 */
+
+.pattern-grid{
+
+    background-color:var(--paper-color);
+
+    background-image:
+
+    linear-gradient(
+        rgba(255,255,255,.28) 2px,
+        transparent 2px
+    ),
+
+    linear-gradient(
+        90deg,
+        rgba(255,255,255,.28) 2px,
+        transparent 2px
+    );
+
+    background-size:42px 42px;
+
+}

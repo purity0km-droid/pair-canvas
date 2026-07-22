@@ -1,0 +1,35 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  width: 100%;
+  min-height: 100%;
+}
+
+body {
+  font-family: "Noto Sans JP", sans-serif;
+  background: #f5f7fb;
+  color: #2c2c2c;
+}
+
+.app {
+  display: flex;
+  height: 100vh;
+}
+
+.sidebar-area {
+    width: 460px;
+    flex-shrink: 0;
+}
+
+.preview-area {
+    flex: 1;
+    overflow-y: auto;
+    background: #eef1f7;
+}

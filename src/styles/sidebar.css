@@ -1,0 +1,609 @@
+.sidebar{
+
+    height:100vh;
+    overflow-y:auto;
+
+    padding:32px;
+
+    background:#fff;
+    border-right:1px solid #e6e6e6;
+
+    font-size:14px;
+
+}
+
+/* =====================================
+   共通パネル
+===================================== */
+
+.panel{
+
+    margin-bottom:24px;
+
+    padding:24px;
+
+    background:#fff;
+
+    border:1px solid #ececec;
+    border-radius:18px;
+
+}
+
+.panel h2{
+
+    margin:0 0 20px;
+
+    font-size:18px;
+    font-weight:700;
+
+}
+
+/* =====================================
+   ロゴ
+===================================== */
+
+.logo{
+
+    margin-bottom:20px;
+
+}
+
+.logo h1{
+
+    margin:0;
+
+    font-size:30px;
+
+    font-family:"Outfit",sans-serif;
+
+    font-weight:600;
+
+    letter-spacing:-1px;
+
+}
+
+.logo p{
+
+    margin-top:8px;
+
+    color:#888;
+
+    font-size:12px;
+
+}
+
+/* =====================================
+   フォーム
+===================================== */
+
+.panel label{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:8px;
+
+    margin-bottom:18px;
+
+}
+
+.panel span{
+
+    font-size:14px;
+    font-weight:500;
+
+}
+
+/* ---------- タイトル ---------- */
+
+.titleRow{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    margin-bottom:20px;
+
+}
+.titleRow input[type="text"]{
+
+    flex:1;
+
+}
+
+.checkboxInline{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    margin:0;
+
+    flex:none;
+
+}
+
+.checkboxInline input{
+
+    width:18px;
+    height:18px;
+
+}
+
+.titleRow input[type="text"]{
+
+    flex:1;
+
+}
+
+/* ---------- テキスト入力 ---------- */
+
+.panel input[type="text"],
+.panel textarea{
+
+    width:100%;
+
+    padding:12px 14px;
+
+    border:1px solid #dcdcdc;
+
+    border-radius:12px;
+
+    outline:none;
+
+    font-size:14px;
+    font-family:inherit;
+
+    resize:vertical;
+
+    transition:.2s;
+
+}
+
+.panel input[type="text"]:focus,
+.panel textarea:focus{
+
+    border-color:#6D5DFC;
+
+}
+
+/* ---------- カラー ---------- */
+
+.colorRow{
+
+    display:flex;
+
+    gap:16px;
+
+}
+
+.colorRow label{
+
+    flex:1;
+
+}
+
+input[type="color"]{
+
+    width:100%;
+    height:60px;
+
+    padding:4px;
+
+    border:1px solid #ddd;
+
+    border-radius:12px;
+
+    background:#fff;
+
+    cursor:pointer;
+
+}
+
+/* =====================================
+   メインボタン
+===================================== */
+
+.primaryButton{
+
+    width:100%;
+
+    height:48px;
+
+    border:none;
+
+    border-radius:14px;
+
+    background:#6D5DFC;
+
+    color:#fff;
+
+    font-size:14px;
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+}
+
+.primaryButton:hover{
+
+    transform:translateY(-2px);
+
+    background:#5d4ef2;
+
+}
+
+.primaryButton:disabled{
+
+    opacity:.45;
+
+    cursor:not-allowed;
+
+    transform:none;
+
+}
+
+/* =====================================
+   Relation Header
+===================================== */
+
+.relationHeader{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:18px;
+
+}
+
+.relationHeader h2{
+
+    margin:0;
+
+    white-space:nowrap;
+
+    flex-shrink:0;
+
+}
+
+/* =====================================
+   ＋追加ボタン
+===================================== */
+
+.addRelationButton{
+
+    min-width:70px;
+
+    height:34px;
+
+    padding:0 14px;
+
+    border:none;
+
+    border-radius:999px;
+
+    background:#6D5DFC;
+
+    color:#fff;
+
+    font-size:13px;
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+}
+
+.addRelationButton:hover{
+
+    filter:brightness(.95);
+
+}
+
+.addRelationButton:disabled{
+
+    background:#d6d6d6;
+
+    cursor:not-allowed;
+
+}
+
+/* =====================================
+   Relation Tabs
+===================================== */
+
+.relationTabs{
+
+    display:flex;
+
+    gap:12px;
+
+    margin:18px 0 22px;
+
+}
+
+.relationTab{
+
+    width:40px;
+    height:40px;
+
+    padding:0;
+
+    flex:none;
+
+    border:1px solid #ddd;
+    border-radius:50%;
+
+    background:#fff;
+
+    color:#666;
+
+    font-size:14px;
+    font-weight:700;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+}
+
+.relationTab:hover{
+
+    border-color:#6D5DFC;
+
+}
+
+.relationTab.active{
+
+    background:#6D5DFC;
+
+    border-color:#6D5DFC;
+
+    color:#fff;
+
+    box-shadow:0 4px 12px rgba(109,93,252,.22);
+
+}
+
+/* =====================================
+   Accordion
+===================================== */
+
+.accordionHeader{
+
+    width:100%;
+
+    padding:14px 18px;
+
+    border:none;
+
+    border-radius:14px;
+
+    background:#6D5DFC;
+
+    color:#fff;
+
+    text-align:left;
+
+    cursor:pointer;
+
+}
+
+.accordionTitle{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    font-size:15px;
+    font-weight:700;
+
+}
+
+.accordionIcon{
+
+    width:18px;
+
+    display:flex;
+
+    justify-content:center;
+
+}
+
+.accordionSummary{
+
+    margin-top:8px;
+
+    margin-left:26px;
+
+    color:rgba(255,255,255,.88);
+
+    font-size:13px;
+
+}
+
+.accordionBody{
+
+    margin-top:20px;
+
+}
+
+.deleteButton{
+
+    margin-top:24px;
+
+}
+
+/* =====================================
+   背景パターン
+===================================== */
+
+.patternGrid{
+
+    display:grid;
+
+    grid-template-columns:repeat(3,minmax(0,1fr));
+
+    gap:10px;
+
+    margin-top:8px;
+
+}
+
+.patternButton{
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:6px;
+
+    width:100%;
+
+    padding:10px 8px;
+
+    border:1px solid #ddd;
+
+    border-radius:12px;
+
+    background:#fff;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+}
+
+.patternButton:hover{
+
+    border-color:#6D5DFC;
+
+}
+
+.patternButton.active{
+
+    border-color:#6D5DFC;
+
+    box-shadow:0 0 0 2px rgba(109,93,252,.18);
+
+}
+
+.patternButton small{
+
+    font-size:11px;
+
+    color:#666;
+
+    font-weight:600;
+
+}
+
+/* ==========================
+   プレビュー
+========================== */
+
+.patternPreview{
+
+    width:100%;
+
+    height:34px;
+
+    border-radius:8px;
+
+    border:1px solid #e7e7e7;
+
+}
+
+/* ベタ */
+
+.patternPreview.solid{
+
+    background:#d8d8d8;
+
+}
+
+/* 斜線 */
+
+.patternPreview.stripe{
+
+    background:
+    repeating-linear-gradient(
+        -45deg,
+        #d8d8d8 0 2px,
+        white 2px 10px
+    );
+
+}
+
+/* チェック */
+
+.patternPreview.check{
+
+    background:
+    linear-gradient(#d8d8d8 1px,transparent 1px),
+    linear-gradient(90deg,#d8d8d8 1px,transparent 1px);
+
+    background-size:10px 10px;
+
+}
+
+/* ドット */
+
+.patternPreview.dot{
+
+    background:
+    radial-gradient(#cfcfcf 1.3px,transparent 1.3px);
+
+    background-size:10px 10px;
+
+}
+
+/* ＋ */
+
+.patternPreview.grid{
+
+    background:
+    linear-gradient(#d8d8d8 1px,transparent 1px),
+    linear-gradient(90deg,#d8d8d8 1px,transparent 1px);
+
+    background-size:18px 18px;
+
+}
+
+.saveButtons{
+
+    display:flex;
+
+    gap:12px;
+
+    margin-top:24px;
+
+}
+
+.importButton{
+
+    display:flex;
+
+    justify-content:center;
+    align-items:center;
+
+    text-decoration:none;
+
+}
