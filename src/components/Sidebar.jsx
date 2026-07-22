@@ -13,10 +13,11 @@ export default function Sidebar(props) {
       <PageSettings
         page={props.page}
         updatePage={props.updatePage}
-        saveJson={props.saveProject}
-        loadJson={(e) =>
+        saveProject={props.saveProject}
+        loadProject={(e) =>
           props.loadProject(e.target.files[0])
         }
+        fileInputRef={props.fileInputRef}
         savePng={props.savePng}
       />
 
