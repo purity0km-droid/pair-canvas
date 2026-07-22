@@ -61,13 +61,7 @@ export default function Preview({
 
               <RelationCard
                 relation={relations[0]}
-                layout="small"
-                updateRelation={updateRelation}
-              />
-
-              <RelationCard
-                relation={relations[1]}
-                layout="small"
+                layout="large"
                 updateRelation={updateRelation}
               />
 
@@ -76,8 +70,14 @@ export default function Preview({
             <div className="cardGrid threeBottom">
 
               <RelationCard
+                relation={relations[1]}
+                layout="small"
+                updateRelation={updateRelation}
+              />
+
+              <RelationCard
                 relation={relations[2]}
-                layout="large"
+                layout="small"
                 updateRelation={updateRelation}
               />
 

@@ -33,3 +33,21 @@ body {
     overflow-y: auto;
     background: #eef1f7;
 }
+
+@media (max-width:900px){
+
+    .app{
+        flex-direction:column;
+        height:auto;
+    }
+
+    .sidebar-area{
+        width:100%;
+        height:auto;
+    }
+
+    .preview-area{
+        width:100%;
+    }
+
+}
