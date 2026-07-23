@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import "../styles/imageUploader.css";
 
 function resizeImage(file, maxSize = 1600) {
@@ -59,46 +59,59 @@ export default function ImageUploader({ image, onChange }) {
   const inputRef = useRef(null);
   const [dragging, setDragging] = useState(false);
 
-  async function handleFile(e) {
-    const file = e.target.files?.[0];
-    
-    // どこで止まっているか確認するためのアラート（不要になったら消してください）
-     alert("1. ファイル選択を検知しました"); 
+  // 対策2: ReactのonChangeを使わず、ネイティブのイベントリスナーで確実に検知する
+  useEffect(() => {
+    const inputEl = inputRef.current;
+    if (!inputEl) return;
 
-    if (!file) {
-       alert("エラー: ファイルが取得できません");
-      return;
-    }
+    const handleNativeChange = async (e) => {
+      // 動作確認用アラート（動いたら消してOKです）
+      // alert("ファイル選択を検知しました！");
 
-    // デバッグ: スマホが認識しているファイル形式を表示
-     alert(`2. ファイル名: ${file.name}\nタイプ: ${file.type}`);
+      const file = e.target.files?.[0];
+      if (!file) return;
 
-    if (file.type && !file.type.startsWith("image/")) {
-      alert(`画像として認識されませんでした（Type: ${file.type}）。別の画像をお試しください。`);
-      if (inputRef.current) inputRef.current.value = "";
-      return;
-    }
+      if (file.type && !file.type.startsWith("image/")) {
+        alert("画像として認識されませんでした。別の画像をお試しください。");
+        inputEl.value = "";
+        return;
+      }
 
+      try {
+        const resizedImage = await resizeImage(file);
+        onChange(resizedImage);
+      } catch (error) {
+        console.error("画像処理エラー:", error);
+        alert(`画像の処理に失敗しました: ${error.message}`);
+      } finally {
+        inputEl.value = "";
+      }
+    };
+
+    // イベントを直接アタッチ
+    inputEl.addEventListener("change", handleNativeChange);
+
+    // クリーンアップ
+    return () => {
+      inputEl.removeEventListener("change", handleNativeChange);
+    };
+  }, [onChange]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // ドラッグ＆ドロップ時の手動発火用関数
+  const handleDropFile = async (file) => {
+    if (!file || (file.type && !file.type.startsWith("image/"))) return;
     try {
-       alert("3. リサイズ処理を開始します");
       const resizedImage = await resizeImage(file);
-      
-       alert("4. リサイズ完了！画面に反映します");
       onChange(resizedImage);
     } catch (error) {
-      console.error("画像の処理に失敗しました", error);
-      alert(`エラーが発生しました:\n${error.message}`);
-    } finally {
-      if (inputRef.current) inputRef.current.value = "";
+      console.error(error);
     }
-  }
+  };
 
-return (
+  return (
     <>
-
       <label
         className={`imageUploader ${dragging ? "dragging" : ""}`}
-        // label要素にしたので onClick は削除します
         onDragOver={(e) => {
           e.preventDefault();
           setDragging(true);
@@ -109,33 +122,39 @@ return (
         onDrop={(e) => {
           e.preventDefault();
           setDragging(false);
-          if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-            // Drop時は手動で関数を呼ぶ
-            handleFile({ target: { files: e.dataTransfer.files } });
-          }
+          const file = e.dataTransfer.files?.[0];
+          if (file) handleDropFile(file);
         }}
-        // カーソルをポインターにしてボタンっぽくする
-        style={{ cursor: "pointer", display: "block" }} 
+        style={{ cursor: "pointer", display: "block" }}
       >
         <input
           ref={inputRef}
           type="file"
           accept="image/jpeg, image/png, image/webp, image/gif"
-          // hidden属性だとスマホで発火しないことがあるので、CSSで安全に隠す
-          style={{ display: "none" }}
-          onChange={handleFile}
+          // 対策1: hidden や display: none は絶対に使わない！
+          // 代わりに「透明にして、サイズを極小にする」ことで画面から隠す
+          style={{
+            position: "absolute",
+            width: "1px",
+            height: "1px",
+            opacity: 0,
+            overflow: "hidden",
+            pointerEvents: "none",
+            zIndex: -1,
+          }}
+          // onChange={...} は使いません（useEffect内で処理するため）
         />
 
         {image ? (
           <>
-            <img src={image} alt="" className="imagePreview" />
+            <img src={image} alt="Preview" className="imagePreview" />
             <button
               className="removeImageButton"
               onClick={(e) => {
                 e.preventDefault(); // 親のlabelクリックを防ぐ
                 e.stopPropagation();
                 onChange(null);
-                if (inputRef.current) inputRef.current.value = ""; // クリア
+                if (inputRef.current) inputRef.current.value = "";
               }}
             >
               ✕
