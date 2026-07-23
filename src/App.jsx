@@ -253,7 +253,7 @@ function App() {
         <div
           style={{
             position: "fixed",
-            right: 0,
+            left: 0,
             top: 0,
             zIndex: 0, // メインコンテンツの後ろに隠す
             opacity: 1, // 完全描写
