@@ -20,12 +20,16 @@ function App() {
     {
       id: crypto.randomUUID(),
       name: "関係性①",
+
       leftImage: null,
       rightImage: null,
+
       leftName: "",
       rightName: "",
+
       leftSub: "",
       rightSub: "",
+
       relation: "",
       storyTitle: "",
       description: "",
@@ -35,9 +39,6 @@ function App() {
   const [selectedRelationId, setSelectedRelationId] = useState(
     relations[0].id
   );
-
-  // 書き出し実行中かどうかの状態
-  const [isExporting, setIsExporting] = useState(false);
 
   const fileInputRef = useRef(null);
   const previewRef = useRef(null);
@@ -62,12 +63,16 @@ function App() {
     const newRelation = {
       id: crypto.randomUUID(),
       name: `関係性${relations.length + 1}`,
+
       leftImage: null,
       rightImage: null,
+
       leftName: "",
       rightName: "",
+
       leftSub: "",
       rightSub: "",
+
       relation: "",
       storyTitle: "",
       description: "",
@@ -119,9 +124,12 @@ function App() {
       relations,
     };
 
-    const blob = new Blob([JSON.stringify(data, null, 2)], {
-      type: "application/json",
-    });
+    const blob = new Blob(
+      [JSON.stringify(data, null, 2)],
+      {
+        type: "application/json",
+      }
+    );
 
     const url = URL.createObjectURL(blob);
 
@@ -165,26 +173,18 @@ function App() {
   }
 
 // -----------------------------
-  // PNG保存（Base64破壊防止 & デコード完全待ち版）
+  // PNG保存（スマホ対応強化版）
   // -----------------------------
   async function savePng({ highQuality = false } = {}) {
+    if (!exportPreviewRef.current) return;
+    const element = exportPreviewRef.current;
+
     try {
-      // 1. 書き出し画面を表に出す
-      setIsExporting(true);
-
-      // 2. レンダリング完了を少し待つ
-      await new Promise((resolve) => setTimeout(resolve, 150));
-
-      if (!exportPreviewRef.current) return;
-      const element = exportPreviewRef.current;
-
-      // 3. 【最重要】要素内にあるすべての <img> のデコード（描画準備）を強制的に待つ
+      // 1. 要素内にあるすべての <img> や背景画像のロード・デコードを強制的に待つ
       const imgElements = Array.from(element.querySelectorAll("img"));
       await Promise.all(
         imgElements.map((img) => {
-          if (img.complete) {
-            return img.decode().catch(() => {});
-          }
+          if (img.complete) return img.decode().catch(() => {});
           return new Promise((resolve) => {
             img.onload = () => img.decode().then(resolve).catch(resolve);
             img.onerror = resolve;
@@ -192,18 +192,16 @@ function App() {
         })
       );
 
+      // 2. スマホのレンダリング待ち（少しだけ待機）
+      await new Promise((resolve) => setTimeout(resolve, 150));
+
+      // 3. キャプチャ実行
       const options = {
         pixelRatio: highQuality ? 2 : 1,
-        cacheBust: false, // ★超重要: Base64画像を壊さないため絶対に false にする
+        cacheBust: true,
         skipAutoScale: true,
-        backgroundColor: page.backgroundColor || "#6D5DFC",
       };
 
-      // 4. 【ウォームアップ】1回ダミー実行してiOS Safariに画像を描画させる
-      await htmlToImage.toPng(element, options);
-      await new Promise((resolve) => setTimeout(resolve, 100));
-
-      // 5. 本番キャプチャ
       const dataUrl = await htmlToImage.toPng(element, options);
 
       const link = document.createElement("a");
@@ -215,19 +213,15 @@ function App() {
     } catch (error) {
       console.error(error);
       alert("PNG保存に失敗しました。");
-    } finally {
-      // 6. 書き出し画面を隠す
-      setIsExporting(false);
     }
   }
-  
+
   const selectedRelation = relations.find(
     (relation) => relation.id === selectedRelationId
   );
 
   return (
-    <div className="app" style={{ position: "relative" }}>
-      {/* サイドバー */}
+    <div className="app" style={{ position: "relative", zIndex: 1 }}>
       <aside className="sidebar-area">
         <Sidebar
           page={page}
@@ -242,12 +236,11 @@ function App() {
           saveProject={saveProject}
           loadProject={loadProject}
           savePng={savePng}
-          savePngHighQuality={() => savePng({ highQuality: true })}
+          savePngHighQuality={() => savePng({ highQuality:true })}
           fileInputRef={fileInputRef}
         />
       </aside>
 
-      {/* メインプレビュー */}
       <main className="preview-area">
         <Preview
           page={page}
@@ -256,25 +249,24 @@ function App() {
         />
       </main>
 
-      {/* 保存専用プレビュー（保存時だけ一瞬手前に出してスマホの描画スキップを回避） */}
-      <div
-        style={{
-          position: "fixed",
-          top: 0,
-          left: isExporting ? 0 : "-9999px",
-          zIndex: isExporting ? 9999 : -1,
-          opacity: isExporting ? 1 : 0,
-          pointerEvents: "none",
-          backgroundColor: page.backgroundColor || "#6D5DFC",
-        }}
-      >
-        <Preview
-          page={page}
-          relations={relations}
-          exportPreviewRef={exportPreviewRef}
-          exportMode
-        />
-      </div>
+      {/* 保存専用（画面には表示しない） */}
+        <div
+          style={{
+            position: "fixed",
+            left: 0,
+            top: 0,
+            zIndex: 0, // メインコンテンツの後ろに隠す
+            opacity: 1, // 完全に0にするとOSに無視されるため0.01
+            pointerEvents: "none", // 誤タップ防止
+          }}
+        >
+          <Preview
+            page={page}
+            relations={relations}
+            exportPreviewRef={exportPreviewRef}
+            exportMode
+          />
+        </div>
     </div>
   );
 }
