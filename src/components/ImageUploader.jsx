@@ -93,19 +93,12 @@ export default function ImageUploader({ image, onChange }) {
     }
   }
 
-  return (
+return (
     <>
-      <input
-        ref={inputRef}
-        type="file"
-        accept="image/jpeg, image/png, image/webp, image/gif"
-        hidden
-        onChange={handleFile}
-      />
 
-      <div
+      <label
         className={`imageUploader ${dragging ? "dragging" : ""}`}
-        onClick={() => inputRef.current?.click()}
+        // label要素にしたので onClick は削除します
         onDragOver={(e) => {
           e.preventDefault();
           setDragging(true);
@@ -116,17 +109,33 @@ export default function ImageUploader({ image, onChange }) {
         onDrop={(e) => {
           e.preventDefault();
           setDragging(false);
-          handleFile({ target: { files: e.dataTransfer.files } });
+          if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+            // Drop時は手動で関数を呼ぶ
+            handleFile({ target: { files: e.dataTransfer.files } });
+          }
         }}
+        // カーソルをポインターにしてボタンっぽくする
+        style={{ cursor: "pointer", display: "block" }} 
       >
+        <input
+          ref={inputRef}
+          type="file"
+          accept="image/jpeg, image/png, image/webp, image/gif"
+          // hidden属性だとスマホで発火しないことがあるので、CSSで安全に隠す
+          style={{ display: "none" }}
+          onChange={handleFile}
+        />
+
         {image ? (
           <>
             <img src={image} alt="" className="imagePreview" />
             <button
               className="removeImageButton"
               onClick={(e) => {
+                e.preventDefault(); // 親のlabelクリックを防ぐ
                 e.stopPropagation();
                 onChange(null);
+                if (inputRef.current) inputRef.current.value = ""; // クリア
               }}
             >
               ✕
@@ -136,13 +145,13 @@ export default function ImageUploader({ image, onChange }) {
           <div className="imagePlaceholder">
             <div className="plus">＋</div>
             <div>
-              クリック または
+              タップ または
               <br />
               ドラッグ＆ドロップ
             </div>
           </div>
         )}
-      </div>
+      </label>
     </>
   );
 }
