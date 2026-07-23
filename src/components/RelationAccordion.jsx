@@ -160,8 +160,8 @@ export default function RelationAccordion({
 
             <span>関係性</span>
 
-            <input
-              type="text"
+            <textarea
+              rows="2"
               value={relation.relation}
               onChange={(e) =>
                 updateRelation(

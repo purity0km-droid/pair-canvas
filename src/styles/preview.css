@@ -13,11 +13,6 @@
     background:#f4f5fb;
 
 }
-.paper *{
-
-    pointer-events:none;
-
-}
 
 .paper{
 
@@ -57,9 +52,8 @@
 .cardGrid{
 
     display:grid;
-
     gap:28px;
-
+    justify-items: stretch;
 }
 
 /* 1枚 */
