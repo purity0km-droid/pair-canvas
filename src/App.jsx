@@ -215,13 +215,13 @@ function App() {
       alert("PNG保存に失敗しました。");
     }
   }
-
+  
   const selectedRelation = relations.find(
     (relation) => relation.id === selectedRelationId
   );
 
   return (
-    <div className="app" style={{ position: "relative", zIndex: 1 }}>
+    <div className="app">
       <aside className="sidebar-area">
         <Sidebar
           page={page}
@@ -252,11 +252,11 @@ function App() {
       {/* 保存専用（画面には表示しない） */}
         <div
           style={{
-            position: "fixed",
+            position: "absolute", // fixedからabsoluteに変更
             left: 0,
             top: 0,
-            zIndex: 0, // メインコンテンツの後ろに隠す
-            opacity: 1, // 完全に0にするとOSに無視されるため0.01
+            zIndex: -1000, // メインコンテンツの後ろに隠す
+            opacity: 0.01, // 完全に0にするとOSに無視されるため0.01
             pointerEvents: "none", // 誤タップ防止
           }}
         >
