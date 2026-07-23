@@ -173,46 +173,39 @@ function App() {
   }
 
 // -----------------------------
-// PNG保存
-// -----------------------------
-    async function savePng({
-      highQuality = false,
-    } = {}) {
+  // PNG保存
+  // -----------------------------
+  async function savePng({ highQuality = false } = {}) {
+    if (!exportPreviewRef.current) return;
+    const element = exportPreviewRef.current;
 
-      if (!exportPreviewRef.current) return;
+    try {
+      const options = {
+        pixelRatio: highQuality ? 2 : 1,
+        cacheBust: true,
+        skipAutoScale: true,
+      };
 
-      const element = exportPreviewRef.current;
+      // 【重要対策】iOS/スマホ向けの「画像抜け」対策
+      // 一度ダミーで書き出し処理を走らせて、ブラウザに画像を強制レンダリングさせる
+      await htmlToImage.toPng(element, options);
+      // さらに念押しで少しだけ待機（環境によって画像展開が追いつかないのを防ぐ）
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
-      try {
+      // 2回目で本番のデータを取得する
+      const dataUrl = await htmlToImage.toPng(element, options);
 
-        const dataUrl = await htmlToImage.toPng(
-          element,
-          {
-            pixelRatio: highQuality ? 2 : 1,
-            cacheBust: true,
-            skipAutoScale: true,
-          }
-        );
-
-        const link = document.createElement("a");
-
-        link.download = highQuality
-          ? "pair-canvas-hq.png"
-          : "pair-canvas.png";
-
-        link.href = dataUrl;
-
-        link.click();
-
-      } catch (error) {
-
-        console.error(error);
-
-        alert("PNG保存に失敗しました。");
-
-      }
-
+      const link = document.createElement("a");
+      link.download = highQuality
+        ? "pair-canvas-hq.png"
+        : "pair-canvas.png";
+      link.href = dataUrl;
+      link.click();
+    } catch (error) {
+      console.error(error);
+      alert("PNG保存に失敗しました。");
     }
+  }
 
   const selectedRelation = relations.find(
     (relation) => relation.id === selectedRelationId
@@ -248,20 +241,23 @@ function App() {
       </main>
 
       {/* 保存専用（画面には表示しない） */}
-      <div
-        style={{
-          position: "fixed",
-          left: "-99999px",
-          top: 0,
-        }}
-      >
-        <Preview
-          page={page}
-          relations={relations}
-          exportPreviewRef={exportPreviewRef}
-          exportMode
-        />
-      </div>
+        <div
+          style={{
+            position: "absolute", // fixedからabsoluteに変更
+            left: 0,
+            top: 0,
+            zIndex: -1000, // メインコンテンツの後ろに隠す
+            opacity: 0.01, // 完全に0にするとOSに無視されるため0.01
+            pointerEvents: "none", // 誤タップ防止
+          }}
+        >
+          <Preview
+            page={page}
+            relations={relations}
+            exportPreviewRef={exportPreviewRef}
+            exportMode
+          />
+        </div>
     </div>
   );
 }
