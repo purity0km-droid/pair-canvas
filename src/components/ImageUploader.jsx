@@ -90,79 +90,62 @@ function resizeImage(file, maxSize = 1600) {
 }
 
 
-export default function ImageUploader({
-  image,
-  onChange,
-}) {
-
+export default function ImageUploader({ image, onChange }) {
   const inputRef = useRef(null);
-
   const [dragging, setDragging] = useState(false);
 
-
-  async function handleFile(file) {
-
+  async function handleFile(e) {
+    const file = e.target.files?.[0];
     if (!file) return;
 
-    if (!file.type.startsWith("image/")) return;
+    // 変更: file.typeが空になるAndroidバグ対策（空欄の場合はスルーさせる）
+    if (file.type && !file.type.startsWith("image/")) {
+      // 処理を終わらせる前にinputをリセット
+      if (inputRef.current) inputRef.current.value = "";
+      return;
+    }
 
-
-    const resizedImage = await resizeImage(file);
-
-
-    onChange(resizedImage);
-
+    try {
+      const resizedImage = await resizeImage(file);
+      onChange(resizedImage);
+    } catch (error) {
+      console.error("画像の処理に失敗しました", error);
+      alert("画像の読み込みに失敗しました。別の画像をお試しください。");
+    } finally {
+      // 追加: 同じ画像を再選択できるようにリセット
+      if (inputRef.current) inputRef.current.value = "";
+    }
   }
-
 
   return (
     <>
-
       <input
         ref={inputRef}
         type="file"
-        accept="image/*"
+        // 変更: iOSでHEICをJPEGに自動変換させるための魔法の指定
+        accept="image/jpeg, image/png, image/webp, image/gif"
         hidden
-        onChange={(e) =>
-          handleFile(e.target.files?.[0])
-        }
+        onChange={handleFile} // 変更: eventをそのまま渡す
       />
-
 
       <div
         className={`imageUploader ${dragging ? "dragging" : ""}`}
-
-        onClick={() =>
-          inputRef.current?.click()
-        }
-
+        onClick={() => inputRef.current?.click()}
         onDragOver={(e) => {
-
           e.preventDefault();
-
           setDragging(true);
-
         }}
-
         onDragLeave={() => {
-
           setDragging(false);
-
         }}
-
         onDrop={(e) => {
-
           e.preventDefault();
-
           setDragging(false);
-
-          handleFile(
-            e.dataTransfer.files[0]
-          );
-
+          // 変更: 疑似的なeventオブジェクトを作ってhandleFileへ渡す
+          handleFile({ target: { files: e.dataTransfer.files } });
         }}
       >
-
+        
         {image ? (
 
           <>
