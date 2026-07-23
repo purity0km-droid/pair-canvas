@@ -221,7 +221,7 @@ function App() {
   );
 
   return (
-    <div className="app">
+    <div className="app" style={{ position: "relative", zIndex: 1 }}>
       <aside className="sidebar-area">
         <Sidebar
           page={page}
@@ -253,10 +253,10 @@ function App() {
         <div
           style={{
             position: "absolute", // fixedからabsoluteに変更
-            left: 0,
+            left: "-9999px",
             top: 0,
-            zIndex: -1000, // メインコンテンツの後ろに隠す
-            opacity: 0.01, // 完全に0にするとOSに無視されるため0.01
+            zIndex: 0, // メインコンテンツの後ろに隠す
+            opacity: 1, // スマホの描画スキップを防ぐため不透明を維持
             pointerEvents: "none", // 誤タップ防止
           }}
         >
