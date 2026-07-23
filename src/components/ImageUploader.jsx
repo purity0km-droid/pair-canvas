@@ -63,15 +63,15 @@ export default function ImageUploader({ image, onChange }) {
     const file = e.target.files?.[0];
     
     // どこで止まっているか確認するためのアラート（不要になったら消してください）
-    // alert("1. ファイル選択を検知しました"); 
+     alert("1. ファイル選択を検知しました"); 
 
     if (!file) {
-      // alert("エラー: ファイルが取得できません");
+       alert("エラー: ファイルが取得できません");
       return;
     }
 
     // デバッグ: スマホが認識しているファイル形式を表示
-    // alert(`2. ファイル名: ${file.name}\nタイプ: ${file.type}`);
+     alert(`2. ファイル名: ${file.name}\nタイプ: ${file.type}`);
 
     if (file.type && !file.type.startsWith("image/")) {
       alert(`画像として認識されませんでした（Type: ${file.type}）。別の画像をお試しください。`);
@@ -80,10 +80,10 @@ export default function ImageUploader({ image, onChange }) {
     }
 
     try {
-      // alert("3. リサイズ処理を開始します");
+       alert("3. リサイズ処理を開始します");
       const resizedImage = await resizeImage(file);
       
-      // alert("4. リサイズ完了！画面に反映します");
+       alert("4. リサイズ完了！画面に反映します");
       onChange(resizedImage);
     } catch (error) {
       console.error("画像の処理に失敗しました", error);
