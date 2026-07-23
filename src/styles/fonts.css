@@ -1,48 +1,48 @@
 @font-face{
     font-family:"Noto Sans JP";
-    src:url("/fonts/NotoSansJP-Regular.ttf") format("truetype");
+    src:url("../assets/fonts/NotoSansJP-Regular.ttf") format("truetype");
 }
 
 @font-face{
     font-family:"Zen Maru Gothic";
-    src:url("/fonts/ZenMaruGothic-Regular.ttf") format("truetype");
+    src:url("../assets/fonts/ZenMaruGothic-Regular.ttf") format("truetype");
 }
 
 @font-face{
     font-family:"Shippori Mincho";
-    src:url("/fonts/ShipporiMincho-Regular.ttf") format("truetype");
+    src:url("../assets/fonts/ShipporiMincho-Regular.ttf") format("truetype");
 }
 
 @font-face{
     font-family:"Kaisei Decol";
-    src:url("/fonts/KaiseiDecol-Regular.ttf") format("truetype");
+    src:url("../assets/fonts/KaiseiDecol-Regular.ttf") format("truetype");
 }
 
 @font-face{
     font-family:"Yuji Syuku";
-    src:url("/fonts/YujiSyuku-Regular.ttf") format("truetype");
+    src:url("../assets/fonts/YujiSyuku-Regular.ttf") format("truetype");
 }
 
 @font-face{
     font-family:"Hachi Maru Pop";
-    src:url("/fonts/HachiMaruPop-Regular.ttf") format("truetype");
+    src:url("../assets/fonts/HachiMaruPop-Regular.ttf") format("truetype");
 }
 
 @font-face{
     font-family:"Kiwi Maru";
-    src:url("/fonts/KiwiMaru-Regular.ttf") format("truetype");
+    src:url("../assets/fonts/KiwiMaru-Regular.ttf") format("truetype");
 }
 
 @font-face{
     font-family:"Kosugi Maru";
-    src:url("/fonts/KosugiMaru-Regular.ttf") format("truetype");
+    src:url("../assets/fonts/KosugiMaru-Regular.ttf") format("truetype");
 }
 
 @font-face{
     font-family:"DotGothic16";
-    src:url("/fonts/DotGothic16-Regular.ttf") format("truetype");
+    src:url("../assets/fonts/DotGothic16-Regular.ttf") format("truetype");
 }
 @font-face{
     font-family:"Limelight";
-    src:url("/fonts/Limelight-Regular.ttf") format("truetype");
+    src:url("../assets/fonts/Limelight-Regular.ttf") format("truetype");
 }
