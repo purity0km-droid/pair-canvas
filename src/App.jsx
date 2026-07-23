@@ -164,28 +164,46 @@ function App() {
     reader.readAsText(file);
   }
 
-  // -----------------------------
-  // PNG保存（スマホ画像抜け防止フラッシュ方式）
+// -----------------------------
+  // PNG保存（Base64破壊防止 & デコード完全待ち版）
   // -----------------------------
   async function savePng({ highQuality = false } = {}) {
     try {
       // 1. 書き出し画面を表に出す
       setIsExporting(true);
 
-      // 2. スマホが画像を最前面で描画し切るのを200ms待つ
-      await new Promise((resolve) => setTimeout(resolve, 200));
+      // 2. レンダリング完了を少し待つ
+      await new Promise((resolve) => setTimeout(resolve, 150));
 
       if (!exportPreviewRef.current) return;
       const element = exportPreviewRef.current;
 
+      // 3. 【最重要】要素内にあるすべての <img> のデコード（描画準備）を強制的に待つ
+      const imgElements = Array.from(element.querySelectorAll("img"));
+      await Promise.all(
+        imgElements.map((img) => {
+          if (img.complete) {
+            return img.decode().catch(() => {});
+          }
+          return new Promise((resolve) => {
+            img.onload = () => img.decode().then(resolve).catch(resolve);
+            img.onerror = resolve;
+          });
+        })
+      );
+
       const options = {
         pixelRatio: highQuality ? 2 : 1,
-        cacheBust: true,
+        cacheBust: false, // ★超重要: Base64画像を壊さないため絶対に false にする
         skipAutoScale: true,
         backgroundColor: page.backgroundColor || "#6D5DFC",
       };
 
-      // 3. キャプチャ実行
+      // 4. 【ウォームアップ】1回ダミー実行してiOS Safariに画像を描画させる
+      await htmlToImage.toPng(element, options);
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      // 5. 本番キャプチャ
       const dataUrl = await htmlToImage.toPng(element, options);
 
       const link = document.createElement("a");
@@ -198,11 +216,11 @@ function App() {
       console.error(error);
       alert("PNG保存に失敗しました。");
     } finally {
-      // 4. 元に戻す
+      // 6. 書き出し画面を隠す
       setIsExporting(false);
     }
   }
-
+  
   const selectedRelation = relations.find(
     (relation) => relation.id === selectedRelationId
   );
