@@ -5,7 +5,7 @@ import "../styles/imageUploader.css";
 
 function resizeImage(file, maxSize = 1600) {
 
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
 
     const reader = new FileReader();
 
@@ -77,12 +77,12 @@ function resizeImage(file, maxSize = 1600) {
 
       };
 
-
+      img.onerror = () => reject(new Error("Image load error"));
       img.src = e.target.result;
 
     };
 
-
+    reader.onerror = () => reject(new Error("File read error"));
     reader.readAsDataURL(file);
 
   });
@@ -145,7 +145,7 @@ export default function ImageUploader({ image, onChange }) {
           handleFile({ target: { files: e.dataTransfer.files } });
         }}
       >
-        
+
         {image ? (
 
           <>
