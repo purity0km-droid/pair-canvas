@@ -173,26 +173,35 @@ function App() {
   }
 
 // -----------------------------
-  // PNG保存
+  // PNG保存（スマホ対応強化版）
   // -----------------------------
   async function savePng({ highQuality = false } = {}) {
     if (!exportPreviewRef.current) return;
     const element = exportPreviewRef.current;
 
     try {
+      // 1. 要素内にあるすべての <img> や背景画像のロード・デコードを強制的に待つ
+      const imgElements = Array.from(element.querySelectorAll("img"));
+      await Promise.all(
+        imgElements.map((img) => {
+          if (img.complete) return img.decode().catch(() => {});
+          return new Promise((resolve) => {
+            img.onload = () => img.decode().then(resolve).catch(resolve);
+            img.onerror = resolve;
+          });
+        })
+      );
+
+      // 2. スマホのレンダリング待ち（少しだけ待機）
+      await new Promise((resolve) => setTimeout(resolve, 150));
+
+      // 3. キャプチャ実行
       const options = {
         pixelRatio: highQuality ? 2 : 1,
         cacheBust: true,
         skipAutoScale: true,
       };
 
-      // 【重要対策】iOS/スマホ向けの「画像抜け」対策
-      // 一度ダミーで書き出し処理を走らせて、ブラウザに画像を強制レンダリングさせる
-      await htmlToImage.toPng(element, options);
-      // さらに念押しで少しだけ待機（環境によって画像展開が追いつかないのを防ぐ）
-      await new Promise((resolve) => setTimeout(resolve, 100));
-
-      // 2回目で本番のデータを取得する
       const dataUrl = await htmlToImage.toPng(element, options);
 
       const link = document.createElement("a");
@@ -212,7 +221,7 @@ function App() {
   );
 
   return (
-    <div className="app">
+    <div className="app" style={{ position: "relative", zIndex: 1 }}>
       <aside className="sidebar-area">
         <Sidebar
           page={page}
@@ -243,11 +252,11 @@ function App() {
       {/* 保存専用（画面には表示しない） */}
         <div
           style={{
-            position: "absolute", // fixedからabsoluteに変更
+            position: "fixed",
             left: 0,
             top: 0,
-            zIndex: -1000, // メインコンテンツの後ろに隠す
-            opacity: 0.01, // 完全に0にするとOSに無視されるため0.01
+            zIndex: 0, // メインコンテンツの後ろに隠す
+            opacity: 1, // 完全描写
             pointerEvents: "none", // 誤タップ防止
           }}
         >
