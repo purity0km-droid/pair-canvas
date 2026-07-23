@@ -20,16 +20,12 @@ function App() {
     {
       id: crypto.randomUUID(),
       name: "関係性①",
-
       leftImage: null,
       rightImage: null,
-
       leftName: "",
       rightName: "",
-
       leftSub: "",
       rightSub: "",
-
       relation: "",
       storyTitle: "",
       description: "",
@@ -39,6 +35,9 @@ function App() {
   const [selectedRelationId, setSelectedRelationId] = useState(
     relations[0].id
   );
+
+  // 書き出し実行中かどうかの状態
+  const [isExporting, setIsExporting] = useState(false);
 
   const fileInputRef = useRef(null);
   const previewRef = useRef(null);
@@ -63,16 +62,12 @@ function App() {
     const newRelation = {
       id: crypto.randomUUID(),
       name: `関係性${relations.length + 1}`,
-
       leftImage: null,
       rightImage: null,
-
       leftName: "",
       rightName: "",
-
       leftSub: "",
       rightSub: "",
-
       relation: "",
       storyTitle: "",
       description: "",
@@ -124,12 +119,9 @@ function App() {
       relations,
     };
 
-    const blob = new Blob(
-      [JSON.stringify(data, null, 2)],
-      {
-        type: "application/json",
-      }
-    );
+    const blob = new Blob([JSON.stringify(data, null, 2)], {
+      type: "application/json",
+    });
 
     const url = URL.createObjectURL(blob);
 
@@ -172,36 +164,28 @@ function App() {
     reader.readAsText(file);
   }
 
-// -----------------------------
-  // PNG保存（スマホ対応強化版）
+  // -----------------------------
+  // PNG保存（スマホ画像抜け防止フラッシュ方式）
   // -----------------------------
   async function savePng({ highQuality = false } = {}) {
-    if (!exportPreviewRef.current) return;
-    const element = exportPreviewRef.current;
-
     try {
-      // 1. 要素内にあるすべての <img> や背景画像のロード・デコードを強制的に待つ
-      const imgElements = Array.from(element.querySelectorAll("img"));
-      await Promise.all(
-        imgElements.map((img) => {
-          if (img.complete) return img.decode().catch(() => {});
-          return new Promise((resolve) => {
-            img.onload = () => img.decode().then(resolve).catch(resolve);
-            img.onerror = resolve;
-          });
-        })
-      );
+      // 1. 書き出し画面を表に出す
+      setIsExporting(true);
 
-      // 2. スマホのレンダリング待ち（少しだけ待機）
-      await new Promise((resolve) => setTimeout(resolve, 150));
+      // 2. スマホが画像を最前面で描画し切るのを200ms待つ
+      await new Promise((resolve) => setTimeout(resolve, 200));
 
-      // 3. キャプチャ実行
+      if (!exportPreviewRef.current) return;
+      const element = exportPreviewRef.current;
+
       const options = {
         pixelRatio: highQuality ? 2 : 1,
         cacheBust: true,
         skipAutoScale: true,
+        backgroundColor: page.backgroundColor || "#6D5DFC",
       };
 
+      // 3. キャプチャ実行
       const dataUrl = await htmlToImage.toPng(element, options);
 
       const link = document.createElement("a");
@@ -213,6 +197,9 @@ function App() {
     } catch (error) {
       console.error(error);
       alert("PNG保存に失敗しました。");
+    } finally {
+      // 4. 元に戻す
+      setIsExporting(false);
     }
   }
 
@@ -222,7 +209,8 @@ function App() {
 
   return (
     <div className="app" style={{ position: "relative" }}>
-      <aside className="sidebar-area" style={{ position: "relative", zIndex: 10 }}>
+      {/* サイドバー */}
+      <aside className="sidebar-area">
         <Sidebar
           page={page}
           relations={relations}
@@ -236,12 +224,13 @@ function App() {
           saveProject={saveProject}
           loadProject={loadProject}
           savePng={savePng}
-          savePngHighQuality={() => savePng({ highQuality:true })}
+          savePngHighQuality={() => savePng({ highQuality: true })}
           fileInputRef={fileInputRef}
         />
       </aside>
 
-      <main className="preview-area" style={{ position: "relative", zIndex: 5 }}>
+      {/* メインプレビュー */}
+      <main className="preview-area">
         <Preview
           page={page}
           relations={relations}
@@ -249,24 +238,25 @@ function App() {
         />
       </main>
 
-      {/* 保存専用（画面には表示しない） */}
-        <div
-          style={{
-            position: "fixed",
-            left: 0,
-            top: 0,
-            zIndex: 0, // メインコンテンツの後ろに隠す
-            opacity: 1, // 完全描写
-            pointerEvents: "none", // 誤タップ防止
-          }}
-        >
-          <Preview
-            page={page}
-            relations={relations}
-            exportPreviewRef={exportPreviewRef}
-            exportMode
-          />
-        </div>
+      {/* 保存専用プレビュー（保存時だけ一瞬手前に出してスマホの描画スキップを回避） */}
+      <div
+        style={{
+          position: "fixed",
+          top: 0,
+          left: isExporting ? 0 : "-9999px",
+          zIndex: isExporting ? 9999 : -1,
+          opacity: isExporting ? 1 : 0,
+          pointerEvents: "none",
+          backgroundColor: page.backgroundColor || "#6D5DFC",
+        }}
+      >
+        <Preview
+          page={page}
+          relations={relations}
+          exportPreviewRef={exportPreviewRef}
+          exportMode
+        />
+      </div>
     </div>
   );
 }
