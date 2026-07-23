@@ -24,9 +24,9 @@
 
     display:grid;
 
-    grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);
-
-    align-items:start;
+    grid-template-columns:minmax(0,320px) auto minmax(0,320px);
+    justify-content:center;
+    align-items:center;
 
     gap:28px;
 
@@ -173,7 +173,7 @@
 
     text-align: left;
 
-    border-radius: 14px;
+    border-radius: 8px;
 
 }
 
@@ -183,7 +183,7 @@
 
     text-align: right;
 
-    border-radius: 14px;
+    border-radius: 8px;
 
 }
 
@@ -197,7 +197,7 @@
 
     margin-top: 10px;
 
-    font-size: 11px;
+    font-size: 11.5px;
     color: #666;
 
     text-align: left;
@@ -220,12 +220,10 @@
 
 .relationCenter {
 
-    height: 200px;
-
     display: flex;
     justify-content: center;
     align-items: center;
-
+    z-index: 2;
 }
 
 .relationOverlay {
@@ -306,4 +304,73 @@
     font-size: 12px;
     font-weight: 400;
 
+}
+
+/* ===========================
+   スマホ対応
+=========================== */
+@media(max-width:600px){
+
+.characterArea{
+
+    grid-template-columns:1fr;
+
+}
+
+.relationCenter{
+
+    order:2;
+
+}
+
+.character:first-child{
+
+    order:1;
+
+}
+
+.character:last-child{
+
+    order:3;
+
+}
+.subInfo,
+.relation-card.medium .subInfo {
+    width:250px;
+}
+
+}
+/* ===========================
+   PNG保存時
+=========================== */
+
+.export-mode .character:first-child{
+
+    order:initial !important;
+
+}
+
+
+.export-mode .relationCenter{
+
+    order:initial !important;
+
+}
+
+
+.export-mode .character:last-child{
+
+    order:initial !important;
+
+}
+.export-mode .characterArea{
+
+    grid-template-columns:320px auto 320px !important;
+
+    justify-content:center;
+
+}
+.export-mode .nameOverlay,
+.export-mode .relationLabel{
+    backdrop-filter:none;
 }

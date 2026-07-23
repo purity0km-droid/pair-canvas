@@ -5,6 +5,7 @@ export default function PageSettings({
   loadProject,
   fileInputRef,
   savePng,
+  savePngHighQuality,
 }) {
 
   const patterns = [
@@ -134,10 +135,6 @@ export default function PageSettings({
             Zen Maru Gothic
             </option>
 
-            <option value="M PLUS Rounded 1c">
-            M PLUS Rounded
-            </option>
-
             <option value="Shippori Mincho">
             Shippori Mincho
             </option>
@@ -152,6 +149,18 @@ export default function PageSettings({
 
             <option value="Hachi Maru Pop">
             Hachi Maru Pop
+            </option>
+
+            <option value="Kiwi Maru">
+              キウイ丸
+            </option>
+
+            <option value="Kosugi Maru">
+              小杉丸
+            </option>
+
+            <option value="DotGothic16">
+              DotGothic16
             </option>
         </select>
 
@@ -188,6 +197,14 @@ export default function PageSettings({
                 onClick={savePng}
             >
                 PNG保存
+            </button>
+
+            <button
+                className="primaryButton"
+                type="button"
+                onClick={savePngHighQuality}
+            >
+                PC推奨高画質保存
             </button>
 
         </div>

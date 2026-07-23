@@ -42,6 +42,7 @@ function App() {
 
   const fileInputRef = useRef(null);
   const previewRef = useRef(null);
+  const exportPreviewRef = useRef(null);
 
   // -----------------------------
   // ページ設定更新
@@ -171,31 +172,47 @@ function App() {
     reader.readAsText(file);
   }
 
-  // -----------------------------
-  // PNG保存
-  // -----------------------------
-  async function savePng() {
-    if (!previewRef.current) return;
+// -----------------------------
+// PNG保存
+// -----------------------------
+    async function savePng({
+      highQuality = false,
+    } = {}) {
 
-    try {
-      const dataUrl = await htmlToImage.toPng(
-        previewRef.current,
-        {
-          pixelRatio: 2,
-          cacheBust: true,
-        }
-      );
+      if (!exportPreviewRef.current) return;
 
-      const link = document.createElement("a");
+      const element = exportPreviewRef.current;
 
-      link.download = "relationship.png";
-      link.href = dataUrl;
-      link.click();
-    } catch (error) {
-      console.error(error);
-      alert("PNG保存に失敗しました。");
+      try {
+
+        const dataUrl = await htmlToImage.toPng(
+          element,
+          {
+            pixelRatio: highQuality ? 2 : 1,
+            cacheBust: true,
+            skipAutoScale: true,
+          }
+        );
+
+        const link = document.createElement("a");
+
+        link.download = highQuality
+          ? "pair-canvas-hq.png"
+          : "pair-canvas.png";
+
+        link.href = dataUrl;
+
+        link.click();
+
+      } catch (error) {
+
+        console.error(error);
+
+        alert("PNG保存に失敗しました。");
+
+      }
+
     }
-  }
 
   const selectedRelation = relations.find(
     (relation) => relation.id === selectedRelationId
@@ -217,6 +234,7 @@ function App() {
           saveProject={saveProject}
           loadProject={loadProject}
           savePng={savePng}
+          savePngHighQuality={() => savePng({ highQuality:true })}
           fileInputRef={fileInputRef}
         />
       </aside>
@@ -228,6 +246,22 @@ function App() {
           previewRef={previewRef}
         />
       </main>
+
+      {/* 保存専用（画面には表示しない） */}
+      <div
+        style={{
+          position: "fixed",
+          left: "-99999px",
+          top: 0,
+        }}
+      >
+        <Preview
+          page={page}
+          relations={relations}
+          exportPreviewRef={exportPreviewRef}
+          exportMode
+        />
+      </div>
     </div>
   );
 }

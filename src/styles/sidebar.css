@@ -5,7 +5,7 @@
 
     padding:32px;
 
-    background:#fff;
+    background:#ececec;
     border-right:1px solid #e6e6e6;
 
     font-size:14px;
@@ -54,7 +54,7 @@
 
     font-size:30px;
 
-    font-family:"Outfit",sans-serif;
+    font-family:"Limelight",sans-serif;
 
     font-weight:600;
 
@@ -606,4 +606,29 @@ input[type="color"]{
 
     text-decoration:none;
 
+}
+
+/* ==========================
+   スマホ対応
+========================== */
+@media (max-width:900px){
+
+    .sidebar{
+
+        height:auto;
+        max-height:50vh;
+
+        overflow-y:auto;
+
+        border-right:none;
+        border-bottom:1px solid #e6e6e6;
+
+        padding:20px;
+
+    }
+    .saveButtons{
+
+        flex-direction:column;
+
+    }
 }

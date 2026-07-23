@@ -23,8 +23,8 @@
 
     --paper-color:#ffffff;
 
-    width:1000px;
-
+    width:100%;
+    max-width:1000px;
     min-height:1400px;
 
     padding:40px;
@@ -48,17 +48,6 @@
     font-weight:700;
 
     letter-spacing:.05em;
-
-}
-@media (max-width:900px){
-
-.paper{
-    transform:scale(.55);
-    transform-origin:top center;
-}
-.preview{
-    overflow:auto;
-}
 
 }
 
@@ -223,5 +212,97 @@
     );
 
     background-size:42px 42px;
+
+}
+
+/* =====================================
+   スマホ対応
+===================================== */
+@media (max-width:768px){
+
+.paper{
+
+    width:100%;
+    min-height:1400px;
+
+    padding:24px;
+
+    transform:none;
+
+    border-radius:18px;
+
+}
+
+.preview{
+
+    padding:20px;
+
+}
+
+}
+@media(max-width:600px){
+
+.cardGrid.four{
+
+    grid-template-columns:1fr;
+
+}
+
+.cardGrid.threeBottom{
+
+    grid-template-columns:1fr;
+
+}
+
+}
+
+/* ===========================
+   PNG保存用
+=========================== */
+
+.export-mode{
+
+    width:1000px !important;
+    max-width:none !important;
+
+    min-height:1400px !important;
+    height:auto !important;
+
+    padding:40px !important;
+
+}
+
+
+.export-mode .cardGrid{
+
+    width:100% !important;
+
+}
+
+
+.export-mode .relation-card{
+
+    width:100% !important;
+
+}
+
+
+.export-mode .characterArea{
+
+    grid-template-columns:320px auto 320px !important;
+
+}
+
+
+.export-mode .cardGrid.four{
+
+    grid-template-columns:1fr 1fr !important;
+
+}
+
+
+.export-mode .cardGrid.threeBottom{
+
+    grid-template-columns:1fr 1fr !important;
 
 }

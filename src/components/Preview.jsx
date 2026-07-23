@@ -7,19 +7,23 @@ export default function Preview({
   relations,
   updateRelation,
   previewRef,
+  exportPreviewRef,
+  exportMode = false,
 }) {
   return (
     <div className="preview">
 
-      <div
-        ref={previewRef}
-        className={`paper pattern-${page.backgroundPattern}`}
-        style={{
-          "--paper-color": page.backgroundColor,
-          color: page.textColor,
-          fontFamily: page.fontFamily,
-        }}
-      >
+    <div
+      ref={exportMode ? exportPreviewRef : previewRef}
+      className={`paper pattern-${page.backgroundPattern} ${
+        exportMode ? "export-mode" : ""
+      }`}
+      style={{
+        "--paper-color": page.backgroundColor,
+        color: page.textColor,
+        fontFamily: page.fontFamily,
+      }}
+    >
 
         {page.showTitle && (
           <h1>{page.title || "タイトル"}</h1>

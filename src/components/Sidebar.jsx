@@ -17,6 +17,7 @@ export default function Sidebar(props) {
         loadProject={props.loadProject}
         fileInputRef={props.fileInputRef}
         savePng={props.savePng}
+        savePngHighQuality={props.savePngHighQuality}
       />
 
       <RelationPanel
