@@ -221,7 +221,7 @@ function App() {
   );
 
   return (
-    <div className="app" style={{ position: "relative", zIndex: 1 }}>
+    <div className="app">
       <aside className="sidebar-area">
         <Sidebar
           page={page}
@@ -241,7 +241,7 @@ function App() {
         />
       </aside>
 
-      <main className="preview-area">
+      <main className="preview-area" style={{ position: "relative" }}>
         <Preview
           page={page}
           relations={relations}
@@ -252,10 +252,13 @@ function App() {
       {/* 保存専用（画面には表示しない） */}
         <div
           style={{
-            position: "fixed",
+            position: "absolute",
             left: 0,
             top: 0,
-            zIndex: 0, // メインコンテンツの後ろに隠す
+            width: "100%",
+            height: "100%",
+            overflow: "hidden",
+            zIndex: -1, // メインコンテンツの後ろに隠す
             opacity: 1, // 完全描写
             pointerEvents: "none", // 誤タップ防止
           }}
