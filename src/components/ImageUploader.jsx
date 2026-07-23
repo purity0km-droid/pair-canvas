@@ -1,94 +1,59 @@
 import { useRef, useState } from "react";
-
 import "../styles/imageUploader.css";
 
-
 function resizeImage(file, maxSize = 1600) {
-
   return new Promise((resolve, reject) => {
-
     const reader = new FileReader();
 
-
     reader.onload = (e) => {
-
       const img = new Image();
 
-
       img.onload = () => {
+        // 【重要】onloadの中でのエラーも確実にcatchへ送るためのtry-catch
+        try {
+          let width = img.width;
+          let height = img.height;
 
-        let width = img.width;
-        let height = img.height;
-
-
-        // 長辺を制限
-        if (width > height) {
-
-          if (width > maxSize) {
-
-            height = Math.round(
-              height * (maxSize / width)
-            );
-
-            width = maxSize;
-
+          // 長辺を制限
+          if (width > height) {
+            if (width > maxSize) {
+              height = Math.round(height * (maxSize / width));
+              width = maxSize;
+            }
+          } else {
+            if (height > maxSize) {
+              width = Math.round(width * (maxSize / height));
+              height = maxSize;
+            }
           }
 
-        } else {
+          const canvas = document.createElement("canvas");
+          canvas.width = width;
+          canvas.height = height;
 
-          if (height > maxSize) {
-
-            width = Math.round(
-              width * (maxSize / height)
-            );
-
-            height = maxSize;
-
+          const ctx = canvas.getContext("2d");
+          // スマホのメモリ不足でCanvasが作れなかった場合の検知
+          if (!ctx) {
+            throw new Error("スマホのメモリ制限で画像が処理できませんでした");
           }
 
+          ctx.drawImage(img, 0, 0, width, height);
+
+          // 圧縮して保存
+          resolve(canvas.toDataURL("image/jpeg", 0.85));
+        } catch (err) {
+          reject(err); // ここでエラーを投げないと永遠にフリーズします
         }
-
-
-        const canvas = document.createElement("canvas");
-
-        canvas.width = width;
-        canvas.height = height;
-
-
-        const ctx = canvas.getContext("2d");
-
-
-        ctx.drawImage(
-          img,
-          0,
-          0,
-          width,
-          height
-        );
-
-
-        // 圧縮して保存
-        resolve(
-          canvas.toDataURL(
-            "image/jpeg",
-            0.85
-          )
-        );
-
       };
 
       img.onerror = () => reject(new Error("Image load error"));
       img.src = e.target.result;
-
     };
 
     reader.onerror = () => reject(new Error("File read error"));
     reader.readAsDataURL(file);
-
   });
-
 }
-
 
 export default function ImageUploader({ image, onChange }) {
   const inputRef = useRef(null);
@@ -96,23 +61,34 @@ export default function ImageUploader({ image, onChange }) {
 
   async function handleFile(e) {
     const file = e.target.files?.[0];
-    if (!file) return;
+    
+    // どこで止まっているか確認するためのアラート（不要になったら消してください）
+    // alert("1. ファイル選択を検知しました"); 
 
-    // 変更: file.typeが空になるAndroidバグ対策（空欄の場合はスルーさせる）
+    if (!file) {
+      // alert("エラー: ファイルが取得できません");
+      return;
+    }
+
+    // デバッグ: スマホが認識しているファイル形式を表示
+    // alert(`2. ファイル名: ${file.name}\nタイプ: ${file.type}`);
+
     if (file.type && !file.type.startsWith("image/")) {
-      // 処理を終わらせる前にinputをリセット
+      alert(`画像として認識されませんでした（Type: ${file.type}）。別の画像をお試しください。`);
       if (inputRef.current) inputRef.current.value = "";
       return;
     }
 
     try {
+      // alert("3. リサイズ処理を開始します");
       const resizedImage = await resizeImage(file);
+      
+      // alert("4. リサイズ完了！画面に反映します");
       onChange(resizedImage);
     } catch (error) {
       console.error("画像の処理に失敗しました", error);
-      alert("画像の読み込みに失敗しました。別の画像をお試しください。");
+      alert(`エラーが発生しました:\n${error.message}`);
     } finally {
-      // 追加: 同じ画像を再選択できるようにリセット
       if (inputRef.current) inputRef.current.value = "";
     }
   }
@@ -122,10 +98,9 @@ export default function ImageUploader({ image, onChange }) {
       <input
         ref={inputRef}
         type="file"
-        // 変更: iOSでHEICをJPEGに自動変換させるための魔法の指定
         accept="image/jpeg, image/png, image/webp, image/gif"
         hidden
-        onChange={handleFile} // 変更: eventをそのまま渡す
+        onChange={handleFile}
       />
 
       <div
@@ -141,60 +116,33 @@ export default function ImageUploader({ image, onChange }) {
         onDrop={(e) => {
           e.preventDefault();
           setDragging(false);
-          // 変更: 疑似的なeventオブジェクトを作ってhandleFileへ渡す
           handleFile({ target: { files: e.dataTransfer.files } });
         }}
       >
-
         {image ? (
-
           <>
-
-            <img
-              src={image}
-              alt=""
-              className="imagePreview"
-            />
-
-
+            <img src={image} alt="" className="imagePreview" />
             <button
               className="removeImageButton"
-
               onClick={(e) => {
-
                 e.stopPropagation();
-
                 onChange(null);
-
               }}
             >
               ✕
             </button>
-
           </>
-
         ) : (
-
           <div className="imagePlaceholder">
-
-            <div className="plus">
-              ＋
-            </div>
-
-
+            <div className="plus">＋</div>
             <div>
               クリック または
               <br />
               ドラッグ＆ドロップ
             </div>
-
           </div>
-
         )}
-
       </div>
-
     </>
   );
-
 }
