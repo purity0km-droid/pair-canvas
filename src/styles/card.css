@@ -194,16 +194,12 @@
 .subInfo {
 
     width: 150px;
-
     margin-top: 10px;
 
     font-size: 11.5px;
     color: #666;
-
     text-align: left;
-
     line-height: 1.5;
-
     white-space: pre-wrap;
 
 }
@@ -302,7 +298,6 @@
 .description {
 
     margin-top: 24px;
-    min-height: 150px;
     line-height: 1.9;
 
     white-space: pre-wrap;
@@ -391,7 +386,23 @@
     order:initial !important;
 
 }
-.export-mode .characterArea{
+.export-mode .relation-card.large .characterArea{
+
+    grid-template-columns:320px auto 320px !important;
+
+    justify-content:center;
+
+}
+
+.export-mode .relation-card.small .characterArea{
+
+    grid-template-columns:150px auto 150px !important;
+
+    justify-content:center;
+
+}
+
+.export-mode .relation-card.medium .characterArea{
 
     grid-template-columns:320px auto 320px !important;
 
