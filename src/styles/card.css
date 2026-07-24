@@ -311,40 +311,41 @@
 =========================== */
 @media(max-width:600px){
 
-.characterArea{
+.paper:not(.export-mode):not(.export-mode-single) .characterArea{
 
     grid-template-columns:1fr;
 
 }
 
-.relationCenter{
+.paper:not(.export-mode):not(.export-mode-single) .relationCenter{
 
     order:2;
 
 }
 
-.character:first-child{
+.paper:not(.export-mode):not(.export-mode-single) .character:first-child{
 
     order:1;
 
 }
 
-.character:last-child{
+.paper:not(.export-mode):not(.export-mode-single) .character:last-child{
 
     order:3;
 
 }
-.imageBox{
+
+.paper:not(.export-mode):not(.export-mode-single) .imageBox{
 
     width:100% !important;
     max-width:320px;
 
     height:auto !important;
-    aspect-ratio: 320 / 280;
+    aspect-ratio:320 / 280;
 
 }
 
-.cardImage{
+.paper:not(.export-mode):not(.export-mode-single) .cardImage{
 
     width:100%;
     height:100%;
@@ -353,12 +354,13 @@
 
 }
 
-.subInfo,
-.subInfo.right{
+.paper:not(.export-mode):not(.export-mode-single) .subInfo,
+.paper:not(.export-mode):not(.export-mode-single) .subInfo.right{
 
     width:100%;
     max-width:320px;
-    text-align: center;
+
+    text-align:center;
 
 }
 
@@ -368,23 +370,17 @@
 =========================== */
 
 .export-mode .character:first-child{
-
     order:initial !important;
-
 }
 
 
 .export-mode .relationCenter{
-
     order:initial !important;
-
 }
 
 
 .export-mode .character:last-child{
-
     order:initial !important;
-
 }
 .export-mode .relation-card.large .characterArea{
 
