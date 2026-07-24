@@ -1,10 +1,8 @@
 import "../styles/card.css";
-import ImageUploader from "./ImageUploader";
 
 export default function RelationCard({
   relation,
   layout = "small",
-  updateRelation,
 }) {
   return (
     <div className={`relation-card ${layout}`}>
@@ -16,12 +14,19 @@ export default function RelationCard({
 
           <div className="imageBox">
 
-            <ImageUploader
-              image={relation.leftImage}
-              side="left"
-              relation={relation}
-              updateRelation={updateRelation}
-            />
+            {relation.leftImage ? (
+              <img
+                src={relation.leftImage}
+                alt=""
+                className="cardImage"
+              />
+            ) : (
+              <div className="imageEmpty">
+                ここに画像が
+                <br />
+                表示されます
+              </div>
+            )}
 
             <div className="nameOverlay left">
               {relation.leftName || "左の名前"}
@@ -57,12 +62,19 @@ export default function RelationCard({
 
           <div className="imageBox">
 
-            <ImageUploader
-              image={relation.rightImage}
-              side="right"
-              relation={relation}
-              updateRelation={updateRelation}
-            />
+            {relation.rightImage ? (
+              <img
+                src={relation.rightImage}
+                alt=""
+                className="cardImage"
+              />
+            ) : (
+              <div className="imageEmpty">
+                ここに画像が
+                <br />
+                表示されます
+              </div>
+            )}
 
             <div className="nameOverlay right">
               {relation.rightName || "右の名前"}
