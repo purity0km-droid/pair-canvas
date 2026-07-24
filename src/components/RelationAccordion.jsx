@@ -85,7 +85,8 @@ export default function RelationAccordion({
 
             <span>左補足情報</span>
 
-            <input
+            <textarea
+              rows="2"
               type="text"
               value={relation.leftSub}
               onChange={(e) =>
@@ -141,7 +142,8 @@ export default function RelationAccordion({
 
             <span>右補足情報</span>
 
-            <input
+            <textarea
+              rows="2"
               type="text"
               value={relation.rightSub}
               onChange={(e) =>

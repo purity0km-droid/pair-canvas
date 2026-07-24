@@ -402,3 +402,10 @@
 .export-mode .relationLabel{
     backdrop-filter:none;
 }
+.export-mode .subInfo {
+    text-align: left !important;  /* 左側は左揃え */
+}
+
+.export-mode .subInfo.right {
+    text-align: right !important; /* 右側は右揃え */
+}
