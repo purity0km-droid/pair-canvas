@@ -23,7 +23,9 @@ export default function Preview({
 
       <div
         ref={exportMode ? exportPreviewRef : previewRef}
-        className={`paper pattern-${page.backgroundPattern} ${exportClass}`}
+        className={`paper pattern-${page.backgroundPattern} ${exportClass} ${
+          exportMode ? "export-pc" : ""
+        }`}
         style={{
           "--paper-color": page.backgroundColor,
           color: page.textColor,

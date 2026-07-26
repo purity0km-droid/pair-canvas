@@ -288,7 +288,7 @@
     width:1000px !important;
     max-width:none !important;
 
-    min-height:1400px !important;
+    min-height:auto !important;
     height:auto !important;
 
     padding:40px !important;
@@ -326,20 +326,3 @@
 
 }
 
-
-.export-mode .cardGrid.four{
-
-    grid-template-columns:1fr 1fr !important;
-
-}
-
-
-.export-mode .cardGrid.threeBottom{
-
-    display:flex !important;
-
-    justify-content:center !important;
-
-    gap:24px;
-
-}

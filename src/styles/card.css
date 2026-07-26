@@ -311,31 +311,31 @@
 =========================== */
 @media(max-width:600px){
 
-.paper:not(.export-mode):not(.export-mode-single) .characterArea{
+.paper:not(.export-pc) .characterArea{
 
     grid-template-columns:1fr;
 
 }
 
-.paper:not(.export-mode):not(.export-mode-single) .relationCenter{
+.paper:not(.export-pc) .relationCenter{
 
     order:2;
 
 }
 
-.paper:not(.export-mode):not(.export-mode-single) .character:first-child{
+.paper:not(.export-pc) .character:first-child{
 
     order:1;
 
 }
 
-.paper:not(.export-mode):not(.export-mode-single) .character:last-child{
+.paper:not(.export-pc) .character:last-child{
 
     order:3;
 
 }
 
-.paper:not(.export-mode):not(.export-mode-single) .imageBox{
+.paper:not(.export-pc) .imageBox{
 
     width:100% !important;
     max-width:320px;
@@ -345,7 +345,7 @@
 
 }
 
-.paper:not(.export-mode):not(.export-mode-single) .cardImage{
+.paper:not(.export-pc) .cardImage{
 
     width:100%;
     height:100%;
@@ -354,8 +354,8 @@
 
 }
 
-.paper:not(.export-mode):not(.export-mode-single) .subInfo,
-.paper:not(.export-mode):not(.export-mode-single) .subInfo.right{
+.paper:not(.export-pc) .subInfo,
+.paper:not(.export-pc) .subInfo.right{
 
     width:100%;
     max-width:320px;
