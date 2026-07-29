@@ -15,20 +15,31 @@
     border-radius:22px;
 
 }
+.relation-card.small{
+    padding:20px;
+}
 
 /* ===========================
    キャラクターエリア
 =========================== */
 
 .characterArea{
-
+    position:relative;
     display:grid;
 
-    grid-template-columns:minmax(0,320px) auto minmax(0,320px);
+    grid-template-columns:500px 500px;
     justify-content:center;
     align-items:center;
 
     gap:28px;
+
+}
+/* ===== Small専用 ===== */
+
+.relation-card.small .characterArea{
+
+    grid-template-columns:235px 235px;
+    gap:8px;
 
 }
 
@@ -214,12 +225,23 @@
    中央
 =========================== */
 
-.relationCenter {
+.relationCenter{
 
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 2;
+    position:absolute;
+
+    left:50%;
+    top:50%;
+
+    transform:translate(-50%,-50%);
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    z-index:20;
+
+    pointer-events:none;
+
 }
 
 .relationOverlay {
@@ -252,10 +274,14 @@
     text-align:center;
     
     white-space:pre-wrap;
-    overflow-wrap:anywhere;
-    word-break:break-word;
-
+    overflow-wrap: normal;
+    word-break: keep-all;
     line-height:1.4;
+
+}
+.relation-card.small .relationLabel{
+
+    max-width:100%;
 
 }
 
@@ -314,12 +340,18 @@
 .paper:not(.export-pc) .characterArea{
 
     grid-template-columns:1fr;
-
+    gap: 16px;
 }
 
 .paper:not(.export-pc) .relationCenter{
 
     order:2;
+    margin: 12px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
 
 }
 
@@ -365,54 +397,10 @@
 }
 
 }
-/* ===========================
-   PNG保存時
-=========================== */
-
-.export-mode .character:first-child{
-    order:initial !important;
+/*.export-pc .relation-card.small .characterArea{
+    outline:2px solid red;
 }
 
-
-.export-mode .relationCenter{
-    order:initial !important;
-}
-
-
-.export-mode .character:last-child{
-    order:initial !important;
-}
-.export-mode .relation-card.large .characterArea{
-
-    grid-template-columns:320px auto 320px !important;
-
-    justify-content:center;
-
-}
-
-.export-mode .relation-card.small .characterArea{
-
-    grid-template-columns:150px auto 150px !important;
-
-    justify-content:center;
-
-}
-
-.export-mode .relation-card.medium .characterArea{
-
-    grid-template-columns:320px auto 320px !important;
-
-    justify-content:center;
-
-}
-.export-mode .nameOverlay,
-.export-mode .relationLabel{
-    backdrop-filter:none;
-}
-.export-mode .subInfo {
-    text-align: left !important;  /* 左側は左揃え */
-}
-
-.export-mode .subInfo.right {
-    text-align: right !important; /* 右側は右揃え */
-}
+.export-pc .relation-card.small .character{
+    outline:2px solid blue;
+} */

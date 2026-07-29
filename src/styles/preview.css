@@ -265,64 +265,19 @@
 }
 @media(max-width:600px){
 
-.cardGrid.four{
+.paper:not(.export-pc) .cardGrid.four{
 
     grid-template-columns:1fr;
 
 }
 
-.cardGrid.threeBottom{
+.paper:not(.export-pc) .cardGrid.threeBottom{
+
+    display:grid;
 
     grid-template-columns:1fr;
 
 }
-
-}
-
-/* ===========================
-   PNG保存用
-=========================== */
-
-.export-mode{
-
-    width:1000px !important;
-    max-width:none !important;
-
-    min-height:auto !important;
-    height:auto !important;
-
-    padding:40px !important;
-
-}
-.export-mode-single{
-
-    width:1000px !important;
-    max-width:none !important;
-
-    min-height:auto !important;
-    height:auto !important;
-
-    padding:40px !important;
-
-}
-
-.export-mode .cardGrid{
-
-    width:100% !important;
-
-}
-
-
-.export-mode .relation-card{
-
-    width:100% !important;
-
-}
-
-
-.export-mode .characterArea{
-
-    grid-template-columns:320px auto 320px !important;
 
 }
 

@@ -1,0 +1,189 @@
+/* ===========================
+   Export Only
+=========================== */
+
+.export-pc{
+
+    width:1000px;
+    max-width:none;
+
+    min-height:auto;
+
+    padding:40px;
+
+}
+
+/* -------------------
+   Card Layout
+-------------------- */
+
+.export-pc .cardGrid{
+
+    gap:28px;
+
+}
+
+.export-pc .cardGrid.one{
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+}
+
+.export-pc .cardGrid.two{
+
+    display:grid;
+    grid-template-columns:1fr;
+
+}
+
+.export-pc .cardGrid.threeTop{
+
+    display:flex;
+    justify-content:center;
+
+}
+
+.export-pc .cardGrid.threeBottom{
+
+    display:grid !important;
+
+    grid-template-columns:repeat(2, minmax(0,1fr));
+
+    gap:24px;
+
+    margin-top:48px;
+
+}
+.export-pc .cardGrid.threeBottom > *{
+
+    min-width:0;
+
+}
+
+.export-pc .cardGrid.four{
+
+    display:grid !important;
+
+    grid-template-columns:1fr 1fr !important;
+
+    gap:28px;
+
+}
+
+/* -------------------
+   Card Size
+-------------------- */
+
+.export-pc .relation-card.large{
+
+    width:100%;
+
+}
+
+.export-pc .relation-card.medium{
+
+    width:100%;
+
+}
+
+.export-pc .relation-card.small{
+
+    width:100%;
+    min-width:0;
+
+}
+
+/* -------------------
+   Character Layout
+-------------------- */
+
+.export-pc .relation-card.large .characterArea{
+
+    grid-template-columns:500px 500px;
+
+    justify-content:center;
+
+}
+
+.export-pc .relation-card.medium .characterArea{
+
+    grid-template-columns:500px 500px;
+
+    justify-content:center;
+
+}
+
+.export-pc .relation-card.small .characterArea{
+
+    grid-template-columns:235px 235px;
+
+    justify-content:center;
+
+}
+.export-pc .relationCenter,
+.export-pc .relationOverlay{
+
+    min-width:0;
+
+}
+
+/* -------------------
+   Overlay
+-------------------- */
+
+.export-pc .nameOverlay,
+.export-pc .relationLabel{
+
+    backdrop-filter:none;
+
+}
+.export-pc .relationLabel{
+
+    max-width:100%;
+
+}
+.export-pc .relationCenter{
+
+    transform:translate(-50%,-45%);
+
+}
+
+/* -------------------
+   SubInfo
+-------------------- */
+
+.export-pc .subInfo{
+
+    text-align:left;
+
+}
+
+.export-pc .subInfo.right{
+
+    text-align:right;
+
+}
+
+/* -------------------
+   Order Reset
+-------------------- */
+
+.export-pc .character:first-child{
+
+    order:initial;
+
+}
+
+.export-pc .relationCenter{
+
+    order:initial;
+
+}
+
+.export-pc .character:last-child{
+
+    order:initial;
+
+}

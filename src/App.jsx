@@ -5,6 +5,7 @@ import "./styles/app.css";
 
 import Sidebar from "./components/Sidebar";
 import Preview from "./components/Preview";
+import ExportPreview from "./components/ExportPreview";
 
 function App() {
   const [page, setPage] = useState({
@@ -248,7 +249,7 @@ function App() {
           top: 0,
         }}
       >
-        <Preview
+        <ExportPreview
           page={page}
           relations={relations}
           exportPreviewRef={exportPreviewRef}
