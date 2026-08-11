@@ -174,39 +174,68 @@ function App() {
   }
 
 // -----------------------------
-  // PNG保存
-  // -----------------------------
-  async function savePng({ highQuality = false } = {}) {
-    if (!exportPreviewRef.current) return;
-    const element = exportPreviewRef.current;
+// PNG保存
+// -----------------------------
+async function savePng({ highQuality = false } = {}) {
+  if (!exportPreviewRef.current) return;
 
-    try {
-      const options = {
-        pixelRatio: highQuality ? 2 : 1,
-        cacheBust: true,
-        skipAutoScale: true,
-      };
+  const element = exportPreviewRef.current;
 
-      // 【重要対策】iOS/スマホ向けの「画像抜け」対策
-      // 一度ダミーで書き出し処理を走らせて、ブラウザに画像を強制レンダリングさせる
-      await htmlToImage.toPng(element, options);
-      // さらに念押しで少しだけ待機（環境によって画像展開が追いつかないのを防ぐ）
-      await new Promise((resolve) => setTimeout(resolve, 100));
+  try {
+    const options = {
+      pixelRatio: highQuality ? 2 : 1,
+      cacheBust: true,
+      skipAutoScale: true,
+    };
 
-      // 2回目で本番のデータを取得する
-      const dataUrl = await htmlToImage.toPng(element, options);
+    // =====================================
+    // Safari / iPhone対策
+    // 1回目：画像をブラウザ側にレンダリングさせる
+    // =====================================
+    await htmlToImage.toPng(element, options);
 
-      const link = document.createElement("a");
-      link.download = highQuality
-        ? "pair-canvas-hq.png"
-        : "pair-canvas.png";
-      link.href = dataUrl;
-      link.click();
-    } catch (error) {
-      console.error(error);
-      alert("PNG保存に失敗しました。");
-    }
+    // 少し待つ
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    // =====================================
+    // 2回目：本番画像
+    // =====================================
+    const dataUrl = await htmlToImage.toPng(element, options);
+
+    // =====================================
+    // Blob化
+    // =====================================
+    const response = await fetch(dataUrl);
+    const blob = await response.blob();
+
+    // =====================================
+    // 保存
+    // =====================================
+    const fileName = highQuality
+      ? "pair-canvas-hq.png"
+      : "pair-canvas.png";
+
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+
+    link.href = url;
+    link.download = fileName;
+
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    // すぐ revoke するとSafariで保存に失敗することがある
+    setTimeout(() => {
+      URL.revokeObjectURL(url);
+    }, 1000);
+
+  } catch (error) {
+    console.error(error);
+    alert("PNG保存に失敗しました。");
   }
+}
 
   const selectedRelation = relations.find(
     (relation) => relation.id === selectedRelationId
