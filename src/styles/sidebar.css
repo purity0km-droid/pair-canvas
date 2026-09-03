@@ -172,6 +172,24 @@
 
 }
 
+/* ---------- フォント選択プレビュー ---------- */
+
+.fontPreviewSample{
+
+    margin-top:8px;
+
+    padding:10px 12px;
+
+    border:1px solid #ececec;
+    border-radius:10px;
+
+    background:#fafafe;
+
+    font-size:15px;
+    color:#3d3d3d;
+
+}
+
 /* ---------- カラー ---------- */
 
 .colorRow{

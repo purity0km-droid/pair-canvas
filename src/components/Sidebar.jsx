@@ -15,7 +15,6 @@ export default function Sidebar(props) {
         updatePage={props.updatePage}
         saveProject={props.saveProject}
         loadProject={props.loadProject}
-        fileInputRef={props.fileInputRef}
         savePng={props.savePng}
         savePngHighQuality={props.savePngHighQuality}
       />

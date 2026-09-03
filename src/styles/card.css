@@ -333,74 +333,16 @@
 }
 
 /* ===========================
-   スマホ対応
+   画像のドラッグ移動（位置調整機能）
+   入力中プレビューが常にPC同様の実寸で組まれるようになった（Preview.jsx参照）ため、
+   スマホ幅専用のレイアウト組み替えは不要になり削除しました。
 =========================== */
-@media(max-width:600px){
 
-.paper:not(.export-pc) .characterArea{
-
-    grid-template-columns:1fr;
-    gap: 16px;
+.cardImage.draggable{
+    cursor:grab;
+    touch-action:none; /* ドラッグ中にスマホの画面スクロールが起きないようにする */
 }
 
-.paper:not(.export-pc) .relationCenter{
-
-    order:2;
-    margin: 12px 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-
+.cardImage.draggable:active{
+    cursor:grabbing;
 }
-
-.paper:not(.export-pc) .character:first-child{
-
-    order:1;
-
-}
-
-.paper:not(.export-pc) .character:last-child{
-
-    order:3;
-
-}
-
-.paper:not(.export-pc) .imageBox{
-
-    width:100% !important;
-    max-width:320px;
-
-    height:auto !important;
-    aspect-ratio:320 / 280;
-
-}
-
-.paper:not(.export-pc) .cardImage{
-
-    width:100%;
-    height:100%;
-
-    object-fit:cover;
-
-}
-
-.paper:not(.export-pc) .subInfo,
-.paper:not(.export-pc) .subInfo.right{
-
-    width:100%;
-    max-width:320px;
-
-    text-align:center;
-
-}
-
-}
-/*.export-pc .relation-card.small .characterArea{
-    outline:2px solid red;
-}
-
-.export-pc .relation-card.small .character{
-    outline:2px solid blue;
-} */

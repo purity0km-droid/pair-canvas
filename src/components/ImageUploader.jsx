@@ -1,6 +1,8 @@
 import { useRef, useState, useEffect } from "react";
 import "../styles/imageUploader.css";
 
+const DEFAULT_TRANSFORM = { scale: 1, x: 0, y: 0 };
+
 function resizeImage(file, maxSize = 1600) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -55,9 +57,20 @@ function resizeImage(file, maxSize = 1600) {
   });
 }
 
-export default function ImageUploader({ image, onChange }) {
+export default function ImageUploader({
+  image,
+  onChange,
+  transform,
+  onTransformChange,
+}) {
   const inputRef = useRef(null);
   const [dragging, setDragging] = useState(false);
+
+  // 新しい画像に差し替えたら、前の画像用の位置・拡大率は引き継がずリセットする
+  function applyNewImage(resizedImage) {
+    onChange(resizedImage);
+    onTransformChange?.(DEFAULT_TRANSFORM);
+  }
 
   // 対策2: ReactのonChangeを使わず、ネイティブのイベントリスナーで確実に検知する
   useEffect(() => {
@@ -65,9 +78,6 @@ export default function ImageUploader({ image, onChange }) {
     if (!inputEl) return;
 
     const handleNativeChange = async (e) => {
-      // 動作確認用アラート（動いたら消してOKです）
-      // alert("ファイル選択を検知しました！");
-
       const file = e.target.files?.[0];
       if (!file) return;
 
@@ -79,7 +89,7 @@ export default function ImageUploader({ image, onChange }) {
 
       try {
         const resizedImage = await resizeImage(file);
-        onChange(resizedImage);
+        applyNewImage(resizedImage);
       } catch (error) {
         console.error("画像処理エラー:", error);
         alert(`画像の処理に失敗しました: ${error.message}`);
@@ -95,14 +105,18 @@ export default function ImageUploader({ image, onChange }) {
     return () => {
       inputEl.removeEventListener("change", handleNativeChange);
     };
-  }, [onChange]); // eslint-disable-line react-hooks/exhaustive-deps
+    // applyNewImage は onChange/onTransformChange に依存するが、
+    // 呼び出し側は毎レンダー新しい関数を渡すため、依存配列に含めると
+    // 無限にリスナーを張り直してしまう。ここでは意図的に image 変更契機のみで良い。
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // ドラッグ＆ドロップ時の手動発火用関数
   const handleDropFile = async (file) => {
     if (!file || (file.type && !file.type.startsWith("image/"))) return;
     try {
       const resizedImage = await resizeImage(file);
-      onChange(resizedImage);
+      applyNewImage(resizedImage);
     } catch (error) {
       console.error(error);
     }
@@ -154,6 +168,7 @@ export default function ImageUploader({ image, onChange }) {
                 e.preventDefault(); // 親のlabelクリックを防ぐ
                 e.stopPropagation();
                 onChange(null);
+                onTransformChange?.(DEFAULT_TRANSFORM);
                 if (inputRef.current) inputRef.current.value = "";
               }}
             >
@@ -171,6 +186,37 @@ export default function ImageUploader({ image, onChange }) {
           </div>
         )}
       </label>
+
+      {/* 画像の位置・拡大率調整：ドラッグでの位置調整はプレビュー側（カード上の画像）で行う。
+          ここではスライダーでの拡大率調整と、まとめてのリセットだけを扱う。 */}
+      {image && (
+        <div className="imageAdjust">
+          <label className="imageAdjustRow">
+            <span>拡大</span>
+            <input
+              type="range"
+              min="1"
+              max="3"
+              step="0.05"
+              value={transform?.scale ?? 1}
+              onChange={(e) =>
+                onTransformChange?.({
+                  ...(transform || DEFAULT_TRANSFORM),
+                  scale: parseFloat(e.target.value),
+                })
+              }
+            />
+          </label>
+
+          <button
+            type="button"
+            className="imageAdjustReset"
+            onClick={() => onTransformChange?.(DEFAULT_TRANSFORM)}
+          >
+            位置・拡大をリセット
+          </button>
+        </div>
+      )}
     </>
   );
 }

@@ -57,6 +57,14 @@ export default function RelationAccordion({
                   image
                 )
               }
+              transform={relation.leftImageTransform}
+              onTransformChange={(t) =>
+                updateRelation(
+                  relation.id,
+                  "leftImageTransform",
+                  t
+                )
+              }
             />
 
           </label>
@@ -114,6 +122,14 @@ export default function RelationAccordion({
                   image
                 )
               }
+              transform={relation.rightImageTransform}
+              onTransformChange={(t) =>
+                updateRelation(
+                  relation.id,
+                  "rightImageTransform",
+                  t
+                )
+              }
             />
 
           </label>
@@ -157,7 +173,7 @@ export default function RelationAccordion({
 
           </label>
 
-          {/* 関係性 */}
+          {/* 関係性（矢印の上のラベル） */}
           <label>
 
             <span>関係性</span>
@@ -169,6 +185,26 @@ export default function RelationAccordion({
                 updateRelation(
                   relation.id,
                   "relation",
+                  e.target.value
+                )
+              }
+            />
+
+          </label>
+
+          {/* 関係性（矢印の下のラベル・任意／絵文字だけでもOK） */}
+          <label>
+
+            <span>関係性（矢印の下・任意）</span>
+
+            <textarea
+              rows="1"
+              value={relation.relationSub}
+              placeholder="空欄なら表示されません（例：🌙 など）"
+              onChange={(e) =>
+                updateRelation(
+                  relation.id,
+                  "relationSub",
                   e.target.value
                 )
               }

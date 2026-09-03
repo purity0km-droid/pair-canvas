@@ -13,10 +13,30 @@
     background:#f4f5fb;
 
 }
+
+/* ==========================
+   入力中プレビューの縮小表示（WYSIWYG）
+   Preview.jsx が .paper を常に実寸（1000px）で組み、この2つの要素で
+   画面幅に合わせて丸ごと縮小する。レイアウトの組み替えはしない。
+========================== */
+.scaleOuter{
+    width:100%;
+    max-width:1000px;
+    overflow:hidden;
+}
+.scaleInner{
+    transform-origin:top left;
+}
+
 .paper *{
 
     pointer-events:none;
 
+}
+
+/* 画像のドラッグ移動だけは有効にする（RelationCard.jsx / card.css参照） */
+.paper.editable .cardImage.draggable{
+    pointer-events:auto;
 }
 
 .paper{
@@ -240,42 +260,14 @@
 
 /* =====================================
    スマホ対応
+   レイアウトの組み替えは行わず、外側の余白だけ調整する
+   （配置そのものは常に一定 → Preview.jsx の縮小表示で画面に収める）
 ===================================== */
 @media (max-width:768px){
-
-.paper{
-
-    width:100%;
-    min-height:1400px;
-
-    padding:24px;
-
-    transform:none;
-
-    border-radius:18px;
-
-}
 
 .preview{
 
     padding:20px;
-
-}
-
-}
-@media(max-width:600px){
-
-.paper:not(.export-pc) .cardGrid.four{
-
-    grid-template-columns:1fr;
-
-}
-
-.paper:not(.export-pc) .cardGrid.threeBottom{
-
-    display:grid;
-
-    grid-template-columns:1fr;
 
 }
 

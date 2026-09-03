@@ -1,9 +1,20 @@
+const FONT_OPTIONS = [
+  { value: "Noto Sans JP", label: "Noto Sans JP" },
+  { value: "Zen Maru Gothic", label: "Zen Maru Gothic" },
+  { value: "Shippori Mincho", label: "Shippori Mincho" },
+  { value: "Kaisei Decol", label: "Kaisei Decol" },
+  { value: "Yuji Syuku", label: "Yuji Syuku" },
+  { value: "Hachi Maru Pop", label: "Hachi Maru Pop" },
+  { value: "Kiwi Maru", label: "キウイ丸" },
+  { value: "Kosugi Maru", label: "小杉丸" },
+  { value: "DotGothic16", label: "DotGothic16" },
+];
+
 export default function PageSettings({
   page,
   updatePage,
   saveProject,
   loadProject,
-  fileInputRef,
   savePng,
   savePngHighQuality,
 }) {
@@ -121,50 +132,37 @@ export default function PageSettings({
 
         <span>フォント</span>
 
+        {/*
+          選択肢名だけだと実際の見た目が分からなかったため、
+          各optionにそのフォントを直接あてて見た目を確認できるようにしている
+          （OSやブラウザによってはoptionへのフォント適用が効かない場合があるため、
+           保険として下に選択中フォントのサンプル文字も出している）
+        */}
         <select
             value={page.fontFamily}
             onChange={(e) =>
             updatePage("fontFamily", e.target.value)
             }
         >
-            <option value="Noto Sans JP">
-            Noto Sans JP
-            </option>
-
-            <option value="Zen Maru Gothic">
-            Zen Maru Gothic
-            </option>
-
-            <option value="Shippori Mincho">
-            Shippori Mincho
-            </option>
-
-            <option value="Kaisei Decol">
-            Kaisei Decol
-            </option>
-
-            <option value="Yuji Syuku">
-            Yuji Syuku
-            </option>
-
-            <option value="Hachi Maru Pop">
-            Hachi Maru Pop
-            </option>
-
-            <option value="Kiwi Maru">
-              キウイ丸
-            </option>
-
-            <option value="Kosugi Maru">
-              小杉丸
-            </option>
-
-            <option value="DotGothic16">
-              DotGothic16
-            </option>
+            {FONT_OPTIONS.map((font) => (
+              <option
+                key={font.value}
+                value={font.value}
+                style={{ fontFamily: font.value }}
+              >
+                {font.label}
+              </option>
+            ))}
         </select>
 
-        </label>      
+        <div
+          className="fontPreviewSample"
+          style={{ fontFamily: page.fontFamily }}
+        >
+          あいうえお ABC 123
+        </div>
+
+        </label>
 
         <div className="saveButtons">
 
