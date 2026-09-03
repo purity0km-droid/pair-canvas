@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 
 import "../styles/preview.css";
 
@@ -30,8 +30,14 @@ export default function Preview({ page, relations, updateRelation, previewRef })
   //
   // レイアウトの並び自体を変えたい場合は RelationSheet.jsx を、
   // 「どこまで縮小するか」を変えたい場合はこのファイルの DESIGN_WIDTH を見てください。
+  //
+  // 【useEffectではなくuseLayoutEffectを使う理由】
+  // 初期状態は scale=1（等倍）から始まるため、通常のuseEffect（画面に描画した後で
+  // 実行される）だと、スマホ幅などでは「一瞬だけ縮小前の大きいカードが見えてから
+  // 一気に縮む」というチラつきが発生します。
+  // useLayoutEffectは画面に描画される直前に実行されるため、このチラつきを防げます。
   // -----------------------------------------------------------------
-  useEffect(() => {
+  useLayoutEffect(() => {
     const outer = outerRef.current;
     const inner = innerRef.current;
     if (!outer || !inner) return;
