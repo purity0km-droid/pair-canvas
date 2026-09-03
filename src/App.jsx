@@ -65,6 +65,9 @@ function App() {
     relations[0].id
   );
 
+  // PNG書き出し中かどうか（書き出しボタンのローディング表示に使う）
+  const [isExporting, setIsExporting] = useState(false);
+
   const previewRef = useRef(null);
   const exportPreviewRef = useRef(null);
 
@@ -205,32 +208,71 @@ function App() {
   }
 
   // -----------------------------------------------------------------
-  // PNG保存
+  // PNG保存（フェーズ3：サファリ問題対応）
   //
-  // Safari／iPhoneでの書き出し崩れ対策として、同じ要素を2回レンダリングしている。
-  // より根本的な対策（document.fonts.ready を待つ等）は、
-  // 「フェーズ3：サファリ問題対応」でまとめて見直す予定。今回はここには触れていない。
+  // html-to-image（内部はSVGのforeignObject方式）には、Safari／iOSで
+  // 主に2つの既知の問題がある。
+  //   1) フォントがCSSOMに登録される前にキャプチャすると文字化け・フォント欠けが起きる
+  //      → document.fonts.ready を待ってから撮る
+  //   2) 画像のデコードタイミングがフレーキーで、初回キャプチャで画像が消えることがある
+  //      → 対象画像すべての img.decode() 完了を待ってから撮る
+  //
+  // 以前は「固定100ms待ってから2回レンダリング」という運任せの実装だったが、
+  // 今は「フォント・画像の準備ができたのを確認してから」待つ形にした。
+  // ただしSafariのforeignObject実装自体が本質的に不安定なため
+  // （html-to-image側の既知issue）、保険としての2回レンダリングという
+  // 構造は残している。fontEmbedCSSは1回計算したものを使い回すことで、
+  // 2回目の計算コストを省いて軽量化している。
   // -----------------------------------------------------------------
+  async function waitUntilReadyToCapture(element) {
+    // フォントの読み込み待ち
+    if (document.fonts?.ready) {
+      try {
+        await document.fonts.ready;
+      } catch (error) {
+        console.error("フォント読み込み待機でエラー:", error);
+      }
+    }
+
+    // 画像（アップロードした写真など）のデコード待ち
+    const images = Array.from(element.querySelectorAll("img"));
+    await Promise.all(
+      images.map((img) =>
+        img.decode ? img.decode().catch(() => {}) : Promise.resolve()
+      )
+    );
+  }
+
   async function savePng({ highQuality = false } = {}) {
     if (!exportPreviewRef.current) return;
 
     const element = exportPreviewRef.current;
 
+    setIsExporting(true);
+
     try {
+      await waitUntilReadyToCapture(element);
+
+      // フォント埋め込み用CSSは1回だけ計算して使い回す
+      let fontEmbedCSS;
+      try {
+        fontEmbedCSS = await htmlToImage.getFontEmbedCSS(element);
+      } catch (error) {
+        console.error("フォント埋め込みCSSの取得に失敗しました:", error);
+      }
+
       const options = {
         pixelRatio: highQuality ? 2 : 1,
         cacheBust: true,
         skipAutoScale: true,
+        fontEmbedCSS,
       };
 
       // =====================================
-      // Safari / iPhone対策
+      // Safari対策：保険として2回レンダリングする
       // 1回目：画像をブラウザ側にレンダリングさせる
       // =====================================
       await htmlToImage.toPng(element, options);
-
-      // 少し待つ
-      await new Promise((resolve) => setTimeout(resolve, 100));
 
       // =====================================
       // 2回目：本番画像
@@ -269,6 +311,8 @@ function App() {
     } catch (error) {
       console.error(error);
       alert("PNG保存に失敗しました。");
+    } finally {
+      setIsExporting(false);
     }
   }
 
@@ -293,6 +337,7 @@ function App() {
           loadProject={loadProject}
           savePng={savePng}
           savePngHighQuality={() => savePng({ highQuality:true })}
+          isExporting={isExporting}
         />
       </aside>
 

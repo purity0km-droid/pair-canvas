@@ -17,6 +17,7 @@ export default function PageSettings({
   loadProject,
   savePng,
   savePngHighQuality,
+  isExporting,
 }) {
 
   const patterns = [
@@ -193,16 +194,18 @@ export default function PageSettings({
                 className="primaryButton"
                 type="button"
                 onClick={savePng}
+                disabled={isExporting}
             >
-                PNG保存
+                {isExporting ? "書き出し中…" : "PNG保存"}
             </button>
 
             <button
                 className="primaryButton"
                 type="button"
                 onClick={savePngHighQuality}
+                disabled={isExporting}
             >
-                PC推奨高画質保存
+                {isExporting ? "書き出し中…" : "PC推奨高画質保存"}
             </button>
 
         </div>
