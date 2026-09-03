@@ -1,31 +1,46 @@
+/* =====================================================================
+   サイドバー（フェーズ2：デザイン調整）
+
+   方針：
+   - 各セクションを白い箱＋枠線で仕切るのをやめ、余白と1本の薄い罫線だけで
+     区切る「継ぎ目のない」構成にした。
+   - 色は紫（#6D5DFC）1色を軸にする。元実装からの意図的な引き継ぎで、
+     本家zetaのアプリ内配色（黒基調＋紫）に寄せている。
+   - 見出しは明朝体（Shippori Mincho）。単色でも硬くなりすぎないように。
+===================================================================== */
+
 .sidebar{
 
     height:100vh;
     overflow-y:auto;
 
-    padding:32px;
+    padding:36px 32px;
 
-    background:#f4f5fb;
-    border-right:1px solid #e6e6e6;
+    background:
+        radial-gradient(circle at 10% 0%, rgba(109,93,252,.07), transparent 42%),
+        #f7f6fb;
 
     font-size:14px;
 
 }
 
 /* =====================================
-   共通パネル
+   共通セクション
+   （以前は1セクション＝1つの白い箱だった。今は罫線と余白だけで区切る）
 ===================================== */
 
 .panel{
 
-    margin-bottom:24px;
+    padding:24px 2px;
 
-    padding:24px;
+    border-top:1px solid rgba(109,93,252,.14);
 
-    background:#fff;
+}
 
-    border:1px solid #ececec;
-    border-radius:18px;
+.panel:first-of-type{
+
+    border-top:none;
+    padding-top:0;
 
 }
 
@@ -33,6 +48,7 @@
 
     margin:0 0 20px;
 
+    font-family:"Shippori Mincho", serif;
     font-size:18px;
     font-weight:700;
 
@@ -44,7 +60,7 @@
 
 .logo{
 
-    margin-bottom:20px;
+    margin-bottom:8px;
 
 }
 
@@ -52,23 +68,26 @@
 
     margin:0;
 
-    font-size:30px;
+    font-size:28px;
 
-    font-family:"Limelight",sans-serif;
+    font-family:"Shippori Mincho", serif;
 
-    font-weight:600;
+    font-weight:700;
 
-    letter-spacing:-1px;
+    color:#4c3ce0;
+
+    letter-spacing:.02em;
 
 }
 
 .logo p{
 
-    margin-top:8px;
+    margin-top:6px;
 
-    color:#888;
+    color:#8a7f9c;
 
-    font-size:12px;
+    font-size:11px;
+    letter-spacing:.12em;
 
 }
 
@@ -90,8 +109,9 @@
 
 .panel span{
 
-    font-size:14px;
+    font-size:13px;
     font-weight:500;
+    color:#6b6478;
 
 }
 
@@ -133,28 +153,27 @@
     width:18px;
     height:18px;
 
-}
-
-.titleRow input[type="text"]{
-
-    flex:1;
+    accent-color:#6D5DFC;
 
 }
 
-/* ---------- テキスト入力 ---------- */
+/* ---------- テキスト入力 ----------
+   枠線で囲うのをやめ、薄い塗り＋角丸だけにした（すりガラス寄りの軽い質感） */
 
 .panel input[type="text"],
 .panel textarea{
 
     width:100%;
 
-    padding:12px 14px;
+    padding:11px 14px;
 
-    border:1px solid #dcdcdc;
+    border:none;
 
     border-radius:12px;
 
     outline:none;
+
+    background:rgba(109,93,252,.06);
 
     font-size:14px;
     font-family:inherit;
@@ -168,7 +187,9 @@
 .panel input[type="text"]:focus,
 .panel textarea:focus{
 
-    border-color:#6D5DFC;
+    background:rgba(109,93,252,.1);
+
+    box-shadow:0 0 0 2px rgba(109,93,252,.35);
 
 }
 
@@ -180,10 +201,9 @@
 
     padding:10px 12px;
 
-    border:1px solid #ececec;
-    border-radius:10px;
+    border-radius:12px;
 
-    background:#fafafe;
+    background:rgba(109,93,252,.06);
 
     font-size:15px;
     color:#3d3d3d;
@@ -209,15 +229,15 @@
 input[type="color"]{
 
     width:100%;
-    height:60px;
+    height:56px;
 
     padding:4px;
 
-    border:1px solid #ddd;
+    border:none;
 
     border-radius:12px;
 
-    background:#fff;
+    background:rgba(109,93,252,.06);
 
     cursor:pointer;
 
@@ -235,7 +255,7 @@ input[type="color"]{
 
     border:none;
 
-    border-radius:14px;
+    border-radius:999px;
 
     background:#6D5DFC;
 
@@ -247,6 +267,8 @@ input[type="color"]{
     cursor:pointer;
 
     transition:.2s;
+
+    box-shadow:0 10px 24px -12px rgba(109,93,252,.65);
 
 }
 
@@ -266,108 +288,43 @@ input[type="color"]{
 
     transform:none;
 
-}
-
-/* =====================================
-   Relation Header
-===================================== */
-
-.relationHeader{
-
-    display:flex;
-
-    justify-content:space-between;
-
-    align-items:center;
-
-    margin-bottom:18px;
-
-}
-
-.relationHeader h2{
-
-    margin:0;
-
-    white-space:nowrap;
-
-    flex-shrink:0;
+    box-shadow:none;
 
 }
 
 /* =====================================
-   ＋追加ボタン
-===================================== */
-
-.addRelationButton{
-
-    min-width:70px;
-
-    height:34px;
-
-    padding:0 14px;
-
-    border:none;
-
-    border-radius:999px;
-
-    background:#6D5DFC;
-
-    color:#fff;
-
-    font-size:13px;
-    font-weight:600;
-
-    cursor:pointer;
-
-    transition:.2s;
-
-}
-
-.addRelationButton:hover{
-
-    filter:brightness(.95);
-
-}
-
-.addRelationButton:disabled{
-
-    background:#d6d6d6;
-
-    cursor:not-allowed;
-
-}
-
-/* =====================================
-   Relation Tabs
+   Relation Tabs（番号＋「＋追加」を同じ並びに統合）
 ===================================== */
 
 .relationTabs{
 
     display:flex;
 
-    gap:12px;
+    flex-wrap:wrap;
 
-    margin:18px 0 22px;
+    gap:10px;
+
+    margin:4px 0 22px;
 
 }
 
 .relationTab{
 
-    width:40px;
-    height:40px;
+    width:38px;
+    height:38px;
 
     padding:0;
 
     flex:none;
 
-    border:1px solid #ddd;
+    border:1.5px solid rgba(109,93,252,.28);
     border-radius:50%;
 
     background:#fff;
 
-    color:#666;
+    color:#6D5DFC;
 
-    font-size:14px;
+    font-size:13px;
     font-weight:700;
 
     cursor:pointer;
@@ -390,7 +347,28 @@ input[type="color"]{
 
     color:#fff;
 
-    box-shadow:0 4px 12px rgba(109,93,252,.22);
+    box-shadow:0 4px 12px rgba(109,93,252,.3);
+
+}
+
+.relationTab.addTab{
+
+    border-style:dashed;
+
+    font-size:16px;
+    font-weight:400;
+
+    color:#6D5DFC;
+
+}
+
+.relationTab.addTab:disabled{
+
+    opacity:.35;
+
+    cursor:not-allowed;
+
+    border-color:rgba(109,93,252,.28);
 
 }
 
@@ -406,7 +384,7 @@ input[type="color"]{
 
     border:none;
 
-    border-radius:14px;
+    border-radius:16px;
 
     background:#6D5DFC;
 
@@ -426,6 +404,7 @@ input[type="color"]{
 
     gap:8px;
 
+    font-family:"Shippori Mincho", serif;
     font-size:15px;
     font-weight:700;
 
@@ -497,7 +476,7 @@ input[type="color"]{
 
     padding:10px 8px;
 
-    border:1px solid #ddd;
+    border:1.5px solid rgba(109,93,252,.16);
 
     border-radius:12px;
 
@@ -637,9 +616,6 @@ input[type="color"]{
         max-height:50vh;
 
         overflow-y:auto;
-
-        border-right:none;
-        border-bottom:1px solid #e6e6e6;
 
         padding:20px;
 

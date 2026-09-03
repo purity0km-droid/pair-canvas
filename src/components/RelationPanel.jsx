@@ -1,4 +1,5 @@
 import RelationAccordion from "./RelationAccordion";
+import { MAX_RELATIONS } from "../constants";
 
 export default function RelationPanel({
   relations,
@@ -11,20 +12,10 @@ export default function RelationPanel({
   return (
     <section className="panel">
 
-      <div className="relationHeader">
+      <h2>関係性</h2>
 
-        <h2>関係性</h2>
-
-        <button
-          className="addRelationButton"
-          onClick={addRelation}
-          disabled={relations.length >= 4}
-        >
-          ＋追加
-        </button>
-
-      </div>
-
+      {/* 番号タブの並びの最後に「＋」を同じ丸ボタンとして続ける形にした
+          （以前は右上に別デザインの「＋追加」ボタンが独立していた） */}
       <div className="relationTabs">
 
         {relations.map((relation, index) => (
@@ -44,6 +35,16 @@ export default function RelationPanel({
           </button>
 
         ))}
+
+        <button
+          className="relationTab addTab"
+          onClick={addRelation}
+          disabled={relations.length >= MAX_RELATIONS}
+          aria-label="関係性を追加"
+          title="関係性を追加"
+        >
+          ＋
+        </button>
 
       </div>
 

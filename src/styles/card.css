@@ -1,3 +1,18 @@
+/* =====================================================================
+   カードデザイン（フェーズ2：デザイン調整）
+
+   方針：
+   - カード自体の色（背景色・文字色）はページ設定でユーザーが自由に選べる
+     仕様なので、ここでは特定の色を強く焼き込まない（紫のアクセントカラーは
+     サイドバーなど「アプリ自身のUI」側にだけ使い、書き出される絵の中には
+     持ち込まない）。
+   - 「枠で囲っている感じ」をなくす：カード外枠は罫線をやめて影だけに、
+     キャラクター画像は縁取りをやめて下端を紙の色へ溶かす。
+   - 名前・関係性ラベル・プロット名は、ユーザーが自由な画像や背景色を選べる
+     以上コントラストを保証する必要があるため、暗色スクリム（半透明の黒）は
+     そのまま維持する（角丸だけ、より丸いピル形にした）。
+===================================================================== */
+
 .relation-card{
 
     width:100%;
@@ -9,10 +24,13 @@
 
     padding:24px;
 
+    /* キャプチャで確認したとおり、白いカードが色付きの紙の上に乗る見え方は
+       そのまま維持する（不透明の白＝ページの背景色に関わらず同じ見た目になる） */
     background:#fcfcfc;
 
-    border:1px solid #ececec;
-    border-radius:22px;
+    border-radius:26px;
+
+    box-shadow:0 18px 40px -28px rgba(20,17,24,.45);
 
 }
 .relation-card.small{
@@ -55,15 +73,17 @@
 
 /* ===========================
    画像
+   「枠に写真を収めている」感じを出さないよう、縁取り・リングは使わず、
+   下端だけをふわっと透明にして紙の色へ馴染ませている。
 =========================== */
 
 .imageBox {
 
     position: relative;
 
-    background: #efefef;
+    background: rgba(0,0,0,.05);
 
-    border-radius: 18px;
+    border-radius: 20px;
 
     overflow: hidden;
 
@@ -130,6 +150,10 @@
 
     display:block;
 
+    /* 下端をマスクで透明にフェードさせ、紙の背景と地続きに見せる */
+    -webkit-mask-image:linear-gradient(to bottom, black 82%, transparent 100%);
+    mask-image:linear-gradient(to bottom, black 82%, transparent 100%);
+
 }
 
 .imageEmpty{
@@ -144,7 +168,7 @@
 
     color:#999;
 
-    background:#efefef;
+    background:rgba(0,0,0,.04);
 
     font-size:14px;
 
@@ -152,6 +176,8 @@
 
 /* ===========================
    名前帯
+   コントラストを保証する必要があるため、暗色スクリムのまま維持。
+   角丸だけピル形に。
 =========================== */
 
 .nameOverlay {
@@ -160,12 +186,12 @@
 
     bottom:8px;
 
-    padding:8px 14px;
+    padding:7px 14px;
 
     width:fit-content;
     max-width:85%;
 
-    background:rgba(0,0,0,.65);
+    background:rgba(15,13,18,.68);
     backdrop-filter:blur(6px);
 
     color:#fff;
@@ -176,6 +202,8 @@
     overflow:hidden;
     text-overflow:ellipsis;
 
+    border-radius:999px;
+
 }
 
 .nameOverlay.left {
@@ -184,8 +212,6 @@
 
     text-align: left;
 
-    border-radius: 8px;
-
 }
 
 .nameOverlay.right {
@@ -193,8 +219,6 @@
     right: 8px;
 
     text-align: right;
-
-    border-radius: 8px;
 
 }
 
@@ -222,7 +246,8 @@
 }
 
 /* ===========================
-   中央
+   中央：関係性ラベル／矢印／下段ラベル
+   1つの枠で囲わず、ラベルだけが独立したチップを持つ（矢印はプレーン表示）。
 =========================== */
 
 .relationCenter{
@@ -258,13 +283,13 @@
 
     max-width: 180px;
 
-    padding: 8px 18px;
+    padding: 7px 16px;
 
-    background: rgba(0,0,0,.65);
+    background: rgba(15,13,18,.68);
 
     backdrop-filter: blur(6px);
 
-    border-radius: 18px;
+    border-radius: 999px;
 
     color:#fff;
 
@@ -272,7 +297,7 @@
     font-weight:400;
 
     text-align:center;
-    
+
     white-space:pre-wrap;
     overflow-wrap: normal;
     word-break: keep-all;
@@ -285,6 +310,12 @@
 
 }
 
+.relationLabelSub{
+
+    font-size:15px;
+
+}
+
 .arrow {
 
     font-size: 30px;
@@ -292,6 +323,11 @@
     font-weight: bold;
 
     color: #666;
+
+    /* ユーザーが選んだ背景色がどんな色でも視認できるよう、薄い白のにじみを添える */
+    text-shadow:
+        0 1px 8px rgba(255,255,255,.85),
+        0 0 14px rgba(255,255,255,.5);
 
 }
 
@@ -303,13 +339,13 @@
 
     margin-top: 34px;
 
-    padding: 12px 18px;
+    padding: 11px 20px;
 
     text-align: center;
 
-    background: rgba(0,0,0,.7);
+    background: rgba(15,13,18,.72);
 
-    border-radius: 12px;
+    border-radius: 999px;
 
     font-size: 14px;
     font-weight: 700;
@@ -334,8 +370,6 @@
 
 /* ===========================
    画像のドラッグ移動（位置調整機能）
-   入力中プレビューが常にPC同様の実寸で組まれるようになった（Preview.jsx参照）ため、
-   スマホ幅専用のレイアウト組み替えは不要になり削除しました。
 =========================== */
 
 .cardImage.draggable{
