@@ -187,7 +187,12 @@
    選んだフォント自身で表示されるので、下にサンプル表示は出さない
    （PageSettings.jsx参照）。少しだけ大きめの文字にして見比べやすくしている。 */
 
-.fontSelect{
+/* 【重要】セレクタは .panel .fontSelect（詳細度 0,2,0）にすること。
+   .fontSelect だけ（0,1,0）だと、上の .panel select（0,1,1）に負けて
+   padding と background-image の指定が一切効かない。
+   （フェーズ4まではこの状態で、自前で描いている▼の矢印が表示されず、
+     padding-right も効いていなかった。フェーズ5で修正） */
+.panel .fontSelect{
 
     appearance:none;
     -webkit-appearance:none;
@@ -206,6 +211,13 @@
     background-size:5px 5px, 5px 5px;
     background-repeat:no-repeat;
 
+    /* 【重要】上下のpaddingを .panel select の 9px から 5px に減らしている。
+       高さを32pxにしたので、9pxのままだと文字の入る領域が
+       32 - 9*2 = 14px しか残らず、行の高さ（13px × 1.5 = 19.5px）が
+       入りきらずに文字の下が切れる。5pxなら 32 - 10 = 22px 確保できる。
+       高さを変えるときは、この padding も一緒に見直すこと。 */
+    padding-top:5px;
+    padding-bottom:5px;
     padding-right:30px;
 
     /* 幅が狭くなったぶん、はみ出さないよう少しだけ小さくする */
