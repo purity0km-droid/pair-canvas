@@ -1,74 +1,73 @@
+/* =====================================================================
+   サイドバー（フェーズ2：デザイン調整）
+
+   方針：
+   - 各セクションを白い箱＋枠線で仕切るのをやめ、余白と1本の薄い罫線だけで
+     区切る「継ぎ目のない」構成にした。
+   - 色は紫（#6D5DFC）1色を軸にする。元実装からの意図的な引き継ぎで、
+     本家zetaのアプリ内配色（黒基調＋紫）に寄せている。
+   - 見出しのフォントは本文と同じ（Noto Sans JP）。フェーズ2では明朝体
+     （Shippori Mincho）にしていたが、アプリ内で使うフォントはデザイン変更前の
+     原本どおり本文フォントで統一する方針に戻した（フェーズ5のフィードバック反映）。
+     ※ここでいうフォントは「アプリのUI」の話で、書き出される絵の中の
+       フォント（ページ設定で選ぶもの）とは別物。
+
+   フェーズ4の調整：
+   - ロゴとファイル操作ボタンをヘッダー(header.css)へ移し、ここは設定だけに。
+   - 色見本・フォント選択・各種ボタンを一回り小さくして、縦の情報量を増やした。
+===================================================================== */
+
 .sidebar{
 
-    height:100vh;
+    /* 【重要】position:relative は必須。
+       ImageUploader.jsx のファイル選択用inputは position:absolute で
+       画面外に隠しているが、position:static の要素は overflow の
+       クリッピング対象にならないため、relative を付けないと
+       このinputだけがサイドバーのスクロール枠を突き抜けて
+       ページ全体の高さを押し広げ、ページごとスクロールしてしまう
+       （＝ヘッダーが流れて左カラムの下が見切れる）。 */
+    position:relative;
+
+    height:100%;
     overflow-y:auto;
 
-    padding:32px;
+    padding:26px 26px 40px;
 
-    background:#f4f5fb;
-    border-right:1px solid #e6e6e6;
+    background:
+        radial-gradient(circle at 10% 0%, rgba(109,93,252,.07), transparent 42%),
+        #f7f6fb;
 
     font-size:14px;
 
 }
 
 /* =====================================
-   共通パネル
+   共通セクション
+   （以前は1セクション＝1つの白い箱だった。今は罫線と余白だけで区切る）
 ===================================== */
 
 .panel{
 
-    margin-bottom:24px;
+    padding:20px 2px;
 
-    padding:24px;
+    border-top:1px solid rgba(109,93,252,.14);
 
-    background:#fff;
+}
 
-    border:1px solid #ececec;
-    border-radius:18px;
+.panel:first-of-type{
+
+    border-top:none;
+    padding-top:0;
 
 }
 
 .panel h2{
 
-    margin:0 0 20px;
+    margin:0 0 16px;
 
-    font-size:18px;
+    /* font-family は指定しない＝bodyのNoto Sans JPを継承（フェーズ5で明朝体をやめた） */
+    font-size:16px;
     font-weight:700;
-
-}
-
-/* =====================================
-   ロゴ
-===================================== */
-
-.logo{
-
-    margin-bottom:20px;
-
-}
-
-.logo h1{
-
-    margin:0;
-
-    font-size:30px;
-
-    font-family:"Limelight",sans-serif;
-
-    font-weight:600;
-
-    letter-spacing:-1px;
-
-}
-
-.logo p{
-
-    margin-top:8px;
-
-    color:#888;
-
-    font-size:12px;
 
 }
 
@@ -76,22 +75,24 @@
    フォーム
 ===================================== */
 
-.panel label{
+.panel label,
+.panel .fieldGroup{
 
     display:flex;
 
     flex-direction:column;
 
-    gap:8px;
+    gap:6px;
 
-    margin-bottom:18px;
+    margin-bottom:14px;
 
 }
 
 .panel span{
 
-    font-size:14px;
+    font-size:12px;
     font-weight:500;
+    color:#6b6478;
 
 }
 
@@ -105,7 +106,7 @@
 
     gap:10px;
 
-    margin-bottom:20px;
+    margin-bottom:16px;
 
 }
 .titleRow input[type="text"]{
@@ -114,7 +115,14 @@
 
 }
 
-.checkboxInline{
+/* 【重要】セレクタを .titleRow .checkboxInline にしてあるのは、詳細度を
+   .panel label より高くするため。
+   .panel label には margin-bottom:14px が付いており、単に .checkboxInline
+   （詳細度 0,1,0）で margin:0 と書いても .panel label（詳細度 0,1,1）に
+   負けて効かない。その結果チェックボックスの下に14pxの余白が残ったまま
+   .titleRow の align-items:center で中央揃えされ、入力欄に対して
+   ちょうど余白の半分＝7px 上にずれていた（フェーズ5で修正）。 */
+.titleRow .checkboxInline{
 
     display:flex;
 
@@ -133,30 +141,30 @@
     width:18px;
     height:18px;
 
-}
-
-.titleRow input[type="text"]{
-
-    flex:1;
+    accent-color:#6D5DFC;
 
 }
 
-/* ---------- テキスト入力 ---------- */
+/* ---------- テキスト入力 ----------
+   枠線で囲うのをやめ、薄い塗り＋角丸だけにした（すりガラス寄りの軽い質感） */
 
 .panel input[type="text"],
-.panel textarea{
+.panel textarea,
+.panel select{
 
     width:100%;
 
-    padding:12px 14px;
+    padding:9px 12px;
 
-    border:1px solid #dcdcdc;
+    border:none;
 
     border-radius:12px;
 
     outline:none;
 
-    font-size:14px;
+    background:rgba(109,93,252,.06);
+
+    font-size:13px;
     font-family:inherit;
 
     resize:vertical;
@@ -166,190 +174,161 @@
 }
 
 .panel input[type="text"]:focus,
-.panel textarea:focus{
+.panel textarea:focus,
+.panel select:focus{
 
-    border-color:#6D5DFC;
+    background:rgba(109,93,252,.1);
+
+    box-shadow:0 0 0 2px rgba(109,93,252,.35);
 
 }
 
-/* ---------- カラー ---------- */
+/* ---------- フォント選択 ----------
+   選んだフォント自身で表示されるので、下にサンプル表示は出さない
+   （PageSettings.jsx参照）。少しだけ大きめの文字にして見比べやすくしている。 */
+
+/* 【重要】セレクタは .panel .fontSelect（詳細度 0,2,0）にすること。
+   .fontSelect だけ（0,1,0）だと、上の .panel select（0,1,1）に負けて
+   padding と background-image の指定が一切効かない。
+   （フェーズ4まではこの状態で、自前で描いている▼の矢印が表示されず、
+     padding-right も効いていなかった。フェーズ5で修正） */
+.panel .fontSelect{
+
+    appearance:none;
+    -webkit-appearance:none;
+
+    /* 同じ行に並ぶ色見本(26px)と高さが離れすぎないよう、フェーズ5で
+       40px → 32px に下げた（フォント名は読めるサイズを保つ） */
+    height:32px;
+
+    /* 右端に自前の▼を描く（OS標準の矢印を消しているため） */
+    background-image:
+        linear-gradient(45deg, transparent 50%, #8a7f9c 50%),
+        linear-gradient(135deg, #8a7f9c 50%, transparent 50%);
+    background-position:
+        calc(100% - 17px) calc(50% + 1px),
+        calc(100% - 12px) calc(50% + 1px);
+    background-size:5px 5px, 5px 5px;
+    background-repeat:no-repeat;
+
+    /* 【重要】上下のpaddingを .panel select の 9px から 5px に減らしている。
+       高さを32pxにしたので、9pxのままだと文字の入る領域が
+       32 - 9*2 = 14px しか残らず、行の高さ（13px × 1.5 = 19.5px）が
+       入りきらずに文字の下が切れる。5pxなら 32 - 10 = 22px 確保できる。
+       高さを変えるときは、この padding も一緒に見直すこと。 */
+    padding-top:5px;
+    padding-bottom:5px;
+    padding-right:30px;
+
+    /* 幅が狭くなったぶん、はみ出さないよう少しだけ小さくする */
+    font-size:13px;
+
+    text-overflow:ellipsis;
+
+    cursor:pointer;
+
+}
+
+/* ---------- カラー＋フォント ----------
+   フェーズ5で、背景色・文字色・フォントを1行にまとめた。
+   色見本は「今の色が分かれば十分」なので幅を固定し（下の .colorField）、
+   フォント名は長いもの（Zen Maru Gothic など）があるので、
+   残りの幅を全部フォント選択欄に渡している（.fontField を flex:1）。
+   窮屈に感じる場合は .fontField を .colorRow の外へ出して独立した行に戻す。 */
 
 .colorRow{
 
     display:flex;
 
-    gap:16px;
+    /* 3項目のラベル行の上端を揃える（stretchだと色見本が縦に伸びてしまう） */
+    align-items:flex-start;
+
+    gap:10px;
+
+    margin-bottom:14px;
 
 }
 
+/* .panel label の margin-bottom:14px が各項目に付くと行の下に二重の余白が
+   できるので、行側(.colorRow)にだけ余白を持たせて中の項目からは外す。
+   詳細度は .panel label（0,1,1）より高くする必要があるため
+   .colorRow label（0,2,0）で指定している。 */
 .colorRow label{
 
-    flex:1;
+    margin-bottom:0;
 
 }
 
+.colorRow .colorField{
+
+    /* 色見本は中身が「色」だけなので、名前の長さに左右されない固定幅でよい */
+    flex:none;
+    width:62px;
+
+}
+
+.colorRow .fontField{
+
+    /* 余った幅は全部フォント選択欄へ。min-width:0 が無いと、
+       select の既定の最小幅にflexが負けて行からはみ出す */
+    flex:1;
+    min-width:0;
+
+}
+
+/* 色見本は「今の色が分かれば十分」なので、フェーズ4で高さを半分以下（56px→26px）にした。
+   フェーズ5で同じ行のフォント選択欄(32px)と下端を揃えるため 26px → 32px。
+   行の高さはフォント選択欄で決まるので、この6pxで縦が伸びることはない。 */
 input[type="color"]{
 
     width:100%;
-    height:60px;
+    height:32px;
 
-    padding:4px;
-
-    border:1px solid #ddd;
-
-    border-radius:12px;
-
-    background:#fff;
-
-    cursor:pointer;
-
-}
-
-/* =====================================
-   メインボタン
-===================================== */
-
-.primaryButton{
-
-    width:100%;
-
-    height:48px;
+    padding:2px;
 
     border:none;
 
-    border-radius:14px;
+    border-radius:8px;
 
-    background:#6D5DFC;
-
-    color:#fff;
-
-    font-size:14px;
-    font-weight:600;
+    background:rgba(109,93,252,.06);
 
     cursor:pointer;
 
-    transition:.2s;
-
-}
-
-.primaryButton:hover{
-
-    transform:translateY(-2px);
-
-    background:#5d4ef2;
-
-}
-
-.primaryButton:disabled{
-
-    opacity:.45;
-
-    cursor:not-allowed;
-
-    transform:none;
-
 }
 
 /* =====================================
-   Relation Header
-===================================== */
-
-.relationHeader{
-
-    display:flex;
-
-    justify-content:space-between;
-
-    align-items:center;
-
-    margin-bottom:18px;
-
-}
-
-.relationHeader h2{
-
-    margin:0;
-
-    white-space:nowrap;
-
-    flex-shrink:0;
-
-}
-
-/* =====================================
-   ＋追加ボタン
-===================================== */
-
-.addRelationButton{
-
-    min-width:70px;
-
-    height:34px;
-
-    padding:0 14px;
-
-    border:none;
-
-    border-radius:999px;
-
-    background:#6D5DFC;
-
-    color:#fff;
-
-    font-size:13px;
-    font-weight:600;
-
-    cursor:pointer;
-
-    transition:.2s;
-
-}
-
-.addRelationButton:hover{
-
-    filter:brightness(.95);
-
-}
-
-.addRelationButton:disabled{
-
-    background:#d6d6d6;
-
-    cursor:not-allowed;
-
-}
-
-/* =====================================
-   Relation Tabs
+   Relation Tabs（番号＋「＋追加」を同じ並びに統合）
 ===================================== */
 
 .relationTabs{
 
     display:flex;
 
-    gap:12px;
+    flex-wrap:wrap;
 
-    margin:18px 0 22px;
+    gap:8px;
+
+    margin:0 0 18px;
 
 }
 
 .relationTab{
 
-    width:40px;
-    height:40px;
+    width:34px;
+    height:34px;
 
     padding:0;
 
     flex:none;
 
-    border:1px solid #ddd;
+    border:1.5px solid rgba(109,93,252,.28);
     border-radius:50%;
 
     background:#fff;
 
-    color:#666;
+    color:#6D5DFC;
 
-    font-size:14px;
+    font-size:13px;
     font-weight:700;
 
     cursor:pointer;
@@ -372,23 +351,44 @@ input[type="color"]{
 
     color:#fff;
 
-    box-shadow:0 4px 12px rgba(109,93,252,.22);
+    box-shadow:0 4px 12px rgba(109,93,252,.3);
+
+}
+
+.relationTab.addTab{
+
+    border-style:dashed;
+
+    font-size:16px;
+    font-weight:400;
+
+    color:#6D5DFC;
+
+}
+
+.relationTab.addTab:disabled{
+
+    opacity:.35;
+
+    cursor:not-allowed;
+
+    border-color:rgba(109,93,252,.28);
 
 }
 
 /* =====================================
-   Accordion
-===================================== */
+   関係性の編集ボックスの見出し帯
+   （クラス名は accordion のままだが、フェーズ5で開閉はしなくなった。
+     ①②③のタブで表示するボックスごと切り替わるため、この帯は
+     「今どれを編集しているか」を示すだけのラベルになっている） */
 
 .accordionHeader{
 
     width:100%;
 
-    padding:14px 18px;
+    padding:11px 16px;
 
-    border:none;
-
-    border-radius:14px;
+    border-radius:16px;
 
     background:#6D5DFC;
 
@@ -396,7 +396,7 @@ input[type="color"]{
 
     text-align:left;
 
-    cursor:pointer;
+    /* クリックしても何も起きないので、押せそうに見える cursor:pointer は付けない */
 
 }
 
@@ -408,30 +408,22 @@ input[type="color"]{
 
     gap:8px;
 
-    font-size:15px;
+    /* font-family は指定しない＝bodyのNoto Sans JPを継承（フェーズ5で明朝体をやめた） */
+    font-size:14px;
     font-weight:700;
 
 }
 
-.accordionIcon{
-
-    width:18px;
-
-    display:flex;
-
-    justify-content:center;
-
-}
+/* .accordionIcon（▼/▶）はフェーズ5で廃止。
+   開閉しなくなったため、アイコンぶんの字下げ（margin-left:26px）も外している。 */
 
 .accordionSummary{
 
-    margin-top:8px;
-
-    margin-left:26px;
+    margin-top:6px;
 
     color:rgba(255,255,255,.88);
 
-    font-size:13px;
+    font-size:12px;
 
 }
 
@@ -441,9 +433,160 @@ input[type="color"]{
 
 }
 
+/* 左右のキャラクター設定(画像・名前・補足)をまとめて入れ替えるボタン */
+.swapSidesButton{
+
+    display:block;
+
+    width:100%;
+
+    margin-bottom:18px;
+
+    padding:9px 14px;
+
+    border:none;
+    border-radius:999px;
+
+    background:rgba(109,93,252,.1);
+
+    color:#6D5DFC;
+
+    font-size:13px;
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+}
+
+.swapSidesButton:hover{
+
+    background:rgba(109,93,252,.18);
+
+}
+
+/* =====================================
+   「おまけ」機能：レイアウト詳細設定
+   既定で折りたたんでおき、普段の操作フローには出さない。
+===================================== */
+.layoutExtra{
+
+    margin-bottom:18px;
+
+    border:1px solid rgba(109,93,252,.14);
+    border-radius:12px;
+
+    padding:10px 14px;
+
+}
+
+.layoutExtra summary{
+
+    cursor:pointer;
+
+    font-size:12px;
+
+    color:#8a7f9c;
+
+    user-select:none;
+
+}
+
+.layoutExtra[open] summary{
+
+    margin-bottom:10px;
+
+}
+
+.layoutExtraBody{
+
+    display:flex;
+    flex-direction:column;
+
+    gap:8px;
+
+}
+
+.imageRatioButtons{
+
+    display:flex;
+
+    gap:8px;
+
+}
+
+.imageRatioButton{
+
+    flex:1;
+
+    padding:7px 8px;
+
+    border:none;
+    border-radius:999px;
+
+    background:rgba(109,93,252,.06);
+
+    color:#6b6478;
+
+    font-size:12px;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+}
+
+.imageRatioButton:hover{
+
+    background:rgba(109,93,252,.14);
+
+    color:#6D5DFC;
+
+}
+
+.imageRatioButton.active{
+
+    background:#6D5DFC;
+
+    border-color:#6D5DFC;
+
+    color:#fff;
+
+}
+
+/* 削除ボタン。押し間違えると内容が消えるので、目立たせず
+   （紫の主UIとは別系統の淡い赤）控えめに置いている。 */
 .deleteButton{
 
-    margin-top:24px;
+    display:block;
+
+    width:100%;
+
+    margin-top:20px;
+
+    padding:9px 14px;
+
+    border:none;
+    border-radius:999px;
+
+    background:rgba(220,80,110,.09);
+
+    color:#c04a68;
+
+    font-family:inherit;
+    font-size:12px;
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+}
+
+.deleteButton:hover{
+
+    background:rgba(220,80,110,.16);
 
 }
 
@@ -455,11 +598,11 @@ input[type="color"]{
 
     display:grid;
 
-    grid-template-columns:repeat(3,minmax(0,1fr));
+    grid-template-columns:repeat(5,minmax(0,1fr));
 
-    gap:10px;
+    gap:6px;
 
-    margin-top:8px;
+    margin-top:4px;
 
 }
 
@@ -473,15 +616,15 @@ input[type="color"]{
 
     justify-content:center;
 
-    gap:6px;
+    gap:4px;
 
     width:100%;
 
-    padding:10px 8px;
+    padding:6px 4px;
 
-    border:1px solid #ddd;
+    border:1.5px solid rgba(109,93,252,.16);
 
-    border-radius:12px;
+    border-radius:10px;
 
     background:#fff;
 
@@ -507,11 +650,13 @@ input[type="color"]{
 
 .patternButton small{
 
-    font-size:11px;
+    font-size:8px;
 
     color:#666;
 
     font-weight:600;
+
+    letter-spacing:-.04em;
 
 }
 
@@ -523,9 +668,9 @@ input[type="color"]{
 
     width:100%;
 
-    height:34px;
+    height:22px;
 
-    border-radius:8px;
+    border-radius:6px;
 
     border:1px solid #e7e7e7;
 
@@ -587,31 +732,14 @@ input[type="color"]{
 
 }
 
-.saveButtons{
-
-    display:flex;
-
-    gap:12px;
-
-    margin-top:24px;
-
-}
-
-.importButton{
-
-    display:flex;
-
-    justify-content:center;
-    align-items:center;
-
-    text-decoration:none;
-
-}
-
 /* ==========================
    スマホ対応
+   ※ 基準幅は app.css（縦積みに切り替わる幅）と必ず揃えること。
+     以前ここだけ900pxになっていたため、768〜900pxの範囲では
+     「左カラムのままなのに高さが50vhに制限される」状態になり、
+     関係性の設定が見えなくなっていた。
 ========================== */
-@media (max-width:900px){
+@media (max-width:768px){
 
     .sidebar{
 
@@ -620,15 +748,7 @@ input[type="color"]{
 
         overflow-y:auto;
 
-        border-right:none;
-        border-bottom:1px solid #e6e6e6;
-
-        padding:20px;
-
-    }
-    .saveButtons{
-
-        flex-direction:column;
+        padding:18px 16px 24px;
 
     }
 }

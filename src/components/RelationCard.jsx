@@ -1,37 +1,77 @@
 import "../styles/card.css";
 
-export default function RelationCard({
-  relation,
-  layout = "small",
-}) {
+// -----------------------------------------------------------------------
+// RelationCard
+//
+// 【画像の位置調整について】
+// 以前はこのプレビューカード上で画像を直接つまんで動かせるようにしていましたが、
+// 「見るための場所」で操作できてしまうと、カードを触っただけで意図せず位置が
+// ずれてしまうため、ドラッグ機能はここから外しました。
+// 位置・拡大の調整は、サイドバーの「位置調整モーダル」(ImageUploader.jsx)
+// だけで行います（ドラッグ処理の本体は src/hooks/useImageDrag.js）。
+//
+// つまりこのコンポーネントは「表示専用」です。画面プレビューでもPNG書き出し用の
+// 非表示コピーでも、まったく同じ静止状態で描画されます。
+// -----------------------------------------------------------------------
+
+function CharacterImage({ image, transform, alt }) {
+  const { scale = 1, x = 0, y = 0 } = transform || {};
+
+  if (!image) {
+    return (
+      <div className="imageEmpty">
+        ここに画像が
+        <br />
+        表示されます
+      </div>
+    );
+  }
+
+  return (
+    <img
+      src={image}
+      alt={alt}
+      className="cardImage"
+      style={{ transform: `translate(${x}%, ${y}%) scale(${scale})` }}
+      // <img>はブラウザ既定で「つかんでドラッグするとコピー/移動できる」状態に
+      // なっており、プレビューを触ったときに画像のゴーストが付いてくる。
+      // 表示専用なので、ここで止めておく。
+      draggable={false}
+      onDragStart={(e) => e.preventDefault()}
+    />
+  );
+}
+
+export default function RelationCard({ relation, layout = "small" }) {
+  // 左右の写真の大きさの比率（「おまけ」機能）。
+  // "left" なら左を大きく／右を小さく、"right" ならその逆、
+  // "even"（既定）なら何もしない（現状どおり均等）。
+  // 縦横比自体は変えず、大きさだけを一定倍率で拡大縮小するので、
+  // 位置調整モーダルのクロップ枠の縦横比計算(utils/relationLayout.js)には影響しない。
+  const imageRatio = relation.imageRatio || "even";
+  const leftRatioClass =
+    imageRatio === "left" ? "ratioBig" : imageRatio === "right" ? "ratioSmall" : "";
+  const rightRatioClass =
+    imageRatio === "right" ? "ratioBig" : imageRatio === "left" ? "ratioSmall" : "";
+
   return (
     <div className={`relation-card ${layout}`}>
 
       <div className="characterArea">
 
         {/* 左キャラクター */}
-        <div className="character">
+        <div className={`character ${leftRatioClass}`}>
 
           <div className="imageBox">
-
-            {relation.leftImage ? (
-              <img
-                src={relation.leftImage}
-                alt=""
-                className="cardImage"
-              />
-            ) : (
-              <div className="imageEmpty">
-                ここに画像が
-                <br />
-                表示されます
-              </div>
-            )}
+            <CharacterImage
+              image={relation.leftImage}
+              transform={relation.leftImageTransform}
+              alt=""
+            />
 
             <div className="nameOverlay left">
               {relation.leftName || "左の名前"}
             </div>
-
           </div>
 
           <div className="subInfo">
@@ -40,7 +80,7 @@ export default function RelationCard({
 
         </div>
 
-        {/* 中央 */}
+        {/* 中央：関係性ラベル＋矢印（＋任意で下段のラベル） */}
         <div className="relationCenter">
 
           <div className="relationOverlay">
@@ -53,33 +93,29 @@ export default function RelationCard({
               ⇄
             </div>
 
+            {relation.relationSub && (
+              <div className="relationLabel relationLabelSub">
+                {relation.relationSub}
+              </div>
+            )}
+
           </div>
 
         </div>
 
         {/* 右キャラクター */}
-        <div className="character">
+        <div className={`character ${rightRatioClass}`}>
 
           <div className="imageBox">
-
-            {relation.rightImage ? (
-              <img
-                src={relation.rightImage}
-                alt=""
-                className="cardImage"
-              />
-            ) : (
-              <div className="imageEmpty">
-                ここに画像が
-                <br />
-                表示されます
-              </div>
-            )}
+            <CharacterImage
+              image={relation.rightImage}
+              transform={relation.rightImageTransform}
+              alt=""
+            />
 
             <div className="nameOverlay right">
               {relation.rightName || "右の名前"}
             </div>
-
           </div>
 
           <div className="subInfo right">

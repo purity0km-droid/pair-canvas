@@ -1,49 +1,91 @@
-import { useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as htmlToImage from "html-to-image";
 
 import "./styles/app.css";
 
+import AppHeader from "./components/AppHeader";
 import Sidebar from "./components/Sidebar";
 import Preview from "./components/Preview";
 import ExportPreview from "./components/ExportPreview";
 
+import { createRelation, normalizeRelation } from "./utils/createRelation";
+import { MAX_RELATIONS, DRAFT_STORAGE_KEY } from "./constants";
+
+const DEFAULT_PAGE = {
+  showTitle: true,
+  title: "",
+  backgroundColor: "#6D5DFC",
+  textColor: "#3d3d3d",
+  backgroundPattern: "solid",
+  fontFamily: "Noto Sans JP",
+};
+
+// -----------------------------------------------------------------
+// 自動下書き保存（localStorage）
+//
+// うっかりタブを閉じたりリロードしたりしても、直前の入力内容が消えないよう、
+// ページ設定・関係性データを localStorage に保存しておき、次回起動時に
+// 自動で復元します。サーバーには何も送っていません（この端末の中だけ）。
+// -----------------------------------------------------------------
+function loadDraft() {
+  try {
+    const raw = localStorage.getItem(DRAFT_STORAGE_KEY);
+    if (!raw) return null;
+
+    const data = JSON.parse(raw);
+    if (!data || typeof data !== "object") return null;
+
+    return data;
+  } catch (error) {
+    console.error("下書きの読み込みに失敗しました:", error);
+    return null;
+  }
+}
+
+function initialPage() {
+  const draft = loadDraft();
+  if (draft?.page && typeof draft.page === "object") {
+    return { ...DEFAULT_PAGE, ...draft.page };
+  }
+  return DEFAULT_PAGE;
+}
+
+function initialRelations() {
+  const draft = loadDraft();
+  if (Array.isArray(draft?.relations) && draft.relations.length > 0) {
+    return draft.relations.map((r, i) => normalizeRelation(r, i + 1));
+  }
+  return [createRelation(1)];
+}
+
 function App() {
-  const [page, setPage] = useState({
-    showTitle: true,
-    title: "",
-    backgroundColor: "#6D5DFC",
-    textColor: "#3d3d3d",
-    backgroundPattern: "solid",
-    fontFamily: "Noto Sans JP",
-  });
-
-  const [relations, setRelations] = useState([
-    {
-      id: crypto.randomUUID(),
-      name: "関係性①",
-
-      leftImage: null,
-      rightImage: null,
-
-      leftName: "",
-      rightName: "",
-
-      leftSub: "",
-      rightSub: "",
-
-      relation: "",
-      storyTitle: "",
-      description: "",
-    },
-  ]);
+  const [page, setPage] = useState(initialPage);
+  const [relations, setRelations] = useState(initialRelations);
 
   const [selectedRelationId, setSelectedRelationId] = useState(
     relations[0].id
   );
 
-  const fileInputRef = useRef(null);
+  // PNG書き出し中かどうか（書き出しボタンのローディング表示に使う）
+  const [isExporting, setIsExporting] = useState(false);
+
   const previewRef = useRef(null);
   const exportPreviewRef = useRef(null);
+
+  // -----------------------------
+  // 自動下書き保存：page / relations が変わるたびにlocalStorageへ保存
+  // -----------------------------
+  useEffect(() => {
+    try {
+      localStorage.setItem(
+        DRAFT_STORAGE_KEY,
+        JSON.stringify({ page, relations })
+      );
+    } catch (error) {
+      // 端末のストレージ容量制限などで失敗しても、アプリの利用自体は継続する
+      console.error("下書きの自動保存に失敗しました:", error);
+    }
+  }, [page, relations]);
 
   // -----------------------------
   // ページ設定更新
@@ -59,25 +101,9 @@ function App() {
   // 関係性追加
   // -----------------------------
   function addRelation() {
-    if (relations.length >= 4) return;
+    if (relations.length >= MAX_RELATIONS) return;
 
-    const newRelation = {
-      id: crypto.randomUUID(),
-      name: `関係性${relations.length + 1}`,
-
-      leftImage: null,
-      rightImage: null,
-
-      leftName: "",
-      rightName: "",
-
-      leftSub: "",
-      rightSub: "",
-
-      relation: "",
-      storyTitle: "",
-      description: "",
-    };
+    const newRelation = createRelation(relations.length + 1);
 
     setRelations((prev) => [...prev, newRelation]);
     setSelectedRelationId(newRelation.id);
@@ -154,88 +180,168 @@ function App() {
       try {
         const data = JSON.parse(reader.result);
 
-        if (data.page) {
-          setPage(data.page);
+        if (!data || typeof data !== "object") {
+          throw new Error("JSONの形式が不正です");
         }
 
-        if (data.relations) {
-          setRelations(data.relations);
-
-          if (data.relations.length > 0) {
-            setSelectedRelationId(data.relations[0].id);
-          }
+        if (data.page && typeof data.page === "object") {
+          setPage({ ...DEFAULT_PAGE, ...data.page });
         }
-      } catch {
-        alert("JSONファイルを読み込めませんでした。");
+
+        if (Array.isArray(data.relations) && data.relations.length > 0) {
+          // 古いバージョンで保存されたJSON（relationSub や
+          // leftImageTransform が無いもの）でも壊れないよう、
+          // 欠けている項目は normalizeRelation が初期値で補ってくれる
+          const normalized = data.relations.map((r, i) =>
+            normalizeRelation(r, i + 1)
+          );
+
+          setRelations(normalized);
+          setSelectedRelationId(normalized[0].id);
+        }
+      } catch (error) {
+        console.error("JSON読込エラー:", error);
+        alert("JSONファイルを読み込めませんでした。ファイルの内容を確認してください。");
       }
     };
 
     reader.readAsText(file);
   }
 
-// -----------------------------
-// PNG保存
-// -----------------------------
-async function savePng({ highQuality = false } = {}) {
-  if (!exportPreviewRef.current) return;
+  // -----------------------------------------------------------------
+  // 全部リセット
+  //
+  // 入力内容はlocalStorageに自動保存されているため、「まっさらな状態から
+  // やり直したい」ときは下書きごと消す必要がある。取り消しはできないので、
+  // 必ず確認ダイアログを挟む。
+  // -----------------------------------------------------------------
+  function resetAll() {
+    const ok = window.confirm(
+      "入力内容をすべて消して、最初の状態に戻します。よろしいですか？（この操作は取り消せません）"
+    );
+    if (!ok) return;
 
-  const element = exportPreviewRef.current;
+    try {
+      localStorage.removeItem(DRAFT_STORAGE_KEY);
+    } catch (error) {
+      console.error("下書きの削除に失敗しました:", error);
+    }
 
-  try {
-    const options = {
-      pixelRatio: highQuality ? 2 : 1,
-      cacheBust: true,
-      skipAutoScale: true,
-    };
+    const fresh = createRelation(1);
 
-    // =====================================
-    // Safari / iPhone対策
-    // 1回目：画像をブラウザ側にレンダリングさせる
-    // =====================================
-    await htmlToImage.toPng(element, options);
-
-    // 少し待つ
-    await new Promise((resolve) => setTimeout(resolve, 100));
-
-    // =====================================
-    // 2回目：本番画像
-    // =====================================
-    const dataUrl = await htmlToImage.toPng(element, options);
-
-    // =====================================
-    // Blob化
-    // =====================================
-    const response = await fetch(dataUrl);
-    const blob = await response.blob();
-
-    // =====================================
-    // 保存
-    // =====================================
-    const fileName = highQuality
-      ? "pair-canvas-hq.png"
-      : "pair-canvas.png";
-
-    const url = URL.createObjectURL(blob);
-
-    const link = document.createElement("a");
-
-    link.href = url;
-    link.download = fileName;
-
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-
-    // すぐ revoke するとSafariで保存に失敗することがある
-    setTimeout(() => {
-      URL.revokeObjectURL(url);
-    }, 1000);
-
-  } catch (error) {
-    console.error(error);
-    alert("PNG保存に失敗しました。");
+    setPage(DEFAULT_PAGE);
+    setRelations([fresh]);
+    setSelectedRelationId(fresh.id);
   }
-}
+
+  // -----------------------------------------------------------------
+  // PNG保存（フェーズ3：サファリ問題対応）
+  //
+  // html-to-image（内部はSVGのforeignObject方式）には、Safari／iOSで
+  // 主に2つの既知の問題がある。
+  //   1) フォントがCSSOMに登録される前にキャプチャすると文字化け・フォント欠けが起きる
+  //      → document.fonts.ready を待ってから撮る
+  //   2) 画像のデコードタイミングがフレーキーで、初回キャプチャで画像が消えることがある
+  //      → 対象画像すべての img.decode() 完了を待ってから撮る
+  //
+  // 以前は「固定100ms待ってから2回レンダリング」という運任せの実装だったが、
+  // 今は「フォント・画像の準備ができたのを確認してから」待つ形にした。
+  // ただしSafariのforeignObject実装自体が本質的に不安定なため
+  // （html-to-image側の既知issue）、保険としての2回レンダリングという
+  // 構造は残している。fontEmbedCSSは1回計算したものを使い回すことで、
+  // 2回目の計算コストを省いて軽量化している。
+  // -----------------------------------------------------------------
+  async function waitUntilReadyToCapture(element) {
+    // フォントの読み込み待ち
+    if (document.fonts?.ready) {
+      try {
+        await document.fonts.ready;
+      } catch (error) {
+        console.error("フォント読み込み待機でエラー:", error);
+      }
+    }
+
+    // 画像（アップロードした写真など）のデコード待ち
+    const images = Array.from(element.querySelectorAll("img"));
+    await Promise.all(
+      images.map((img) =>
+        img.decode ? img.decode().catch(() => {}) : Promise.resolve()
+      )
+    );
+  }
+
+  async function savePng({ highQuality = false } = {}) {
+    if (!exportPreviewRef.current) return;
+
+    const element = exportPreviewRef.current;
+
+    setIsExporting(true);
+
+    try {
+      await waitUntilReadyToCapture(element);
+
+      // フォント埋め込み用CSSは1回だけ計算して使い回す
+      let fontEmbedCSS;
+      try {
+        fontEmbedCSS = await htmlToImage.getFontEmbedCSS(element);
+      } catch (error) {
+        console.error("フォント埋め込みCSSの取得に失敗しました:", error);
+      }
+
+      const options = {
+        pixelRatio: highQuality ? 2 : 1,
+        cacheBust: true,
+        skipAutoScale: true,
+        fontEmbedCSS,
+      };
+
+      // =====================================
+      // Safari対策：保険として2回レンダリングする
+      // 1回目：画像をブラウザ側にレンダリングさせる
+      // =====================================
+      await htmlToImage.toPng(element, options);
+
+      // =====================================
+      // 2回目：本番画像
+      // =====================================
+      const dataUrl = await htmlToImage.toPng(element, options);
+
+      // =====================================
+      // Blob化
+      // =====================================
+      const response = await fetch(dataUrl);
+      const blob = await response.blob();
+
+      // =====================================
+      // 保存
+      // =====================================
+      const fileName = highQuality
+        ? "pair-canvas-hq.png"
+        : "pair-canvas.png";
+
+      const url = URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+
+      link.href = url;
+      link.download = fileName;
+
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      // すぐ revoke するとSafariで保存に失敗することがある
+      setTimeout(() => {
+        URL.revokeObjectURL(url);
+      }, 1000);
+
+    } catch (error) {
+      console.error(error);
+      alert("PNG保存に失敗しました。");
+    } finally {
+      setIsExporting(false);
+    }
+  }
 
   const selectedRelation = relations.find(
     (relation) => relation.id === selectedRelationId
@@ -243,32 +349,40 @@ async function savePng({ highQuality = false } = {}) {
 
   return (
     <div className="app">
-      <aside className="sidebar-area">
-        <Sidebar
-          page={page}
-          relations={relations}
-          selectedRelation={selectedRelation}
-          selectedRelationId={selectedRelationId}
-          setSelectedRelationId={setSelectedRelationId}
-          updatePage={updatePage}
-          addRelation={addRelation}
-          updateRelation={updateRelation}
-          removeRelation={removeRelation}
-          saveProject={saveProject}
-          loadProject={loadProject}
-          savePng={savePng}
-          savePngHighQuality={() => savePng({ highQuality:true })}
-          fileInputRef={fileInputRef}
-        />
-      </aside>
+      {/* アプリ名とファイル操作（リセット／JSON／PNG）は上部のヘッダーへ集約。
+          左カラムは「作品の設定」だけに絞っている（AppHeader.jsx参照） */}
+      <AppHeader
+        saveProject={saveProject}
+        loadProject={loadProject}
+        savePng={savePng}
+        savePngHighQuality={() => savePng({ highQuality: true })}
+        resetAll={resetAll}
+        isExporting={isExporting}
+      />
 
-      <main className="preview-area">
-        <Preview
-          page={page}
-          relations={relations}
-          previewRef={previewRef}
-        />
-      </main>
+      <div className="appBody">
+        <aside className="sidebar-area">
+          <Sidebar
+            page={page}
+            relations={relations}
+            selectedRelation={selectedRelation}
+            selectedRelationId={selectedRelationId}
+            setSelectedRelationId={setSelectedRelationId}
+            updatePage={updatePage}
+            addRelation={addRelation}
+            updateRelation={updateRelation}
+            removeRelation={removeRelation}
+          />
+        </aside>
+
+        <main className="preview-area">
+          <Preview
+            page={page}
+            relations={relations}
+            previewRef={previewRef}
+          />
+        </main>
+      </div>
 
       {/* 保存専用（画面には表示しない） */}
       <div
@@ -282,7 +396,6 @@ async function savePng({ highQuality = false } = {}) {
           page={page}
           relations={relations}
           exportPreviewRef={exportPreviewRef}
-          exportMode
         />
       </div>
     </div>

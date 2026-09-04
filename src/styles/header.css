@@ -1,0 +1,343 @@
+/* =====================================================================
+   ヘッダーバー（フェーズ4）
+
+   方針：
+   - アプリ名と、ファイル操作（リセット／JSON／PNG）を画面上部の1本の帯に集約。
+     左カラムからこれらを追い出すことで、左カラムを「作品の設定だけ」にした。
+   - PC幅では「PairCanvas」と「Relationship Sheet」を横並びにして、縦を食わない。
+     狭い画面ではサブタイトルを隠し、ボタンを縮めて1行に収める（フェーズ5）。
+   - 高さは常に固定。スマホでは position:sticky で画面上部に貼り付ける。
+   - 色はサイドバーと同じ紫（#6D5DFC）1色。強調したいPNG保存だけ塗りつぶし、
+     他は白地＋細い枠の控えめなボタンにして、並んでもうるさくならないようにする。
+===================================================================== */
+
+.appHeader{
+
+    flex:none;
+
+    /* スマホ幅では .app が height:auto になりページ全体がスクロールするため、
+       貼り付けておかないとヘッダーが上へ流れて消えてしまう。
+       PC幅では .app が height:100vh でページ自体はスクロールしないので、
+       この指定があっても見た目は変わらない（無害）。 */
+    position:sticky;
+    top:0;
+    z-index:20;
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    gap:20px;
+
+    height:60px;
+
+    padding:0 24px;
+
+    background:#fff;
+
+    border-bottom:1px solid rgba(109,93,252,.14);
+
+    box-shadow:0 2px 20px -16px rgba(60,44,180,.6);
+
+}
+
+/* =====================================
+   ロゴ（PC幅では横並び）
+===================================== */
+
+.appHeader .logo{
+
+    display:flex;
+
+    align-items:baseline;
+
+    gap:12px;
+
+    min-width:0;
+
+}
+
+.appHeader .logo h1{
+
+    margin:0;
+
+    /* フェーズ2で明朝体(Shippori Mincho)にしていたが、デザイン変更前の
+       原本と同じ Limelight に戻した（フェーズ5のフィードバック反映）。
+       Limelight は欧文専用の表示用フォントで、「PairCanvas」の表示だけに使う。
+       日本語を含む文字列をここに入れる場合は sans-serif にフォールバックする。 */
+    font-family:"Limelight", sans-serif;
+    font-size:21px;
+    font-weight:700;
+
+    color:#4c3ce0;
+
+    letter-spacing:.02em;
+
+    white-space:nowrap;
+
+}
+
+.appHeader .logo p{
+
+    margin:0;
+
+    color:#8a7f9c;
+
+    font-size:10px;
+    letter-spacing:.14em;
+
+    white-space:nowrap;
+
+}
+
+/* =====================================
+   ボタン群
+===================================== */
+
+.headerActions{
+
+    display:flex;
+
+    align-items:center;
+
+    flex-wrap:wrap;
+
+    justify-content:flex-end;
+
+    gap:8px;
+
+}
+
+.headerButton{
+
+    display:inline-flex;
+
+    align-items:center;
+    justify-content:center;
+
+    height:34px;
+
+    padding:0 15px;
+
+    border:1px solid rgba(109,93,252,.3);
+    border-radius:999px;
+
+    background:#fff;
+
+    color:#5b51c9;
+
+    font-family:inherit;
+    font-size:12px;
+    font-weight:600;
+
+    white-space:nowrap;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+}
+
+.headerButton:hover{
+
+    border-color:#6D5DFC;
+
+    background:rgba(109,93,252,.06);
+
+}
+
+/* 主役（PNG保存）だけ塗りつぶし */
+
+.headerButton.primary{
+
+    border-color:#6D5DFC;
+
+    background:#6D5DFC;
+
+    color:#fff;
+
+    box-shadow:0 8px 18px -12px rgba(109,93,252,.85);
+
+}
+
+.headerButton.primary:hover{
+
+    background:#5d4ef2;
+
+}
+
+/* リセットは押し間違えると困るので、いちばん目立たない見た目にする */
+
+.headerButton.quiet{
+
+    border-color:transparent;
+
+    background:transparent;
+
+    color:#9a93a8;
+
+    font-weight:500;
+
+}
+
+.headerButton.quiet:hover{
+
+    border-color:transparent;
+
+    background:rgba(109,93,252,.07);
+
+    color:#6b6478;
+
+}
+
+.headerButton:disabled{
+
+    opacity:.45;
+
+    cursor:not-allowed;
+
+    box-shadow:none;
+
+}
+
+/* ---------- ボタンのラベル（広い画面／狭い画面の出し分け） ----------
+   広い画面ではフルの名称、480px以下では短縮名を表示する。
+   詳しい理由は AppHeader.jsx のコメントを参照。 */
+
+.headerButton .labelShort{
+
+    display:none;
+
+}
+
+/* <label>をボタンに見せている「JSON読込」用 */
+
+.headerButton.importButton{
+
+    text-decoration:none;
+
+    margin:0;
+
+}
+
+/* =====================================
+   狭い画面（フェーズ5で全面的に見直し）
+
+   以前は height:auto ＋ flex-wrap で2段組みにしていたため、
+   375px幅ではヘッダーだけで 144.5px（PC幅の60pxの2.4倍）を占め、
+   ボタンも36px高と大きすぎた。
+   今は「高さを固定した1行のバー」に統一し、ロゴとボタンを縮めて
+   その中に収めている。
+===================================== */
+
+@media (max-width:768px){
+
+    .appHeader{
+
+        /* 高さ固定。折り返しは禁止（折り返すと高さが変わってしまう） */
+        height:52px;
+
+        flex-wrap:nowrap;
+
+        padding:0 12px;
+
+        gap:8px;
+
+    }
+
+    .appHeader .logo h1{
+
+        font-size:16px;
+
+    }
+
+    /* サブタイトルまで出すと横幅が足りなくなるので、
+       この幅からは隠す（以前は480px以下だった） */
+    .appHeader .logo p{
+
+        display:none;
+
+    }
+
+    .headerActions{
+
+        /* グリッドでの2段組みをやめ、1行のflexに戻す */
+        display:flex;
+
+        flex-wrap:nowrap;
+
+        gap:5px;
+
+    }
+
+    .headerButton{
+
+        height:30px;
+
+        padding:0 10px;
+
+        font-size:11px;
+
+    }
+
+}
+
+/* =====================================
+   さらに狭い画面（スマホ実機の主な幅）
+   フルのラベルのままでは5つのボタンが1行に収まらないので短縮名に切り替える。
+   （aria-label / title はフルの名称のままなので意味は失われない）
+===================================== */
+
+@media (max-width:480px){
+
+    .appHeader{
+
+        padding:0 10px;
+
+        gap:6px;
+
+    }
+
+    .appHeader .logo h1{
+
+        font-size:15px;
+
+    }
+
+    .headerActions{
+
+        gap:4px;
+
+    }
+
+    .headerButton{
+
+        padding:0 8px;
+
+        font-size:10.5px;
+
+    }
+
+    .headerButton .labelFull{
+
+        display:none;
+
+    }
+
+    .headerButton .labelShort{
+
+        display:inline;
+
+    }
+
+    /* リセットは「↺」1文字になるので、円形に近い見た目にして
+       他のボタンと区別が付くようにする */
+    .headerButton.quiet .labelShort{
+
+        font-size:15px;
+
+        line-height:1;
+
+    }
+
+}

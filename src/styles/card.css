@@ -1,3 +1,29 @@
+/* =====================================================================
+   カードデザイン（フェーズ2：デザイン調整）
+
+   方針：
+   - カード自体の色（背景色・文字色）はページ設定でユーザーが自由に選べる
+     仕様なので、ここでは特定の色を強く焼き込まない（紫のアクセントカラーは
+     サイドバーなど「アプリ自身のUI」側にだけ使い、書き出される絵の中には
+     持ち込まない）。
+   - 「枠で囲っている感じ」をなくす：カード外枠は罫線をやめて影だけに、
+     キャラクター画像は縁取りをやめて下端を紙の色へ溶かす。
+   - 名前・関係性ラベル・プロット名は、ユーザーが自由な画像や背景色を選べる
+     以上コントラストを保証する必要があるため、暗色スクリム（半透明の黒）は
+     そのまま維持する。
+     ただし形はピル形（border-radius:999px）ではなく、デザイン変更前と同じ
+     「角丸の四角」に戻している（フェーズ4のフィードバック反映）。
+     角丸の値：名前=8px／関係性ラベル=12px／プロット名=12px。
+
+     【関係性ラベルだけ元実装の18pxにしていない理由】
+     border-radius は「高さの半分」を超えると、それ以上は丸くならず頭打ちになる。
+     関係性ラベルは1行だと高さが約31px＝半分が約15.5pxなので、元実装の18pxを
+     指定しても実際には15.5pxに丸められ、ピル形(999px)とまったく同じ見た目に
+     なってしまう（＝角丸四角に戻したことにならない）。
+     そのため、確実に「角丸の四角」に見える12pxにしている。
+     元実装の値に厳密に戻したい場合はここを18pxにする。
+===================================================================== */
+
 .relation-card{
 
     width:100%;
@@ -9,10 +35,13 @@
 
     padding:24px;
 
+    /* キャプチャで確認したとおり、白いカードが色付きの紙の上に乗る見え方は
+       そのまま維持する（不透明の白＝ページの背景色に関わらず同じ見た目になる） */
     background:#fcfcfc;
 
-    border:1px solid #ececec;
-    border-radius:22px;
+    border-radius:26px;
+
+    box-shadow:0 18px 40px -28px rgba(20,17,24,.45);
 
 }
 .relation-card.small{
@@ -55,15 +84,17 @@
 
 /* ===========================
    画像
+   「枠に写真を収めている」感じを出さないよう、縁取り・リングは使わず、
+   下端だけをふわっと透明にして紙の色へ馴染ませている。
 =========================== */
 
 .imageBox {
 
     position: relative;
 
-    background: #efefef;
+    background: rgba(0,0,0,.05);
 
-    border-radius: 18px;
+    border-radius: 20px;
 
     overflow: hidden;
 
@@ -121,6 +152,62 @@
     width:150px;
 
 }
+
+/* ===========================
+   左右の写真サイズ比率（「おまけ」機能）
+   RelationAccordion.jsx の「▼ レイアウト（おまけ）」で選ぶと、
+   .character に ratioBig / ratioSmall のどちらかが付く。
+   縦横比は変えず、大きさだけ一定倍率（1.2倍／0.8倍）で拡大縮小している
+   （縦横比を変えると、位置調整モーダルのクロップ枠とズレてしまうため）。
+=========================== */
+
+/* ---- Large（1.2倍 / 0.8倍） ---- */
+.relation-card.large .character.ratioBig .imageBox{
+    width:384px;
+    height:336px;
+}
+.relation-card.large .character.ratioBig .subInfo{
+    width:384px;
+}
+.relation-card.large .character.ratioSmall .imageBox{
+    width:256px;
+    height:224px;
+}
+.relation-card.large .character.ratioSmall .subInfo{
+    width:256px;
+}
+
+/* ---- Medium（1.2倍 / 0.8倍） ---- */
+.relation-card.medium .character.ratioBig .imageBox{
+    width:384px;
+    height:384px;
+}
+.relation-card.medium .character.ratioBig .subInfo{
+    width:384px;
+}
+.relation-card.medium .character.ratioSmall .imageBox{
+    width:256px;
+    height:256px;
+}
+.relation-card.medium .character.ratioSmall .subInfo{
+    width:256px;
+}
+
+/* ---- Small（1.2倍 / 0.8倍） ---- */
+.relation-card.small .character.ratioBig .imageBox{
+    width:180px;
+    height:240px;
+}
+.relation-card.small .character.ratioBig .subInfo{
+    width:180px;
+}
+.relation-card.small .character.ratioSmall .imageBox{
+    width:120px;
+    height:160px;
+}
+.relation-card.small .character.ratioSmall .subInfo{
+    width:120px;
+}
 .cardImage{
 
     width:100%;
@@ -129,6 +216,10 @@
     object-fit:cover;
 
     display:block;
+
+    /* 下端をマスクで透明にフェードさせ、紙の背景と地続きに見せる */
+    -webkit-mask-image:linear-gradient(to bottom, black 82%, transparent 100%);
+    mask-image:linear-gradient(to bottom, black 82%, transparent 100%);
 
 }
 
@@ -144,7 +235,7 @@
 
     color:#999;
 
-    background:#efefef;
+    background:rgba(0,0,0,.04);
 
     font-size:14px;
 
@@ -152,6 +243,8 @@
 
 /* ===========================
    名前帯
+   コントラストを保証する必要があるため、暗色スクリムのまま維持。
+   形は元実装と同じ角丸四角（8px）。
 =========================== */
 
 .nameOverlay {
@@ -165,7 +258,7 @@
     width:fit-content;
     max-width:85%;
 
-    background:rgba(0,0,0,.65);
+    background:rgba(15,13,18,.68);
     backdrop-filter:blur(6px);
 
     color:#fff;
@@ -176,6 +269,8 @@
     overflow:hidden;
     text-overflow:ellipsis;
 
+    border-radius:8px;
+
 }
 
 .nameOverlay.left {
@@ -184,8 +279,6 @@
 
     text-align: left;
 
-    border-radius: 8px;
-
 }
 
 .nameOverlay.right {
@@ -193,8 +286,6 @@
     right: 8px;
 
     text-align: right;
-
-    border-radius: 8px;
 
 }
 
@@ -222,7 +313,8 @@
 }
 
 /* ===========================
-   中央
+   中央：関係性ラベル／矢印／下段ラベル
+   1つの枠で囲わず、ラベルだけが独立したチップを持つ（矢印はプレーン表示）。
 =========================== */
 
 .relationCenter{
@@ -260,11 +352,11 @@
 
     padding: 8px 18px;
 
-    background: rgba(0,0,0,.65);
+    background: rgba(15,13,18,.68);
 
     backdrop-filter: blur(6px);
 
-    border-radius: 18px;
+    border-radius: 12px;
 
     color:#fff;
 
@@ -272,7 +364,7 @@
     font-weight:400;
 
     text-align:center;
-    
+
     white-space:pre-wrap;
     overflow-wrap: normal;
     word-break: keep-all;
@@ -285,6 +377,12 @@
 
 }
 
+.relationLabelSub{
+
+    font-size:15px;
+
+}
+
 .arrow {
 
     font-size: 30px;
@@ -292,6 +390,11 @@
     font-weight: bold;
 
     color: #666;
+
+    /* ユーザーが選んだ背景色がどんな色でも視認できるよう、薄い白のにじみを添える */
+    text-shadow:
+        0 1px 8px rgba(255,255,255,.85),
+        0 0 14px rgba(255,255,255,.5);
 
 }
 
@@ -307,7 +410,7 @@
 
     text-align: center;
 
-    background: rgba(0,0,0,.7);
+    background: rgba(15,13,18,.72);
 
     border-radius: 12px;
 
@@ -333,74 +436,12 @@
 }
 
 /* ===========================
-   スマホ対応
+   画像
+   プレビューは表示専用なので、ブラウザ標準の「画像をドラッグしてコピー/移動」
+   だけ止めておく（Safari向け。Chrome等はJSX側のdraggable={false}で対応済み）。
 =========================== */
-@media(max-width:600px){
 
-.paper:not(.export-pc) .characterArea{
-
-    grid-template-columns:1fr;
-    gap: 16px;
+.cardImage{
+    -webkit-user-drag:none;
+    user-select:none;
 }
-
-.paper:not(.export-pc) .relationCenter{
-
-    order:2;
-    margin: 12px 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-
-}
-
-.paper:not(.export-pc) .character:first-child{
-
-    order:1;
-
-}
-
-.paper:not(.export-pc) .character:last-child{
-
-    order:3;
-
-}
-
-.paper:not(.export-pc) .imageBox{
-
-    width:100% !important;
-    max-width:320px;
-
-    height:auto !important;
-    aspect-ratio:320 / 280;
-
-}
-
-.paper:not(.export-pc) .cardImage{
-
-    width:100%;
-    height:100%;
-
-    object-fit:cover;
-
-}
-
-.paper:not(.export-pc) .subInfo,
-.paper:not(.export-pc) .subInfo.right{
-
-    width:100%;
-    max-width:320px;
-
-    text-align:center;
-
-}
-
-}
-/*.export-pc .relation-card.small .characterArea{
-    outline:2px solid red;
-}
-
-.export-pc .relation-card.small .character{
-    outline:2px solid blue;
-} */
