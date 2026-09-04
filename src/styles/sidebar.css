@@ -115,7 +115,14 @@
 
 }
 
-.checkboxInline{
+/* 【重要】セレクタを .titleRow .checkboxInline にしてあるのは、詳細度を
+   .panel label より高くするため。
+   .panel label には margin-bottom:14px が付いており、単に .checkboxInline
+   （詳細度 0,1,0）で margin:0 と書いても .panel label（詳細度 0,1,1）に
+   負けて効かない。その結果チェックボックスの下に14pxの余白が残ったまま
+   .titleRow の align-items:center で中央揃えされ、入力欄に対して
+   ちょうど余白の半分＝7px 上にずれていた（フェーズ5で修正）。 */
+.titleRow .checkboxInline{
 
     display:flex;
 
