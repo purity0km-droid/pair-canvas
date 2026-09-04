@@ -15,6 +15,21 @@ export default function RelationAccordion({
   // （判定ロジックは RelationSheet.jsx と揃えるため utils/relationLayout.js に集約）
   const layout = getRelationLayout(totalCount, index);
   const imageAspect = LAYOUT_IMAGE_ASPECT[layout];
+
+  // 左右のキャラクター設定（画像・名前・補足・画像の位置調整）をまとめて入れ替える。
+  // 4つのフィールドを個別にupdateRelationしているが、どれも「入れ替え前」の
+  // relationの値を参照しているので、呼び出し順に関わらず正しく入れ替わる。
+  function swapSides() {
+    updateRelation(relation.id, "leftImage", relation.rightImage);
+    updateRelation(relation.id, "rightImage", relation.leftImage);
+    updateRelation(relation.id, "leftImageTransform", relation.rightImageTransform);
+    updateRelation(relation.id, "rightImageTransform", relation.leftImageTransform);
+    updateRelation(relation.id, "leftName", relation.rightName);
+    updateRelation(relation.id, "rightName", relation.leftName);
+    updateRelation(relation.id, "leftSub", relation.rightSub);
+    updateRelation(relation.id, "rightSub", relation.leftSub);
+  }
+
   return (
     <section className="panel">
 
@@ -50,6 +65,14 @@ export default function RelationAccordion({
       {isOpen && (
 
         <div className="accordionBody">
+
+          <button
+            type="button"
+            className="swapSidesButton"
+            onClick={swapSides}
+          >
+            ⇄ 左右を入れ替え
+          </button>
 
           {/* 左画像 */}
           <label>

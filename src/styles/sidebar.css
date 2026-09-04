@@ -438,6 +438,40 @@ input[type="color"]{
 
 }
 
+/* 左右のキャラクター設定(画像・名前・補足)をまとめて入れ替えるボタン */
+.swapSidesButton{
+
+    display:block;
+
+    width:100%;
+
+    margin-bottom:18px;
+
+    padding:8px 14px;
+
+    border:1px solid #ddd;
+    border-radius:10px;
+
+    background:#fff;
+
+    color:#666;
+
+    font-size:13px;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+}
+
+.swapSidesButton:hover{
+
+    border-color:#6D5DFC;
+
+    color:#6D5DFC;
+
+}
+
 .deleteButton{
 
     margin-top:24px;
