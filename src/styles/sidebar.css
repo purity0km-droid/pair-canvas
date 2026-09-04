@@ -480,8 +480,8 @@ input[type="color"]{
 
     margin-bottom:18px;
 
-    border:1px solid #eee;
-    border-radius:10px;
+    border:1px solid rgba(109,93,252,.14);
+    border-radius:12px;
 
     padding:10px 14px;
 
@@ -493,7 +493,7 @@ input[type="color"]{
 
     font-size:12px;
 
-    color:#888;
+    color:#8a7f9c;
 
     user-select:none;
 
@@ -528,12 +528,12 @@ input[type="color"]{
 
     padding:7px 8px;
 
-    border:1px solid #ddd;
-    border-radius:8px;
+    border:none;
+    border-radius:999px;
 
-    background:#fff;
+    background:rgba(109,93,252,.06);
 
-    color:#666;
+    color:#6b6478;
 
     font-size:12px;
 
@@ -545,7 +545,7 @@ input[type="color"]{
 
 .imageRatioButton:hover{
 
-    border-color:#6D5DFC;
+    background:rgba(109,93,252,.14);
 
     color:#6D5DFC;
 
