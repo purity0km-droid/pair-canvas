@@ -61,12 +61,18 @@
 
 }
 
+/* 左カラムの文字サイズは以下の3段だけに揃えている（フェーズ5）。
+     14px … 見出し（.panel h2）／編集ボックスのタイトル（.accordionTitle）
+     13px … 入力欄の中身
+     12px … 補助情報（項目名 .panel span／帯の中の要約・関係性）
+   ここを増やすと「同じ階層なのに大きさが違う」箇所が生まれるので、
+   新しい文字を足すときは上のどれかに合わせること。 */
 .panel h2{
 
     margin:0 0 16px;
 
     /* font-family は指定しない＝bodyのNoto Sans JPを継承（フェーズ5で明朝体をやめた） */
-    font-size:16px;
+    font-size:14px;
     font-weight:700;
 
 }
@@ -230,11 +236,15 @@
 }
 
 /* ---------- カラー＋フォント ----------
-   フェーズ5で、背景色・文字色・フォントを1行にまとめた。
-   色見本は「今の色が分かれば十分」なので幅を固定し（下の .colorField）、
-   フォント名は長いもの（Zen Maru Gothic など）があるので、
-   残りの幅を全部フォント選択欄に渡している（.fontField を flex:1）。
-   窮屈に感じる場合は .fontField を .colorRow の外へ出して独立した行に戻す。 */
+   背景色・文字色・フォントを1行に並べる。
+
+   【カラーコード欄の置き方】
+   カラーコードの入力欄は色見本の「下」に重ねて置き、行の横幅を増やして
+   いない。横に並べると1行に3つ入らなくなり、フォント名（いちばん長い
+   「Zen Maru Gothic」）が切れてしまうため。
+   文字を小さめの等幅にして、色見本と同じ幅（62px）に "#6d5dfc" の
+   7文字が収まるようにしてある。ここの幅や文字サイズを変えるときは、
+   7文字が切れないか必ず確認すること。 */
 
 .colorRow{
 
@@ -261,9 +271,50 @@
 
 .colorRow .colorField{
 
-    /* 色見本は中身が「色」だけなので、名前の長さに左右されない固定幅でよい */
+    /* 色見本は中身が「色」だけなので、名前の長さに左右されない固定幅でよい。
+       ただし下に置くカラーコード欄が "#6d5dfc" の7文字ぶん必要なので、
+       フェーズ5で 62px → 68px に少しだけ広げている。 */
     flex:none;
-    width:62px;
+    width:68px;
+
+    /* .panel label の縦並び（項目名 → 色見本 → カラーコード欄）をそのまま使い、
+       色見本とカラーコード欄の間だけ詰める */
+    gap:4px;
+
+}
+
+/* カラーコードの直接入力欄（色見本のすぐ下）。
+
+   【セレクタを .panel .colorRow .colorCode にしている理由】
+   打ち消したい相手は上の
+
+       .panel input[type="text"], .panel textarea, .panel select
+
+   だが、この詳細度は 0,2,1 である。
+   属性セレクタ [type="text"] はクラスと同じ重みで数えるため、
+   「クラス1（.panel）＋属性1（[type=...]）＋要素1（input）」となり、
+   .colorRow .colorCode（0,2,0）では負けてしまう
+   （実際に負けており、font-size も padding も効いていなかった）。
+   クラス3つの 0,3,0 にして確実に勝たせている。 */
+.panel .colorRow .colorCode{
+
+    width:100%;
+
+    padding:3px 2px;
+
+    border-radius:6px;
+
+    text-align:center;
+
+    /* 68px幅に "#6d5dfc"（7文字）を収めるための大きさ。
+       等幅フォントなので、だいたい 11px × 0.6 × 7文字 ＝ 46px。
+       ここを大きくするときは .colorField の width も一緒に広げること
+       （広げすぎるとフォント選択欄が痩せてフォント名が切れる）。 */
+    font-size:11px;
+
+    font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+    letter-spacing:0;
 
 }
 
@@ -273,6 +324,10 @@
        select の既定の最小幅にflexが負けて行からはみ出す */
     flex:1;
     min-width:0;
+
+    /* 色見本の側はカラーコード欄のぶん背が高くなるが、フォント選択欄は
+       上端（項目名の行）で揃っていれば十分なので、下は伸ばさない */
+    align-self:flex-start;
 
 }
 
@@ -422,6 +477,21 @@ input[type="color"]{
     margin-top:6px;
 
     color:rgba(255,255,255,.88);
+
+    font-size:12px;
+
+}
+
+/* 帯の中に出す「関係性」の内容。
+   これまでCSSの指定が無く .sidebar の 14px をそのまま継いでいたため、
+   すぐ上の要約（.accordionSummary＝12px）と大きさが揃っていなかった。
+   同じ補助情報の段として 12px に統一する（フェーズ5）。
+   要約より一段大事な情報なので、色だけ少し強くしている。 */
+.accordionRelation{
+
+    margin-top:4px;
+
+    color:rgba(255,255,255,.96);
 
     font-size:12px;
 
