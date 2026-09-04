@@ -217,9 +217,13 @@
 
     display:block;
 
-    /* 下端をマスクで透明にフェードさせ、紙の背景と地続きに見せる */
-    -webkit-mask-image:linear-gradient(to bottom, black 82%, transparent 100%);
-    mask-image:linear-gradient(to bottom, black 82%, transparent 100%);
+    /* 【フェーズ5で廃止】以前はここで下端をマスクして透明にフェードさせ、
+       紙の背景と地続きに見せていた（フェーズ2の「フレームレス化」）。
+       ただし写真の下の方が白く飛んで見えるため無効にした。
+       今は画像枠(.imageBox)の角丸で切り取るだけで、写真はそのまま出る。
+       フェードを戻したい場合はここに
+         mask-image:linear-gradient(to bottom, black 82%, transparent 100%);
+       を書き足す（-webkit- 付きも併記すること）。 */
 
 }
 
@@ -377,9 +381,12 @@
 
 }
 
+/* 矢印の下の段。以前だけ15pxで、名前帯（.nameOverlay＝13px）や
+   矢印の上の段（.relationLabel＝13px）と大きさが揃っていなかったため、
+   フェーズ5で13pxに合わせた（上下2段が同じ大きさで並ぶ）。 */
 .relationLabelSub{
 
-    font-size:15px;
+    font-size:13px;
 
 }
 

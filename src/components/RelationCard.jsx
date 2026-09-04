@@ -80,14 +80,20 @@ export default function RelationCard({ relation, layout = "small" }) {
 
         </div>
 
-        {/* 中央：関係性ラベル＋矢印（＋任意で下段のラベル） */}
+        {/* 中央：関係性ラベル（矢印の上・下とも任意）＋矢印
+            上段・下段とも、入力が空ならラベル自体を出さない（フェーズ5）。
+            以前は上段だけ空のときに「関係性」という文字を仮表示していたが、
+            未入力の見本がそのまま書き出されてしまうため廃止した。
+            両方とも空なら、中央には矢印だけが残る。 */}
         <div className="relationCenter">
 
           <div className="relationOverlay">
 
-            <div className="relationLabel">
-              {relation.relation || "関係性"}
-            </div>
+            {relation.relation && (
+              <div className="relationLabel">
+                {relation.relation}
+              </div>
+            )}
 
             <div className="arrow">
               ⇄
