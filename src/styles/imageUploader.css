@@ -88,9 +88,12 @@
 
 }
 /* ==========================
-   クロップ枠(Xのアイコン設定のような、範囲表示＋位置調整UI)
+   画像設定済みのとき：サイドバーに出す静止サムネイル
+   （ここは常時ドラッグ可能にはしない。スマホでサイドバーをスクロール
+   　しようとした指を誤って拾ってしまう＝誤操作の原因になるため。
+   　実際のドラッグ・拡大操作は下の「位置調整モーダル」でだけ行う）
 ========================== */
-.cropWrap{
+.imageSummary{
 
     display:flex;
     flex-direction:column;
@@ -100,11 +103,12 @@
 
 }
 
-.cropStage{
+.imageThumb{
 
     position:relative;
 
-    margin:0 auto;
+    width:100%;
+    max-width:220px;
 
     overflow:hidden;
 
@@ -112,58 +116,19 @@
 
     background:#1a1a1a;
 
-    cursor:grab;
-
-    touch-action:none; /* ドラッグ中にスマホの画面スクロールが起きないようにする */
-
-    border:2px dashed transparent;
-
-    transition:border-color .2s;
-
 }
 
-.cropStage:active{
+.imageThumbImg{
 
-    cursor:grabbing;
+    width:100%;
+    height:100%;
 
-}
+    object-fit:cover;
 
-/* 新しい画像をドラッグ＆ドロップで差し替えようとしているとき */
-.cropStage.dragging{
+    display:block;
 
-    border-color:#6D5DFC;
-
-}
-
-.cropImage{
-
-    position:absolute;
-
-    /* ブラウザ標準の「画像をドラッグしてコピー/移動」動作を止める */
     -webkit-user-drag:none;
     user-select:none;
-
-    /* ドラッグはcropStage側で受け取るので、img自体はイベントを拾わない */
-    pointer-events:none;
-
-}
-
-/* 実際に切り取られる範囲。box-shadowをステージより十分大きく広げることで
-   「枠の外側だけが暗く見える」状態を作っている（枠の中はそのまま素通し）。 */
-.cropFrame{
-
-    position:absolute;
-
-    top:50%;
-    left:50%;
-
-    transform:translate(-50%,-50%);
-
-    border:2px solid #fff;
-    border-radius:6px;
-
-    box-shadow:0 0 0 2000px rgba(0,0,0,.55);
-
     pointer-events:none;
 
 }
@@ -171,6 +136,8 @@
 .cropToolbar{
 
     display:flex;
+
+    flex-wrap:wrap;
 
     gap:8px;
 
@@ -203,11 +170,175 @@
 
 }
 
+.cropIconButton.primary{
+
+    border-color:#6D5DFC;
+
+    background:#6D5DFC;
+
+    color:#fff;
+
+}
+
+.cropIconButton.primary:hover{
+
+    filter:brightness(.95);
+
+}
+
 .cropIconButton.danger:hover{
 
     border-color:#ff4b5c;
 
     color:#ff4b5c;
+
+}
+
+/* ==========================
+   位置調整モーダル
+   Xのアイコン設定のように、画面いっぱいを使って大きく表示し、
+   ここでだけドラッグ・拡大縮小を受け付ける。
+========================== */
+.cropModalBackdrop{
+
+    position:fixed;
+    inset:0;
+
+    background:rgba(0,0,0,.6);
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    padding:20px;
+
+    z-index:1000;
+
+}
+
+.cropModal{
+
+    width:100%;
+    max-width:360px;
+
+    background:#fff;
+
+    border-radius:20px;
+
+    padding:20px;
+
+    display:flex;
+    flex-direction:column;
+
+    gap:16px;
+
+    box-shadow:0 20px 60px rgba(0,0,0,.3);
+
+}
+
+.cropModalHeader{
+
+    display:flex;
+
+    justify-content:space-between;
+    align-items:center;
+
+    font-size:14px;
+    font-weight:700;
+
+}
+
+.cropModalClose{
+
+    width:28px;
+    height:28px;
+
+    border:none;
+    border-radius:50%;
+
+    background:#f0f0f0;
+
+    color:#666;
+
+    cursor:pointer;
+
+    font-size:14px;
+
+}
+
+.cropModalClose:hover{
+
+    background:#e6e6e6;
+
+}
+
+.cropModalFrame{
+
+    position:relative;
+
+    width:100%;
+
+    margin:0 auto;
+
+    overflow:hidden;
+
+    border-radius:12px;
+
+    background:#1a1a1a;
+
+    cursor:grab;
+
+    touch-action:none; /* ドラッグ中にスマホの画面スクロールが起きないようにする */
+
+}
+
+.cropModalFrame:active{
+
+    cursor:grabbing;
+
+}
+
+.cropModalImage{
+
+    width:100%;
+    height:100%;
+
+    object-fit:cover;
+
+    display:block;
+
+    /* ブラウザ標準の「画像をドラッグしてコピー/移動」動作を止める */
+    -webkit-user-drag:none;
+    user-select:none;
+
+    /* ドラッグはcropModalFrame側で受け取るので、img自体はイベントを拾わない */
+    pointer-events:none;
+
+}
+
+.cropModalDone{
+
+    width:100%;
+
+    padding:12px;
+
+    border:none;
+    border-radius:999px;
+
+    background:#6D5DFC;
+
+    color:#fff;
+
+    font-size:14px;
+    font-weight:700;
+
+    cursor:pointer;
+
+}
+
+.cropModalDone:hover{
+
+    filter:brightness(.95);
 
 }
 
