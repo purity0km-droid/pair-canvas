@@ -13,6 +13,10 @@ const ZOOM_MIN = 1;
 const ZOOM_MAX = 3;
 const ZOOM_STEP = 0.5;
 
+// ズーム操作を出す画面幅の上限（px）。
+// app.css / sidebar.css / header.css の縦積み切り替えと必ず同じ値にすること。
+const NARROW_MAX_WIDTH = 768;
+
 export default function Preview({ page, relations, previewRef }) {
   const outerRef = useRef(null);
   const innerRef = useRef(null);
@@ -41,14 +45,43 @@ export default function Preview({ page, relations, previewRef }) {
   // -----------------------------------------------------------------
   const [zoom, setZoom] = useState(1);
 
-  const scale = fitScale * zoom;
+  // 画面が狭いかどうか（スマホ幅かどうか）。
+  //
+  // 【なぜ縮小率ではなく画面幅で判定するのか】
+  // フェーズ5の最初の実装では「縮小率が0.95未満なら操作列を出す」としていたが、
+  // それだとPCでもウィンドウが少し狭いだけで操作列が出てしまい、
+  // 「PCではプレビューの大きさを触らせたくない」という意図と合わなかった。
+  // 今はスマホ幅のときだけ出す。
+  //
+  // 【判定を matchMedia のイベントではなく ResizeObserver で行う理由】
+  // 当初は matchMedia の change イベント（＋保険のresize）で切り替えていたが、
+  // ブラウザの検証ツールで「スマホ表示」に切り替えたとき、環境によっては
+  // そのどちらのイベントも発火しないことが分かった。その場合、
+  //   ・スマホ表示にしたのにズーム操作列が出てこない
+  //   ・PC表示に戻したのに拡大したままで、戻す操作列も無い
+  // という状態が残ってしまう。
+  // 下の update()（ResizeObserverから呼ばれる）はレイアウトが変わると
+  // 確実に走るので、そこで一緒に画面幅を見て判定している。
+  const [isNarrow, setIsNarrow] = useState(false);
 
-  // 縮小表示になっていない（＝ほぼ実寸で見えている）ときは拡大する意味が
-  // 無いので、操作列そのものを出さない。
-  // 逆に言うと、PC幅でもウィンドウが狭くてプレビューが縮んでいるときは
-  // 表示される（例：ウィンドウ1280px → 縮小率0.75で表示される）。
-  // スマホでだけ出したい場合は、この条件を画面幅で判定する形に変える。
-  const showZoomControls = fitScale < 0.95;
+  // 【重要】PC幅では zoom を常に1として扱う。
+  // ブラウザの検証ツールでスマホ表示にして拡大したあとPC表示に戻すと、
+  // 操作列だけが消えて倍率が残り、「戻す手段が無いのに拡大されたまま」に
+  // なっていた（プレビューが画面からはみ出す）。
+  const effectiveZoom = isNarrow ? zoom : 1;
+
+  const scale = fitScale * effectiveZoom;
+
+  // 幅の区分（スマホ⇔PC）がまたいだ瞬間に倍率を等倍へ戻す。
+  // useEffectでsetStateすると描画が1回余分に走るため、Reactが推奨している
+  // 「描画中に前回値と比べて調整する」書き方にしている。
+  const [prevIsNarrow, setPrevIsNarrow] = useState(isNarrow);
+  if (prevIsNarrow !== isNarrow) {
+    setPrevIsNarrow(isNarrow);
+    setZoom(1);
+  }
+
+  const showZoomControls = isNarrow;
 
   // -----------------------------------------------------------------
   // 入力中のプレビューを「常に書き出し画像と同じ配置」で見せるための処理。
@@ -87,6 +120,10 @@ export default function Preview({ page, relations, previewRef }) {
       const width = base.clientWidth;
       setFitScale(width > 0 ? width / DESIGN_WIDTH : 1);
       setNaturalHeight(inner.scrollHeight);
+
+      // スマホ幅かどうかもここで判定する（上のコメント参照）。
+      // 同じ値なら React は再描画しないので、呼びっぱなしで問題ない。
+      setIsNarrow(window.innerWidth <= NARROW_MAX_WIDTH);
     };
 
     update();
@@ -95,7 +132,15 @@ export default function Preview({ page, relations, previewRef }) {
     ro.observe(outer.parentElement ?? outer);
     ro.observe(inner);
 
-    return () => ro.disconnect();
+    // ResizeObserverは「観測している要素の大きさが変わったとき」しか走らない。
+    // 要素の幅が変わらないままウィンドウ幅だけが768pxをまたぐことは考えにくいが、
+    // 取りこぼすと戻せなくなる種類の状態なので、保険でresizeも見ておく。
+    window.addEventListener("resize", update);
+
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", update);
+    };
     // page/relations が変わるたび（文章が伸びる等）に高さを測り直す
   }, [page, relations]);
 
@@ -179,6 +224,15 @@ export default function Preview({ page, relations, previewRef }) {
           </div>
         </div>
       </div>
+
+      {/* 取り扱いの明示。
+          写真をアップロードする画面なので、「どこかへ送られるのでは」という
+          不安を持たれやすい。実際の処理はすべてブラウザの中で完結しており
+          （下書きの保存先もこの端末のlocalStorageだけ）、サーバーへは
+          何も送っていないので、その旨をプレビューの下に常時出しておく。 */}
+      <p className="privacyNote">
+        画像はこの端末のブラウザの中だけで処理されます。サーバーへの保存・送信は行いません。
+      </p>
 
     </div>
   );
