@@ -3,6 +3,7 @@ import * as htmlToImage from "html-to-image";
 
 import "./styles/app.css";
 
+import AppHeader from "./components/AppHeader";
 import Sidebar from "./components/Sidebar";
 import Preview from "./components/Preview";
 import ExportPreview from "./components/ExportPreview";
@@ -208,6 +209,32 @@ function App() {
   }
 
   // -----------------------------------------------------------------
+  // 全部リセット
+  //
+  // 入力内容はlocalStorageに自動保存されているため、「まっさらな状態から
+  // やり直したい」ときは下書きごと消す必要がある。取り消しはできないので、
+  // 必ず確認ダイアログを挟む。
+  // -----------------------------------------------------------------
+  function resetAll() {
+    const ok = window.confirm(
+      "入力内容をすべて消して、最初の状態に戻します。よろしいですか？（この操作は取り消せません）"
+    );
+    if (!ok) return;
+
+    try {
+      localStorage.removeItem(DRAFT_STORAGE_KEY);
+    } catch (error) {
+      console.error("下書きの削除に失敗しました:", error);
+    }
+
+    const fresh = createRelation(1);
+
+    setPage(DEFAULT_PAGE);
+    setRelations([fresh]);
+    setSelectedRelationId(fresh.id);
+  }
+
+  // -----------------------------------------------------------------
   // PNG保存（フェーズ3：サファリ問題対応）
   //
   // html-to-image（内部はSVGのforeignObject方式）には、Safari／iOSで
@@ -322,33 +349,40 @@ function App() {
 
   return (
     <div className="app">
-      <aside className="sidebar-area">
-        <Sidebar
-          page={page}
-          relations={relations}
-          selectedRelation={selectedRelation}
-          selectedRelationId={selectedRelationId}
-          setSelectedRelationId={setSelectedRelationId}
-          updatePage={updatePage}
-          addRelation={addRelation}
-          updateRelation={updateRelation}
-          removeRelation={removeRelation}
-          saveProject={saveProject}
-          loadProject={loadProject}
-          savePng={savePng}
-          savePngHighQuality={() => savePng({ highQuality:true })}
-          isExporting={isExporting}
-        />
-      </aside>
+      {/* アプリ名とファイル操作（リセット／JSON／PNG）は上部のヘッダーへ集約。
+          左カラムは「作品の設定」だけに絞っている（AppHeader.jsx参照） */}
+      <AppHeader
+        saveProject={saveProject}
+        loadProject={loadProject}
+        savePng={savePng}
+        savePngHighQuality={() => savePng({ highQuality: true })}
+        resetAll={resetAll}
+        isExporting={isExporting}
+      />
 
-      <main className="preview-area">
-        <Preview
-          page={page}
-          relations={relations}
-          updateRelation={updateRelation}
-          previewRef={previewRef}
-        />
-      </main>
+      <div className="appBody">
+        <aside className="sidebar-area">
+          <Sidebar
+            page={page}
+            relations={relations}
+            selectedRelation={selectedRelation}
+            selectedRelationId={selectedRelationId}
+            setSelectedRelationId={setSelectedRelationId}
+            updatePage={updatePage}
+            addRelation={addRelation}
+            updateRelation={updateRelation}
+            removeRelation={removeRelation}
+          />
+        </aside>
+
+        <main className="preview-area">
+          <Preview
+            page={page}
+            relations={relations}
+            previewRef={previewRef}
+          />
+        </main>
+      </div>
 
       {/* 保存専用（画面には表示しない） */}
       <div

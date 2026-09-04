@@ -18,14 +18,29 @@ body {
   color: #2c2c2c;
 }
 
+/* =====================================
+   全体レイアウト（フェーズ4）
+   上：ヘッダーバー（AppHeader.jsx）
+   下：左カラム（設定）＋右（プレビュー）
+   スクロールするのは左カラムと右カラムだけで、ページ全体は動かさない。
+===================================== */
+
 .app {
   display: flex;
+  flex-direction: column;
   height: 100vh;
 }
 
+.appBody {
+  flex: 1;
+  min-height: 0; /* これが無いと子のoverflowが効かず、ページ全体が伸びてしまう */
+  display: flex;
+}
+
 .sidebar-area {
-    width: 460px;
+    width: 400px;
     flex-shrink: 0;
+    min-height: 0;
 }
 
 .preview-area {
@@ -34,11 +49,54 @@ body {
     background: #eef1f7;
 }
 
+/* =====================================
+   スクロールバー
+   左カラムと右カラムの境目にOS標準の太いバーが出ると、
+   そこだけ「継ぎ目」が浮いて見えるため、細い半透明のバーにしている。
+   （Firefox は scrollbar-width / scrollbar-color、
+     Chrome・Edge・Safari は ::-webkit-scrollbar-* が効く）
+===================================== */
+
+.sidebar,
+.preview-area {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(109,93,252,.26) transparent;
+}
+
+.sidebar::-webkit-scrollbar,
+.preview-area::-webkit-scrollbar {
+    width: 10px;
+}
+
+.sidebar::-webkit-scrollbar-track,
+.preview-area::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.sidebar::-webkit-scrollbar-thumb,
+.preview-area::-webkit-scrollbar-thumb {
+    /* 透明のボーダー＋background-clipで、バー本体を細く見せる */
+    background: rgba(109,93,252,.24);
+    border: 3px solid transparent;
+    background-clip: content-box;
+    border-radius: 999px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover,
+.preview-area::-webkit-scrollbar-thumb:hover {
+    background: rgba(109,93,252,.45);
+    background-clip: content-box;
+}
+
 @media (max-width:768px){
 
     .app{
-        flex-direction:column;
         height:auto;
+        min-height:100vh;
+    }
+
+    .appBody{
+        flex-direction:column;
     }
 
     .sidebar-area{

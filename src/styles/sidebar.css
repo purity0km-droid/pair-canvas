@@ -7,14 +7,18 @@
    - 色は紫（#6D5DFC）1色を軸にする。元実装からの意図的な引き継ぎで、
      本家zetaのアプリ内配色（黒基調＋紫）に寄せている。
    - 見出しは明朝体（Shippori Mincho）。単色でも硬くなりすぎないように。
+
+   フェーズ4の調整：
+   - ロゴとファイル操作ボタンをヘッダー(header.css)へ移し、ここは設定だけに。
+   - 色見本・フォント選択・各種ボタンを一回り小さくして、縦の情報量を増やした。
 ===================================================================== */
 
 .sidebar{
 
-    height:100vh;
+    height:100%;
     overflow-y:auto;
 
-    padding:36px 32px;
+    padding:26px 26px 40px;
 
     background:
         radial-gradient(circle at 10% 0%, rgba(109,93,252,.07), transparent 42%),
@@ -31,7 +35,7 @@
 
 .panel{
 
-    padding:24px 2px;
+    padding:20px 2px;
 
     border-top:1px solid rgba(109,93,252,.14);
 
@@ -46,48 +50,11 @@
 
 .panel h2{
 
-    margin:0 0 20px;
+    margin:0 0 16px;
 
     font-family:"Shippori Mincho", serif;
-    font-size:18px;
+    font-size:16px;
     font-weight:700;
-
-}
-
-/* =====================================
-   ロゴ
-===================================== */
-
-.logo{
-
-    margin-bottom:8px;
-
-}
-
-.logo h1{
-
-    margin:0;
-
-    font-size:28px;
-
-    font-family:"Shippori Mincho", serif;
-
-    font-weight:700;
-
-    color:#4c3ce0;
-
-    letter-spacing:.02em;
-
-}
-
-.logo p{
-
-    margin-top:6px;
-
-    color:#8a7f9c;
-
-    font-size:11px;
-    letter-spacing:.12em;
 
 }
 
@@ -102,15 +69,15 @@
 
     flex-direction:column;
 
-    gap:8px;
+    gap:6px;
 
-    margin-bottom:18px;
+    margin-bottom:14px;
 
 }
 
 .panel span{
 
-    font-size:13px;
+    font-size:12px;
     font-weight:500;
     color:#6b6478;
 
@@ -126,7 +93,7 @@
 
     gap:10px;
 
-    margin-bottom:20px;
+    margin-bottom:16px;
 
 }
 .titleRow input[type="text"]{
@@ -162,11 +129,12 @@
    枠線で囲うのをやめ、薄い塗り＋角丸だけにした（すりガラス寄りの軽い質感） */
 
 .panel input[type="text"],
-.panel textarea{
+.panel textarea,
+.panel select{
 
     width:100%;
 
-    padding:11px 14px;
+    padding:9px 12px;
 
     border:none;
 
@@ -176,7 +144,7 @@
 
     background:rgba(109,93,252,.06);
 
-    font-size:14px;
+    font-size:13px;
     font-family:inherit;
 
     resize:vertical;
@@ -186,7 +154,8 @@
 }
 
 .panel input[type="text"]:focus,
-.panel textarea:focus{
+.panel textarea:focus,
+.panel select:focus{
 
     background:rgba(109,93,252,.1);
 
@@ -194,20 +163,32 @@
 
 }
 
-/* ---------- フォント選択プレビュー ---------- */
+/* ---------- フォント選択 ----------
+   選んだフォント自身で表示されるので、下にサンプル表示は出さない
+   （PageSettings.jsx参照）。少しだけ大きめの文字にして見比べやすくしている。 */
 
-.fontPreviewSample{
+.fontSelect{
 
-    margin-top:8px;
+    appearance:none;
+    -webkit-appearance:none;
 
-    padding:10px 12px;
+    height:40px;
 
-    border-radius:12px;
+    /* 右端に自前の▼を描く（OS標準の矢印を消しているため） */
+    background-image:
+        linear-gradient(45deg, transparent 50%, #8a7f9c 50%),
+        linear-gradient(135deg, #8a7f9c 50%, transparent 50%);
+    background-position:
+        calc(100% - 17px) calc(50% + 1px),
+        calc(100% - 12px) calc(50% + 1px);
+    background-size:5px 5px, 5px 5px;
+    background-repeat:no-repeat;
 
-    background:rgba(109,93,252,.06);
+    padding-right:34px;
 
     font-size:15px;
-    color:#3d3d3d;
+
+    cursor:pointer;
 
 }
 
@@ -217,7 +198,7 @@
 
     display:flex;
 
-    gap:16px;
+    gap:12px;
 
 }
 
@@ -227,69 +208,21 @@
 
 }
 
+/* 色見本は「今の色が分かれば十分」なので、フェーズ4で高さを半分以下にした */
 input[type="color"]{
 
     width:100%;
-    height:56px;
+    height:26px;
 
-    padding:4px;
+    padding:2px;
 
     border:none;
 
-    border-radius:12px;
+    border-radius:8px;
 
     background:rgba(109,93,252,.06);
 
     cursor:pointer;
-
-}
-
-/* =====================================
-   メインボタン
-===================================== */
-
-.primaryButton{
-
-    width:100%;
-
-    height:48px;
-
-    border:none;
-
-    border-radius:999px;
-
-    background:#6D5DFC;
-
-    color:#fff;
-
-    font-size:14px;
-    font-weight:600;
-
-    cursor:pointer;
-
-    transition:.2s;
-
-    box-shadow:0 10px 24px -12px rgba(109,93,252,.65);
-
-}
-
-.primaryButton:hover{
-
-    transform:translateY(-2px);
-
-    background:#5d4ef2;
-
-}
-
-.primaryButton:disabled{
-
-    opacity:.45;
-
-    cursor:not-allowed;
-
-    transform:none;
-
-    box-shadow:none;
 
 }
 
@@ -303,16 +236,16 @@ input[type="color"]{
 
     flex-wrap:wrap;
 
-    gap:10px;
+    gap:8px;
 
-    margin:4px 0 22px;
+    margin:0 0 18px;
 
 }
 
 .relationTab{
 
-    width:38px;
-    height:38px;
+    width:34px;
+    height:34px;
 
     padding:0;
 
@@ -381,7 +314,7 @@ input[type="color"]{
 
     width:100%;
 
-    padding:14px 18px;
+    padding:11px 16px;
 
     border:none;
 
@@ -406,7 +339,7 @@ input[type="color"]{
     gap:8px;
 
     font-family:"Shippori Mincho", serif;
-    font-size:15px;
+    font-size:14px;
     font-weight:700;
 
 }
@@ -423,13 +356,13 @@ input[type="color"]{
 
 .accordionSummary{
 
-    margin-top:8px;
+    margin-top:6px;
 
     margin-left:26px;
 
     color:rgba(255,255,255,.88);
 
-    font-size:13px;
+    font-size:12px;
 
 }
 
@@ -561,9 +494,38 @@ input[type="color"]{
 
 }
 
+/* 削除ボタン。押し間違えると内容が消えるので、目立たせず
+   （紫の主UIとは別系統の淡い赤）控えめに置いている。 */
 .deleteButton{
 
-    margin-top:24px;
+    display:block;
+
+    width:100%;
+
+    margin-top:20px;
+
+    padding:9px 14px;
+
+    border:none;
+    border-radius:999px;
+
+    background:rgba(220,80,110,.09);
+
+    color:#c04a68;
+
+    font-family:inherit;
+    font-size:12px;
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+}
+
+.deleteButton:hover{
+
+    background:rgba(220,80,110,.16);
 
 }
 
@@ -575,11 +537,11 @@ input[type="color"]{
 
     display:grid;
 
-    grid-template-columns:repeat(3,minmax(0,1fr));
+    grid-template-columns:repeat(5,minmax(0,1fr));
 
-    gap:10px;
+    gap:6px;
 
-    margin-top:8px;
+    margin-top:4px;
 
 }
 
@@ -593,15 +555,15 @@ input[type="color"]{
 
     justify-content:center;
 
-    gap:6px;
+    gap:4px;
 
     width:100%;
 
-    padding:10px 8px;
+    padding:6px 4px;
 
     border:1.5px solid rgba(109,93,252,.16);
 
-    border-radius:12px;
+    border-radius:10px;
 
     background:#fff;
 
@@ -627,11 +589,13 @@ input[type="color"]{
 
 .patternButton small{
 
-    font-size:11px;
+    font-size:8px;
 
     color:#666;
 
     font-weight:600;
+
+    letter-spacing:-.04em;
 
 }
 
@@ -643,9 +607,9 @@ input[type="color"]{
 
     width:100%;
 
-    height:34px;
+    height:22px;
 
-    border-radius:8px;
+    border-radius:6px;
 
     border:1px solid #e7e7e7;
 
@@ -707,31 +671,14 @@ input[type="color"]{
 
 }
 
-.saveButtons{
-
-    display:flex;
-
-    gap:12px;
-
-    margin-top:24px;
-
-}
-
-.importButton{
-
-    display:flex;
-
-    justify-content:center;
-    align-items:center;
-
-    text-decoration:none;
-
-}
-
 /* ==========================
    スマホ対応
+   ※ 基準幅は app.css（縦積みに切り替わる幅）と必ず揃えること。
+     以前ここだけ900pxになっていたため、768〜900pxの範囲では
+     「左カラムのままなのに高さが50vhに制限される」状態になり、
+     関係性の設定が見えなくなっていた。
 ========================== */
-@media (max-width:900px){
+@media (max-width:768px){
 
     .sidebar{
 
@@ -740,12 +687,7 @@ input[type="color"]{
 
         overflow-y:auto;
 
-        padding:20px;
-
-    }
-    .saveButtons{
-
-        flex-direction:column;
+        padding:18px 16px 24px;
 
     }
 }

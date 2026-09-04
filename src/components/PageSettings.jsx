@@ -10,15 +10,10 @@ const FONT_OPTIONS = [
   { value: "DotGothic16", label: "DotGothic16" },
 ];
 
-export default function PageSettings({
-  page,
-  updatePage,
-  saveProject,
-  loadProject,
-  savePng,
-  savePngHighQuality,
-  isExporting,
-}) {
+// ページ全体の設定（タイトル・色・背景パターン・フォント）。
+// 「ページ設定」という見出しは、左カラムに他の見出しが1つしか無く
+// 説明として働いていなかったため、フェーズ4で外している。
+export default function PageSettings({ page, updatePage }) {
 
   const patterns = [
     { id: "solid", label: "■■■■" },
@@ -30,8 +25,6 @@ export default function PageSettings({
 
   return (
     <section className="panel">
-
-      <h2>ページ設定</h2>
 
       <div className="titleRow">
 
@@ -129,86 +122,41 @@ export default function PageSettings({
 
       </label>
 
-        <label>
+      <label>
 
         <span>フォント</span>
 
         {/*
-          選択肢名だけだと実際の見た目が分からなかったため、
-          各optionにそのフォントを直接あてて見た目を確認できるようにしている
-          （OSやブラウザによってはoptionへのフォント適用が効かない場合があるため、
-           保険として下に選択中フォントのサンプル文字も出している）
+          以前は選択欄の下に「あいうえお ABC 123」というサンプル表示を出して
+          いたが、左カラムの縦を余計に使うので廃止した。
+          代わりに、
+            - 各option … そのフォント自身で表示（一覧のまま見比べられる）
+            - 選択欄本体 … 現在選んでいるフォントで表示（選んだ結果が分かる）
+          という形にして、この1行だけで確認できるようにしている。
+          （OSやブラウザによってはoptionへのフォント適用が効かないことがあるが、
+            その場合でも選択欄本体の表示は効くので、選んだフォントは分かる）
         */}
         <select
-            value={page.fontFamily}
-            onChange={(e) =>
+          className="fontSelect"
+          value={page.fontFamily}
+          style={{ fontFamily: page.fontFamily }}
+          onChange={(e) =>
             updatePage("fontFamily", e.target.value)
-            }
+          }
         >
-            {FONT_OPTIONS.map((font) => (
-              <option
-                key={font.value}
-                value={font.value}
-                style={{ fontFamily: font.value }}
-              >
-                {font.label}
-              </option>
-            ))}
+          {FONT_OPTIONS.map((font) => (
+            <option
+              key={font.value}
+              value={font.value}
+              style={{ fontFamily: font.value }}
+            >
+              {font.label}
+            </option>
+          ))}
         </select>
 
-        <div
-          className="fontPreviewSample"
-          style={{ fontFamily: page.fontFamily }}
-        >
-          あいうえお ABC 123
-        </div>
+      </label>
 
-        </label>
-
-        <div className="saveButtons">
-
-            <button
-                className="primaryButton"
-                type="button"
-                onClick={saveProject}
-            >
-                JSON保存
-            </button>
-
-            <label className="primaryButton importButton">
-
-                JSON読込
-
-                <input
-                type="file"
-                accept=".json"
-                hidden
-                onChange={(e) =>
-                    loadProject(e.target.files?.[0])
-                }
-                />
-
-            </label>
-
-            <button
-                className="primaryButton"
-                type="button"
-                onClick={savePng}
-                disabled={isExporting}
-            >
-                {isExporting ? "書き出し中…" : "PNG保存"}
-            </button>
-
-            <button
-                className="primaryButton"
-                type="button"
-                onClick={savePngHighQuality}
-                disabled={isExporting}
-            >
-                {isExporting ? "書き出し中…" : "PC推奨高画質保存"}
-            </button>
-
-        </div>
     </section>
   );
 }
