@@ -327,16 +327,16 @@ input[type="color"]{
 }
 
 /* =====================================
-   Accordion
-===================================== */
+   関係性の編集ボックスの見出し帯
+   （クラス名は accordion のままだが、フェーズ5で開閉はしなくなった。
+     ①②③のタブで表示するボックスごと切り替わるため、この帯は
+     「今どれを編集しているか」を示すだけのラベルになっている） */
 
 .accordionHeader{
 
     width:100%;
 
     padding:11px 16px;
-
-    border:none;
 
     border-radius:16px;
 
@@ -346,7 +346,7 @@ input[type="color"]{
 
     text-align:left;
 
-    cursor:pointer;
+    /* クリックしても何も起きないので、押せそうに見える cursor:pointer は付けない */
 
 }
 
@@ -364,21 +364,12 @@ input[type="color"]{
 
 }
 
-.accordionIcon{
-
-    width:18px;
-
-    display:flex;
-
-    justify-content:center;
-
-}
+/* .accordionIcon（▼/▶）はフェーズ5で廃止。
+   開閉しなくなったため、アイコンぶんの字下げ（margin-left:26px）も外している。 */
 
 .accordionSummary{
 
     margin-top:6px;
-
-    margin-left:26px;
 
     color:rgba(255,255,255,.88);
 

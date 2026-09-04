@@ -1,6 +1,19 @@
 import RelationAccordion from "./RelationAccordion";
 import { MAX_RELATIONS } from "../constants";
 
+// 関係性の編集エリア。
+//
+// 【フェーズ5の変更：タブ＝表示の切り替えにした】
+// 以前は関係性の件数ぶんだけ編集ボックスを縦に並べ、選択中のものだけ中身を
+// 開く（アコーディオン）形にしていた。そのため②を選んでも①③の紫の
+// ヘッダー帯が残り、「タブで切り替えているのに前のものが残っている」状態に
+// なっていた。
+// 今は「①②③のタブで表示するボックスそのものを切り替える」形にして、
+// 選択中の1件だけを描画している。
+//
+// 全件を並べる形に戻したい場合は、下の selectedIndex で1件だけ描いている
+// 箇所を relations.map(...) に戻し、RelationAccordion に isOpen / onToggle を
+// 渡す形に戻す（RelationAccordion.jsx 側のコメントも参照）。
 export default function RelationPanel({
   relations,
   selectedRelationId,
@@ -9,6 +22,10 @@ export default function RelationPanel({
   removeRelation,
   addRelation,
 }) {
+  const selectedIndex = relations.findIndex(
+    (relation) => relation.id === selectedRelationId
+  );
+
   return (
     <section className="panel">
 
@@ -48,22 +65,21 @@ export default function RelationPanel({
 
       </div>
 
-      {relations.map((relation, index) => (
+      {/* 選択中の1件だけを表示する。
+          selectedIndex は「実際のカードで何番目に描かれるか」を
+          RelationAccordion に伝えるために必要（画像枠の縦横比の判定に使う）。 */}
+      {selectedIndex >= 0 && (
 
         <RelationAccordion
-          key={relation.id}
-          relation={relation}
-          index={index}
+          key={relations[selectedIndex].id}
+          relation={relations[selectedIndex]}
+          index={selectedIndex}
           totalCount={relations.length}
-          isOpen={selectedRelationId === relation.id}
-          onToggle={() =>
-            setSelectedRelationId(relation.id)
-          }
           updateRelation={updateRelation}
           removeRelation={removeRelation}
         />
 
-      ))}
+      )}
 
     </section>
   );
