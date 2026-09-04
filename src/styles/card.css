@@ -375,6 +375,11 @@
 .cardImage.draggable{
     cursor:grab;
     touch-action:none; /* ドラッグ中にスマホの画面スクロールが起きないようにする */
+
+    /* ブラウザ標準の「画像をドラッグしてコピー/移動」動作を止める
+       （Safari向け。Chrome等はJSX側のdraggable={false}で対応済み） */
+    -webkit-user-drag:none;
+    user-select:none;
 }
 
 .cardImage.draggable:active{

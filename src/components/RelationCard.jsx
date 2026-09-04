@@ -87,6 +87,12 @@ function CharacterImage({ image, transform, editable, dragProps, boxRef, alt }) 
       alt={alt}
       className={`cardImage ${editable ? "draggable" : ""}`}
       style={{ transform: `translate(${x}%, ${y}%) scale(${scale})` }}
+      // 【重要】<img>はブラウザの既定で「つかんでドラッグするとコピー/移動できる」
+      // 機能(ネイティブドラッグ)が有効になっており、位置調整用の自前のドラッグ処理と
+      // 競合してカクついたり、ブラウザ側の「画像をドラッグ中」の挙動が割り込みます。
+      // draggable={false}とonDragStartでのpreventDefaultの両方でこれを止めています。
+      draggable={false}
+      onDragStart={(e) => e.preventDefault()}
       {...dragProps}
     />
   );
