@@ -10,7 +10,18 @@
      キャラクター画像は縁取りをやめて下端を紙の色へ溶かす。
    - 名前・関係性ラベル・プロット名は、ユーザーが自由な画像や背景色を選べる
      以上コントラストを保証する必要があるため、暗色スクリム（半透明の黒）は
-     そのまま維持する（角丸だけ、より丸いピル形にした）。
+     そのまま維持する。
+     ただし形はピル形（border-radius:999px）ではなく、デザイン変更前と同じ
+     「角丸の四角」に戻している（フェーズ4のフィードバック反映）。
+     角丸の値：名前=8px／関係性ラベル=12px／プロット名=12px。
+
+     【関係性ラベルだけ元実装の18pxにしていない理由】
+     border-radius は「高さの半分」を超えると、それ以上は丸くならず頭打ちになる。
+     関係性ラベルは1行だと高さが約31px＝半分が約15.5pxなので、元実装の18pxを
+     指定しても実際には15.5pxに丸められ、ピル形(999px)とまったく同じ見た目に
+     なってしまう（＝角丸四角に戻したことにならない）。
+     そのため、確実に「角丸の四角」に見える12pxにしている。
+     元実装の値に厳密に戻したい場合はここを18pxにする。
 ===================================================================== */
 
 .relation-card{
@@ -233,7 +244,7 @@
 /* ===========================
    名前帯
    コントラストを保証する必要があるため、暗色スクリムのまま維持。
-   角丸だけピル形に。
+   形は元実装と同じ角丸四角（8px）。
 =========================== */
 
 .nameOverlay {
@@ -242,7 +253,7 @@
 
     bottom:8px;
 
-    padding:7px 14px;
+    padding:8px 14px;
 
     width:fit-content;
     max-width:85%;
@@ -258,7 +269,7 @@
     overflow:hidden;
     text-overflow:ellipsis;
 
-    border-radius:999px;
+    border-radius:8px;
 
 }
 
@@ -339,13 +350,13 @@
 
     max-width: 180px;
 
-    padding: 7px 16px;
+    padding: 8px 18px;
 
     background: rgba(15,13,18,.68);
 
     backdrop-filter: blur(6px);
 
-    border-radius: 999px;
+    border-radius: 12px;
 
     color:#fff;
 
@@ -395,13 +406,13 @@
 
     margin-top: 34px;
 
-    padding: 11px 20px;
+    padding: 12px 18px;
 
     text-align: center;
 
     background: rgba(15,13,18,.72);
 
-    border-radius: 999px;
+    border-radius: 12px;
 
     font-size: 14px;
     font-weight: 700;
@@ -425,19 +436,12 @@
 }
 
 /* ===========================
-   画像のドラッグ移動（位置調整機能）
+   画像
+   プレビューは表示専用なので、ブラウザ標準の「画像をドラッグしてコピー/移動」
+   だけ止めておく（Safari向け。Chrome等はJSX側のdraggable={false}で対応済み）。
 =========================== */
 
-.cardImage.draggable{
-    cursor:grab;
-    touch-action:none; /* ドラッグ中にスマホの画面スクロールが起きないようにする */
-
-    /* ブラウザ標準の「画像をドラッグしてコピー/移動」動作を止める
-       （Safari向け。Chrome等はJSX側のdraggable={false}で対応済み） */
+.cardImage{
     -webkit-user-drag:none;
     user-select:none;
-}
-
-.cardImage.draggable:active{
-    cursor:grabbing;
 }
