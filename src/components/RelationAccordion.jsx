@@ -73,12 +73,17 @@ export default function RelationAccordion({
 
       <div className="accordionBody">
 
+        {/* 表示名はフェーズ5で「左右を入れ替え」→「画像位置入替」に変更。
+            ※動作は名称変更前と同じで、画像だけでなく名前・補足情報・
+              画像の位置調整もまとめて左右入れ替えている（swapSides参照）。
+              画像だけを入れ替える動作に変えたい場合は、swapSides から
+              leftName/rightName・leftSub/rightSub の行を外す。 */}
         <button
           type="button"
           className="swapSidesButton"
           onClick={swapSides}
         >
-          ⇄ 左右を入れ替え
+          ⇄ 画像位置入替
         </button>
 
         {/* 「おまけ」機能：左右の写真の大きさの比率調整。
