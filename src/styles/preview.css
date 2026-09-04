@@ -8,26 +8,158 @@
 
     display:flex;
 
-    justify-content:center;
+    /* 上にズーム操作列、下にプレビュー本体を積む（フェーズ5） */
+    flex-direction:column;
 
-    align-items:flex-start;
+    align-items:center;
 
     background:#f4f5fb;
 
 }
 
 /* ==========================
-   入力中プレビューの縮小表示（WYSIWYG）
-   Preview.jsx が .paper を常に実寸（1000px）で組み、この2つの要素で
-   画面幅に合わせて丸ごと縮小する。レイアウトの組み替えはしない。
+   入力中プレビューの縮小・拡大表示（WYSIWYG）
+   Preview.jsx が .paper を常に実寸（1000px）で組み、
+     .zoomViewport … 表示できる枠（はみ出したら横スクロール）
+     .scaleOuter   … 縮小・拡大した「後」の大きさの箱（幅・高さはJS側で指定）
+     .scaleInner   … 実寸1000pxのまま transform:scale() で拡縮
+   の3つで画面に収める。レイアウトの組み替えはしない。
 ========================== */
-.scaleOuter{
+
+.zoomViewport{
+
     width:100%;
     max-width:1000px;
+
+    /* 拡大したときに横へはみ出したぶんを、指でなぞって見られるようにする。
+       縦は .scaleOuter に実寸の高さを入れてあり、はみ出さない。 */
+    overflow-x:auto;
+    overflow-y:hidden;
+
+    /* iOSで慣性スクロール（指を離しても少し滑る）を有効にする */
+    -webkit-overflow-scrolling:touch;
+
+}
+
+.scaleOuter{
+    /* 幅・高さは Preview.jsx が実寸で指定する（既定値は入れない） */
     overflow:hidden;
 }
 .scaleInner{
     transform-origin:top left;
+}
+
+/* ==========================
+   ズーム操作列（フェーズ5）
+   スマホ幅では 1000px の設計が0.3倍程度まで縮むため文字が読めない。
+   ブラウザ標準のピンチズームも使えるが画面全体が拡大されて扱いにくいので、
+   プレビューだけを拡大できる操作をここに置いている。
+   縮小表示になっていないとき（PC幅など）は Preview.jsx 側で非表示。
+========================== */
+
+.zoomBar{
+
+    align-self:flex-end;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:6px;
+
+    margin-bottom:10px;
+
+}
+
+.zoomButton{
+
+    width:30px;
+    height:30px;
+
+    padding:0;
+
+    border:1px solid rgba(109,93,252,.3);
+    border-radius:50%;
+
+    background:#fff;
+
+    color:#5b51c9;
+
+    font-family:inherit;
+    font-size:15px;
+    font-weight:700;
+    line-height:1;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+}
+
+.zoomButton:hover{
+
+    border-color:#6D5DFC;
+
+    background:rgba(109,93,252,.06);
+
+}
+
+.zoomValue{
+
+    min-width:44px;
+
+    text-align:center;
+
+    color:#6b6478;
+
+    font-size:12px;
+    font-weight:600;
+
+    /* 数字が3桁になっても操作列の幅が動かないように、等幅の数字で表示する */
+    font-variant-numeric:tabular-nums;
+
+}
+
+.zoomReset{
+
+    height:30px;
+
+    padding:0 12px;
+
+    border:1px solid rgba(109,93,252,.3);
+    border-radius:999px;
+
+    background:#fff;
+
+    color:#5b51c9;
+
+    font-family:inherit;
+    font-size:11px;
+    font-weight:600;
+
+    white-space:nowrap;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+}
+
+.zoomReset:hover{
+
+    border-color:#6D5DFC;
+
+    background:rgba(109,93,252,.06);
+
+}
+
+.zoomButton:disabled,
+.zoomReset:disabled{
+
+    opacity:.4;
+
+    cursor:not-allowed;
+
 }
 
 /* プレビューは「見るだけ」。カード内のどの要素も操作対象にしない
@@ -276,6 +408,28 @@
 .preview{
 
     padding:20px;
+
+}
+
+/* ズーム操作列は、プレビューを下までスクロールしていっても押せるように
+   画面上部（ヘッダー52pxのすぐ下）に貼り付けておく。
+   スマホ幅ではページ全体がスクロールするため、貼り付けないと
+   拡大した瞬間に操作列が画面外へ流れてしまう。 */
+.zoomBar{
+
+    position:sticky;
+    top:62px;
+
+    z-index:10;
+
+    padding:6px 10px;
+
+    border-radius:999px;
+
+    background:rgba(244,245,251,.92);
+
+    backdrop-filter:blur(4px);
+    -webkit-backdrop-filter:blur(4px);
 
 }
 

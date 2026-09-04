@@ -106,6 +106,13 @@ body {
 
     .preview-area{
         width:100%;
+
+        /* スマホ幅では .app が height:auto でページ全体がスクロールするため、
+           この列自体は縦スクロールしない（＝overflow-y:auto は働いていない）。
+           にもかかわらず overflow が指定されているとスクロール領域として
+           扱われ、中に置いた position:sticky（プレビューのズーム操作列）が
+           効かなくなるので、ここでは visible に戻している。 */
+        overflow:visible;
     }
 
 }
