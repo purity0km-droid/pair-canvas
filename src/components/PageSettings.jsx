@@ -52,9 +52,16 @@ export default function PageSettings({ page, updatePage }) {
 
       </div>
 
+      {/* 背景色・文字色・フォントを1行にまとめている（フェーズ5）。
+          もともとフォントは色の下に独立した行として置いていたが、
+          「色の選択箇所にフォントも並べたほうがすっきりしそう」という
+          要望を受けて同じ行に入れた。
+          色見本は「今の色が分かれば十分」なので幅を固定し、名前が長くなる
+          フォント選択欄に残りの幅を全部渡している（sidebar.css の
+          .colorRow を参照）。 */}
       <div className="colorRow">
 
-        <label>
+        <label className="colorField">
 
           <span>背景色</span>
 
@@ -68,7 +75,7 @@ export default function PageSettings({ page, updatePage }) {
 
         </label>
 
-        <label>
+        <label className="colorField">
 
           <span>文字色</span>
 
@@ -79,6 +86,41 @@ export default function PageSettings({ page, updatePage }) {
               updatePage("textColor", e.target.value)
             }
           />
+
+        </label>
+
+        <label className="fontField">
+
+          <span>フォント</span>
+
+          {/*
+            以前は選択欄の下に「あいうえお ABC 123」というサンプル表示を出して
+            いたが、左カラムの縦を余計に使うので廃止した。
+            代わりに、
+              - 各option … そのフォント自身で表示（一覧のまま見比べられる）
+              - 選択欄本体 … 現在選んでいるフォントで表示（選んだ結果が分かる）
+            という形にして、この1行だけで確認できるようにしている。
+            （OSやブラウザによってはoptionへのフォント適用が効かないことがあるが、
+              その場合でも選択欄本体の表示は効くので、選んだフォントは分かる）
+          */}
+          <select
+            className="fontSelect"
+            value={page.fontFamily}
+            style={{ fontFamily: page.fontFamily }}
+            onChange={(e) =>
+              updatePage("fontFamily", e.target.value)
+            }
+          >
+            {FONT_OPTIONS.map((font) => (
+              <option
+                key={font.value}
+                value={font.value}
+                style={{ fontFamily: font.value }}
+              >
+                {font.label}
+              </option>
+            ))}
+          </select>
 
         </label>
 
@@ -119,41 +161,6 @@ export default function PageSettings({ page, updatePage }) {
           ))}
 
         </div>
-
-      </label>
-
-      <label>
-
-        <span>フォント</span>
-
-        {/*
-          以前は選択欄の下に「あいうえお ABC 123」というサンプル表示を出して
-          いたが、左カラムの縦を余計に使うので廃止した。
-          代わりに、
-            - 各option … そのフォント自身で表示（一覧のまま見比べられる）
-            - 選択欄本体 … 現在選んでいるフォントで表示（選んだ結果が分かる）
-          という形にして、この1行だけで確認できるようにしている。
-          （OSやブラウザによってはoptionへのフォント適用が効かないことがあるが、
-            その場合でも選択欄本体の表示は効くので、選んだフォントは分かる）
-        */}
-        <select
-          className="fontSelect"
-          value={page.fontFamily}
-          style={{ fontFamily: page.fontFamily }}
-          onChange={(e) =>
-            updatePage("fontFamily", e.target.value)
-          }
-        >
-          {FONT_OPTIONS.map((font) => (
-            <option
-              key={font.value}
-              value={font.value}
-              style={{ fontFamily: font.value }}
-            >
-              {font.label}
-            </option>
-          ))}
-        </select>
 
       </label>
 

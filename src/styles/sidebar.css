@@ -192,7 +192,9 @@
     appearance:none;
     -webkit-appearance:none;
 
-    height:40px;
+    /* 同じ行に並ぶ色見本(26px)と高さが離れすぎないよう、フェーズ5で
+       40px → 32px に下げた（フォント名は読めるサイズを保つ） */
+    height:32px;
 
     /* 右端に自前の▼を描く（OS標準の矢印を消しているため） */
     background-image:
@@ -204,35 +206,71 @@
     background-size:5px 5px, 5px 5px;
     background-repeat:no-repeat;
 
-    padding-right:34px;
+    padding-right:30px;
 
-    font-size:15px;
+    /* 幅が狭くなったぶん、はみ出さないよう少しだけ小さくする */
+    font-size:13px;
+
+    text-overflow:ellipsis;
 
     cursor:pointer;
 
 }
 
-/* ---------- カラー ---------- */
+/* ---------- カラー＋フォント ----------
+   フェーズ5で、背景色・文字色・フォントを1行にまとめた。
+   色見本は「今の色が分かれば十分」なので幅を固定し（下の .colorField）、
+   フォント名は長いもの（Zen Maru Gothic など）があるので、
+   残りの幅を全部フォント選択欄に渡している（.fontField を flex:1）。
+   窮屈に感じる場合は .fontField を .colorRow の外へ出して独立した行に戻す。 */
 
 .colorRow{
 
     display:flex;
 
-    gap:12px;
+    /* 3項目のラベル行の上端を揃える（stretchだと色見本が縦に伸びてしまう） */
+    align-items:flex-start;
+
+    gap:10px;
+
+    margin-bottom:14px;
 
 }
 
+/* .panel label の margin-bottom:14px が各項目に付くと行の下に二重の余白が
+   できるので、行側(.colorRow)にだけ余白を持たせて中の項目からは外す。
+   詳細度は .panel label（0,1,1）より高くする必要があるため
+   .colorRow label（0,2,0）で指定している。 */
 .colorRow label{
 
-    flex:1;
+    margin-bottom:0;
 
 }
 
-/* 色見本は「今の色が分かれば十分」なので、フェーズ4で高さを半分以下にした */
+.colorRow .colorField{
+
+    /* 色見本は中身が「色」だけなので、名前の長さに左右されない固定幅でよい */
+    flex:none;
+    width:62px;
+
+}
+
+.colorRow .fontField{
+
+    /* 余った幅は全部フォント選択欄へ。min-width:0 が無いと、
+       select の既定の最小幅にflexが負けて行からはみ出す */
+    flex:1;
+    min-width:0;
+
+}
+
+/* 色見本は「今の色が分かれば十分」なので、フェーズ4で高さを半分以下（56px→26px）にした。
+   フェーズ5で同じ行のフォント選択欄(32px)と下端を揃えるため 26px → 32px。
+   行の高さはフォント選択欄で決まるので、この6pxで縦が伸びることはない。 */
 input[type="color"]{
 
     width:100%;
-    height:26px;
+    height:32px;
 
     padding:2px;
 
