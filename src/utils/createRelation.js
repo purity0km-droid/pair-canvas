@@ -34,6 +34,10 @@ export function createRelation(index) {
 
     storyTitle: "",
     description: "",
+
+    // 左右の写真の大きさの比率（「おまけ」機能：既定は均等）
+    // "even"（既定・均等） / "left"（左を大きく） / "right"（右を大きく）
+    imageRatio: "even",
   };
 }
 

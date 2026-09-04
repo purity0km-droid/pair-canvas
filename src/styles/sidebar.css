@@ -472,6 +472,95 @@ input[type="color"]{
 
 }
 
+/* =====================================
+   「おまけ」機能：レイアウト詳細設定
+   既定で折りたたんでおき、普段の操作フローには出さない。
+===================================== */
+.layoutExtra{
+
+    margin-bottom:18px;
+
+    border:1px solid #eee;
+    border-radius:10px;
+
+    padding:10px 14px;
+
+}
+
+.layoutExtra summary{
+
+    cursor:pointer;
+
+    font-size:12px;
+
+    color:#888;
+
+    user-select:none;
+
+}
+
+.layoutExtra[open] summary{
+
+    margin-bottom:10px;
+
+}
+
+.layoutExtraBody{
+
+    display:flex;
+    flex-direction:column;
+
+    gap:8px;
+
+}
+
+.imageRatioButtons{
+
+    display:flex;
+
+    gap:8px;
+
+}
+
+.imageRatioButton{
+
+    flex:1;
+
+    padding:7px 8px;
+
+    border:1px solid #ddd;
+    border-radius:8px;
+
+    background:#fff;
+
+    color:#666;
+
+    font-size:12px;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+}
+
+.imageRatioButton:hover{
+
+    border-color:#6D5DFC;
+
+    color:#6D5DFC;
+
+}
+
+.imageRatioButton.active{
+
+    background:#6D5DFC;
+
+    border-color:#6D5DFC;
+
+    color:#fff;
+
+}
+
 .deleteButton{
 
     margin-top:24px;

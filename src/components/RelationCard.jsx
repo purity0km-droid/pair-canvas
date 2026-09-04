@@ -56,13 +56,24 @@ export default function RelationCard({
     onChange: (t) => updateRelation?.(relation.id, "rightImageTransform", t),
   });
 
+  // 左右の写真の大きさの比率（「おまけ」機能）。
+  // "left" なら左を大きく／右を小さく、"right" ならその逆、
+  // "even"（既定）なら何もしない（現状どおり均等）。
+  // 縦横比自体は変えず、大きさだけを一定倍率で拡大縮小するので、
+  // 位置調整モーダルのクロップ枠の縦横比計算(utils/relationLayout.js)には影響しない。
+  const imageRatio = relation.imageRatio || "even";
+  const leftRatioClass =
+    imageRatio === "left" ? "ratioBig" : imageRatio === "right" ? "ratioSmall" : "";
+  const rightRatioClass =
+    imageRatio === "right" ? "ratioBig" : imageRatio === "left" ? "ratioSmall" : "";
+
   return (
     <div className={`relation-card ${layout}`}>
 
       <div className="characterArea">
 
         {/* 左キャラクター */}
-        <div className="character">
+        <div className={`character ${leftRatioClass}`}>
 
           <div className="imageBox">
             <CharacterImage
@@ -109,7 +120,7 @@ export default function RelationCard({
         </div>
 
         {/* 右キャラクター */}
-        <div className="character">
+        <div className={`character ${rightRatioClass}`}>
 
           <div className="imageBox">
             <CharacterImage

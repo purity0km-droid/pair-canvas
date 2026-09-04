@@ -141,6 +141,62 @@
     width:150px;
 
 }
+
+/* ===========================
+   左右の写真サイズ比率（「おまけ」機能）
+   RelationAccordion.jsx の「▼ レイアウト（おまけ）」で選ぶと、
+   .character に ratioBig / ratioSmall のどちらかが付く。
+   縦横比は変えず、大きさだけ一定倍率（1.2倍／0.8倍）で拡大縮小している
+   （縦横比を変えると、位置調整モーダルのクロップ枠とズレてしまうため）。
+=========================== */
+
+/* ---- Large（1.2倍 / 0.8倍） ---- */
+.relation-card.large .character.ratioBig .imageBox{
+    width:384px;
+    height:336px;
+}
+.relation-card.large .character.ratioBig .subInfo{
+    width:384px;
+}
+.relation-card.large .character.ratioSmall .imageBox{
+    width:256px;
+    height:224px;
+}
+.relation-card.large .character.ratioSmall .subInfo{
+    width:256px;
+}
+
+/* ---- Medium（1.2倍 / 0.8倍） ---- */
+.relation-card.medium .character.ratioBig .imageBox{
+    width:384px;
+    height:384px;
+}
+.relation-card.medium .character.ratioBig .subInfo{
+    width:384px;
+}
+.relation-card.medium .character.ratioSmall .imageBox{
+    width:256px;
+    height:256px;
+}
+.relation-card.medium .character.ratioSmall .subInfo{
+    width:256px;
+}
+
+/* ---- Small（1.2倍 / 0.8倍） ---- */
+.relation-card.small .character.ratioBig .imageBox{
+    width:180px;
+    height:240px;
+}
+.relation-card.small .character.ratioBig .subInfo{
+    width:180px;
+}
+.relation-card.small .character.ratioSmall .imageBox{
+    width:120px;
+    height:160px;
+}
+.relation-card.small .character.ratioSmall .subInfo{
+    width:120px;
+}
 .cardImage{
 
     width:100%;
