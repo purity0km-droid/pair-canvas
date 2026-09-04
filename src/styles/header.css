@@ -52,7 +52,11 @@
 
     margin:0;
 
-    font-family:"Shippori Mincho", serif;
+    /* フェーズ2で明朝体(Shippori Mincho)にしていたが、デザイン変更前の
+       原本と同じ Limelight に戻した（フェーズ5のフィードバック反映）。
+       Limelight は欧文専用の表示用フォントで、「PairCanvas」の表示だけに使う。
+       日本語を含む文字列をここに入れる場合は sans-serif にフォールバックする。 */
+    font-family:"Limelight", sans-serif;
     font-size:21px;
     font-weight:700;
 

@@ -6,7 +6,11 @@
      区切る「継ぎ目のない」構成にした。
    - 色は紫（#6D5DFC）1色を軸にする。元実装からの意図的な引き継ぎで、
      本家zetaのアプリ内配色（黒基調＋紫）に寄せている。
-   - 見出しは明朝体（Shippori Mincho）。単色でも硬くなりすぎないように。
+   - 見出しのフォントは本文と同じ（Noto Sans JP）。フェーズ2では明朝体
+     （Shippori Mincho）にしていたが、アプリ内で使うフォントはデザイン変更前の
+     原本どおり本文フォントで統一する方針に戻した（フェーズ5のフィードバック反映）。
+     ※ここでいうフォントは「アプリのUI」の話で、書き出される絵の中の
+       フォント（ページ設定で選ぶもの）とは別物。
 
    フェーズ4の調整：
    - ロゴとファイル操作ボタンをヘッダー(header.css)へ移し、ここは設定だけに。
@@ -61,7 +65,7 @@
 
     margin:0 0 16px;
 
-    font-family:"Shippori Mincho", serif;
+    /* font-family は指定しない＝bodyのNoto Sans JPを継承（フェーズ5で明朝体をやめた） */
     font-size:16px;
     font-weight:700;
 
@@ -347,7 +351,7 @@ input[type="color"]{
 
     gap:8px;
 
-    font-family:"Shippori Mincho", serif;
+    /* font-family は指定しない＝bodyのNoto Sans JPを継承（フェーズ5で明朝体をやめた） */
     font-size:14px;
     font-weight:700;
 
