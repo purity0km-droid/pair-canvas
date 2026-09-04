@@ -74,8 +74,13 @@ export default function RelationAccordion({
             ⇄ 左右を入れ替え
           </button>
 
-          {/* 左画像 */}
-          <label>
+          {/* 左画像
+              【重要】ここは意図的に<label>ではなく<div>にしています。
+              <label>で囲むと、中にある(隠れた)ファイル選択用<input>に
+              クリックがすべて転送されてしまい、クロップ枠のドラッグ操作や
+              「変更」ボタンのクリックのたびにファイル選択ダイアログが
+              二重に開いてしまう不具合の原因になっていました。 */}
+          <div className="fieldGroup">
 
             <span>左画像</span>
 
@@ -99,7 +104,7 @@ export default function RelationAccordion({
               aspect={imageAspect}
             />
 
-          </label>
+          </div>
 
           {/* 左名前 */}
           <label>
@@ -140,8 +145,8 @@ export default function RelationAccordion({
 
           </label>
 
-          {/* 右画像 */}
-          <label>
+          {/* 右画像（左画像と同じ理由で<label>ではなく<div>にしています） */}
+          <div className="fieldGroup">
 
             <span>右画像</span>
 
@@ -165,7 +170,7 @@ export default function RelationAccordion({
               aspect={imageAspect}
             />
 
-          </label>
+          </div>
 
           {/* 右名前 */}
           <label>

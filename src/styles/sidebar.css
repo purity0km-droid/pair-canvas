@@ -95,7 +95,8 @@
    フォーム
 ===================================== */
 
-.panel label{
+.panel label,
+.panel .fieldGroup{
 
     display:flex;
 
