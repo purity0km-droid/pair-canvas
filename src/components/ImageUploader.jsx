@@ -4,6 +4,19 @@ import { useImageDrag } from "../hooks/useImageDrag";
 
 const DEFAULT_TRANSFORM = { scale: 1, x: 0, y: 0 };
 
+// 画像の大きさ（倍率）の可動範囲。
+//
+// scale=1 は「画像の短い辺が枠にぴったり収まり、枠が写真で埋まる状態」
+// （CSSの object-fit:cover の状態）。
+//
+// フェーズ6より前は下限も1で、そこから拡大することしかできなかった。
+// 「枠より小さく表示したい（余白を持たせて全身を入れたい等）」という要望を
+// 受けて、下限を0.3まで下げている。1未満にすると写真が枠の内側に収まり、
+// 余ったところは枠の下地（card.css の .imageBox の背景）が見える。
+const SCALE_MIN = 0.3;
+const SCALE_MAX = 3;
+const SCALE_STEP = 0.05;
+
 function resizeImage(file, maxSize = 1600) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -339,12 +352,15 @@ export default function ImageUploader({
 
             <div className="imageAdjust">
               <label className="imageAdjustRow">
-                <span>拡大</span>
+                {/* 縮小もできるようになったので、表示名は「拡大」ではなく
+                    「大きさ」。今どれくらいかが分かるよう％も出している
+                    （100%＝枠がちょうど写真で埋まる状態） */}
+                <span>大きさ</span>
                 <input
                   type="range"
-                  min="1"
-                  max="3"
-                  step="0.05"
+                  min={SCALE_MIN}
+                  max={SCALE_MAX}
+                  step={SCALE_STEP}
                   value={currentTransform.scale ?? 1}
                   onChange={(e) =>
                     onTransformChange?.({
@@ -353,6 +369,9 @@ export default function ImageUploader({
                     })
                   }
                 />
+                <span className="imageAdjustValue">
+                  {Math.round((currentTransform.scale ?? 1) * 100)}%
+                </span>
               </label>
 
               <button
