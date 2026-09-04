@@ -193,8 +193,29 @@ export default function ImageUploader({
         // ---------------------------------------------------------
         // 画像が未設定のとき：タップ or ドラッグ＆ドロップでアップロード
         // ---------------------------------------------------------
-        <label
+        // 【重要】ここは <label> にしないこと。
+        //
+        // ファイル選択用のinputは、上のとおり画面外へ隠したうえで
+        // 「変更」ボタンなどから inputRef.current.click() で明示的に開く方式に
+        // している（labelとinputを紐づける方式は、他の操作のクリックまで
+        // 横取りしてしまう不具合があったため／フェーズ1で対応済み）。
+        //
+        // そのぶん、この置き場所も <label> のままでは何とも紐づいておらず、
+        // クリックしてもファイル選択ダイアログが開かない（ドラッグ＆ドロップ
+        // でしか画像を入れられない）状態になっていた。
+        // 明示的に onClick で input を開く形にして解消している。
+        <div
           className={`imageUploader ${dragging ? "dragging" : ""}`}
+          role="button"
+          tabIndex={0}
+          onClick={() => inputRef.current?.click()}
+          onKeyDown={(e) => {
+            // キーボード操作でも開けるようにする
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              inputRef.current?.click();
+            }
+          }}
           onDragOver={(e) => {
             e.preventDefault();
             setDragging(true);
@@ -218,7 +239,7 @@ export default function ImageUploader({
               ドラッグ＆ドロップ
             </div>
           </div>
-        </label>
+        </div>
       ) : (
         // ---------------------------------------------------------
         // 画像が設定済みのとき：サイドバーには静止したサムネイルだけを表示し、
