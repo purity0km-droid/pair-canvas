@@ -34,15 +34,13 @@ export function createRelation(index) {
 
     storyTitle: "",
     description: "",
-
-    // 左右の写真の大きさの比率（「おまけ」機能：既定は均等）
-    // "even"（既定・均等） / "left"（左を大きく） / "right"（右を大きく）
-    imageRatio: "even",
   };
 }
 
 // 読み込んだJSON（古いバージョンで保存されたものを含む）を、
 // 今のデータ構造に合わせて補完します。
+// ※フェーズ7で廃止した imageRatio（左右の写真の大きさ比率）が入っている
+//   古いJSONも、そのまま読み込めます（使われないだけで、表示は壊れません）。
 // 例：relationSub や leftImageTransform が無い古いJSONを読み込んでも、
 //     欠けている項目だけ初期値で埋めて、表示が壊れないようにする。
 export function normalizeRelation(partial, index) {

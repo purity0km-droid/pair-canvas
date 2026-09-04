@@ -152,40 +152,6 @@
 
 }
 
-.subInfo{
-
-    width:var(--img-w);
-
-}
-
-/* ===========================
-   左右の写真サイズ比率（「おまけ」機能）
-   RelationAccordion.jsx の「▼ レイアウト（おまけ）」で選ぶと、
-   .character に ratioBig / ratioSmall のどちらかが付く。
-   縦横比は変えず、大きさだけ一定倍率（1.2倍／0.8倍）で拡大縮小している
-   （縦横比を変えると、位置調整モーダルのクロップ枠とズレてしまうため）。
-
-   フェーズ6でCSS変数(--img-w/--img-h)ベースに書き直したので、
-   プリセットやサイズが増えてもここは触らなくてよくなった
-   （以前はサイズ3種ぶんの実寸を個別に書いていた）。
-=========================== */
-
-.character.ratioBig .imageBox{
-    width:calc(var(--img-w) * 1.2);
-    height:calc(var(--img-h) * 1.2);
-}
-.character.ratioBig .subInfo{
-    width:calc(var(--img-w) * 1.2);
-}
-
-.character.ratioSmall .imageBox{
-    width:calc(var(--img-w) * 0.8);
-    height:calc(var(--img-h) * 0.8);
-}
-.character.ratioSmall .subInfo{
-    width:calc(var(--img-w) * 0.8);
-}
-
 .cardImage{
 
     width:100%;
@@ -277,7 +243,15 @@
 
 .subInfo {
 
-    width: 150px;
+    /* 【重要】幅は画像枠と必ず同じにすること。
+       ここが画像枠より狭いと、.character が中央揃えのため補足情報だけが
+       画像の内側へ寄って見える（フェーズ6で実際にそうなっていた。
+       この指定より前に .subInfo{width:var(--img-w)} を別途書いていたが、
+       同じ詳細度で後ろにあるこの 150px に上書きされて無効になっていた）。
+       画像枠の実寸はファイル上部の --img-w / --img-h で
+       「プリセット × サイズ」ごとに与えている。 */
+    width: var(--img-w);
+
     margin-top: 10px;
 
     font-size: 11.5px;

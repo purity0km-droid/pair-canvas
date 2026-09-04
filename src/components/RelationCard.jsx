@@ -1,6 +1,8 @@
 import "../styles/card.css";
 
-import { DEFAULT_LAYOUT_PRESET } from "../utils/relationLayout";
+import { DEFAULT_LAYOUT_PRESET, getImageAspect } from "../utils/relationLayout";
+import { buildImageStyle } from "../utils/imageFit";
+import { useImageAspect } from "../hooks/useImageAspect";
 
 // -----------------------------------------------------------------------
 // RelationCard
@@ -28,8 +30,11 @@ import { DEFAULT_LAYOUT_PRESET } from "../utils/relationLayout";
 // の3か所をセットで足してください。
 // -----------------------------------------------------------------------
 
-function CharacterImage({ image, transform, alt }) {
-  const { scale = 1, x = 0, y = 0 } = transform || {};
+function CharacterImage({ image, transform, frameAspect, alt }) {
+  // 写真そのものの縦横比。読み込みが終わるまでは null。
+  // これが分かると「切り取らない表示」に切り替わり、100%未満に縮小したときに
+  // 切れていた部分が戻ってくる（utils/imageFit.js のコメント参照）。
+  const [imageAspect, handleImageLoad] = useImageAspect(image);
 
   if (!image) {
     return (
@@ -46,7 +51,8 @@ function CharacterImage({ image, transform, alt }) {
       src={image}
       alt={alt}
       className="cardImage"
-      style={{ transform: `translate(${x}%, ${y}%) scale(${scale})` }}
+      style={buildImageStyle({ transform, frameAspect, imageAspect })}
+      onLoad={handleImageLoad}
       // <img>はブラウザ既定で「つかんでドラッグするとコピー/移動できる」状態に
       // なっており、プレビューを触ったときに画像のゴーストが付いてくる。
       // 表示専用なので、ここで止めておく。
@@ -59,10 +65,15 @@ function CharacterImage({ image, transform, alt }) {
 // 画像枠＋その上に重ねる名前帯。
 // 名前帯の暗色スクリムは、ユーザーが自由な写真・背景色を選べる仕様上、
 // 文字の読みやすさを保証するために必須なので外さないこと。
-function Portrait({ image, transform, name, side, showName = true }) {
+function Portrait({ image, transform, name, side, frameAspect, showName = true }) {
   return (
     <div className="imageBox">
-      <CharacterImage image={image} transform={transform} alt="" />
+      <CharacterImage
+        image={image}
+        transform={transform}
+        frameAspect={frameAspect}
+        alt=""
+      />
 
       {showName && (
         <div className={`nameOverlay ${side}`}>
@@ -114,41 +125,32 @@ export default function RelationCard({
   layout = "small",
   preset = DEFAULT_LAYOUT_PRESET,
 }) {
-  // 左右の写真の大きさの比率（「おまけ」機能）。
-  // "left" なら左を大きく／右を小さく、"right" ならその逆、
-  // "even"（既定）なら何もしない。
-  // 縦横比は変えず、大きさだけを一定倍率（1.2倍／0.8倍）で拡大縮小するので、
-  // 位置調整モーダルのクロップ枠の縦横比計算には影響しない。
-  //
-  // 左右の画像が同じ大きさで横に並ぶプリセット（対面・見出し・双方向）でのみ
-  // 効く。帯・交差・語りは画像の置き方そのものが左右非対称なので適用しない。
-  const ratioAware =
-    preset === "facing" || preset === "headline" || preset === "twoway";
-  const imageRatio = ratioAware ? relation.imageRatio || "even" : "even";
-  const leftRatioClass =
-    imageRatio === "left" ? "ratioBig" : imageRatio === "right" ? "ratioSmall" : "";
-  const rightRatioClass =
-    imageRatio === "right" ? "ratioBig" : imageRatio === "left" ? "ratioSmall" : "";
+  // この組み合わせ（プリセット × サイズ）での画像枠の縦横比。
+  // 「切り取らない表示」の倍率計算に使うため、各画像へ渡している
+  // （サイドバーの位置調整ウインドウも同じ値を使うので、見え方が一致する）。
+  const frameAspect = getImageAspect(preset, layout);
 
   const left = (
-    <div className={`character ${leftRatioClass}`.trim()}>
+    <div className="character">
       <Portrait
         image={relation.leftImage}
         transform={relation.leftImageTransform}
         name={relation.leftName}
         side="left"
+        frameAspect={frameAspect}
       />
       <SubInfo text={relation.leftSub} side="left" />
     </div>
   );
 
   const right = (
-    <div className={`character ${rightRatioClass}`.trim()}>
+    <div className="character">
       <Portrait
         image={relation.rightImage}
         transform={relation.rightImageTransform}
         name={relation.rightName}
         side="right"
+        frameAspect={frameAspect}
       />
       <SubInfo text={relation.rightSub} side="right" />
     </div>
@@ -177,6 +179,7 @@ export default function RelationCard({
                   transform={relation.leftImageTransform}
                   name={relation.leftName}
                   side="left"
+                  frameAspect={frameAspect}
                 />
               </div>
 
@@ -186,6 +189,7 @@ export default function RelationCard({
                   transform={relation.rightImageTransform}
                   name={relation.rightName}
                   side="right"
+                  frameAspect={frameAspect}
                 />
               </div>
 
@@ -218,6 +222,7 @@ export default function RelationCard({
                   transform={relation.leftImageTransform}
                   name={relation.leftName}
                   side="left"
+                  frameAspect={frameAspect}
                 />
               </div>
 
@@ -227,6 +232,7 @@ export default function RelationCard({
                   transform={relation.rightImageTransform}
                   name={relation.rightName}
                   side="right"
+                  frameAspect={frameAspect}
                 />
               </div>
 
@@ -317,6 +323,7 @@ export default function RelationCard({
                   transform={relation.leftImageTransform}
                   name={relation.leftName}
                   side="left"
+                  frameAspect={frameAspect}
                   showName={false}
                 />
               </div>
@@ -327,6 +334,7 @@ export default function RelationCard({
                   transform={relation.rightImageTransform}
                   name={relation.rightName}
                   side="right"
+                  frameAspect={frameAspect}
                   showName={false}
                 />
               </div>

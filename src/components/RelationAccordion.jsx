@@ -94,61 +94,6 @@ export default function RelationAccordion({
           ⇄ 画像位置入替
         </button>
 
-        {/* 「おまけ」機能：左右の写真の大きさの比率調整。
-            普段の操作フローには出さず、既定で折りたたんでおく
-            (<details>のため追加のstate管理は不要)。 */}
-        <details className="layoutExtra">
-          <summary>▼ レイアウト（おまけ）</summary>
-
-          <div className="layoutExtraBody">
-            <span>写真の大きさ</span>
-
-            <div className="imageRatioButtons">
-              <button
-                type="button"
-                className={
-                  (relation.imageRatio || "even") === "even"
-                    ? "imageRatioButton active"
-                    : "imageRatioButton"
-                }
-                onClick={() =>
-                  updateRelation(relation.id, "imageRatio", "even")
-                }
-              >
-                均等
-              </button>
-
-              <button
-                type="button"
-                className={
-                  relation.imageRatio === "left"
-                    ? "imageRatioButton active"
-                    : "imageRatioButton"
-                }
-                onClick={() =>
-                  updateRelation(relation.id, "imageRatio", "left")
-                }
-              >
-                左を大きく
-              </button>
-
-              <button
-                type="button"
-                className={
-                  relation.imageRatio === "right"
-                    ? "imageRatioButton active"
-                    : "imageRatioButton"
-                }
-                onClick={() =>
-                  updateRelation(relation.id, "imageRatio", "right")
-                }
-              >
-                右を大きく
-              </button>
-            </div>
-          </div>
-        </details>
-
         {/* 左画像
             【重要】ここは意図的に<label>ではなく<div>にしています。
             <label>で囲むと、中にある(隠れた)ファイル選択用<input>に
