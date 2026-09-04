@@ -28,15 +28,21 @@
     transform-origin:top left;
 }
 
+/* プレビューは「見るだけ」。カード内のどの要素も操作対象にしない
+   （画像の位置調整はサイドバーの位置調整モーダルだけで行う）。
+   あわせて、プレビュー上をなぞったときに文字が範囲選択されて
+   青くハイライトされてしまうのも止めている。 */
+.paper{
+
+    user-select:none;
+    -webkit-user-select:none;
+
+}
+
 .paper *{
 
     pointer-events:none;
 
-}
-
-/* 画像のドラッグ移動だけは有効にする（RelationCard.jsx / card.css参照） */
-.paper.editable .cardImage.draggable{
-    pointer-events:auto;
 }
 
 .paper{

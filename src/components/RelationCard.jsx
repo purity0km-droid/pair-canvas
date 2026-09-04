@@ -1,11 +1,20 @@
 import "../styles/card.css";
-import { useImageDrag } from "../hooks/useImageDrag";
 
-// 画像のドラッグ移動（位置調整）の処理本体は src/hooks/useImageDrag.js に
-// 共通化しています（サイドバーの範囲調整枠(ImageUploader.jsx)と共有するため）。
-// editable が false（PNG書き出し用の非表示コピー）のときは何もしません。
+// -----------------------------------------------------------------------
+// RelationCard
+//
+// 【画像の位置調整について】
+// 以前はこのプレビューカード上で画像を直接つまんで動かせるようにしていましたが、
+// 「見るための場所」で操作できてしまうと、カードを触っただけで意図せず位置が
+// ずれてしまうため、ドラッグ機能はここから外しました。
+// 位置・拡大の調整は、サイドバーの「位置調整モーダル」(ImageUploader.jsx)
+// だけで行います（ドラッグ処理の本体は src/hooks/useImageDrag.js）。
+//
+// つまりこのコンポーネントは「表示専用」です。画面プレビューでもPNG書き出し用の
+// 非表示コピーでも、まったく同じ静止状態で描画されます。
+// -----------------------------------------------------------------------
 
-function CharacterImage({ image, transform, editable, dragProps, boxRef, alt }) {
+function CharacterImage({ image, transform, alt }) {
   const { scale = 1, x = 0, y = 0 } = transform || {};
 
   if (!image) {
@@ -20,42 +29,20 @@ function CharacterImage({ image, transform, editable, dragProps, boxRef, alt }) 
 
   return (
     <img
-      ref={boxRef}
       src={image}
       alt={alt}
-      className={`cardImage ${editable ? "draggable" : ""}`}
+      className="cardImage"
       style={{ transform: `translate(${x}%, ${y}%) scale(${scale})` }}
-      // 【重要】<img>はブラウザの既定で「つかんでドラッグするとコピー/移動できる」
-      // 機能(ネイティブドラッグ)が有効になっており、位置調整用の自前のドラッグ処理と
-      // 競合してカクついたり、ブラウザ側の「画像をドラッグ中」の挙動が割り込みます。
-      // draggable={false}とonDragStartでのpreventDefaultの両方でこれを止めています。
+      // <img>はブラウザ既定で「つかんでドラッグするとコピー/移動できる」状態に
+      // なっており、プレビューを触ったときに画像のゴーストが付いてくる。
+      // 表示専用なので、ここで止めておく。
       draggable={false}
       onDragStart={(e) => e.preventDefault()}
-      {...dragProps}
     />
   );
 }
 
-export default function RelationCard({
-  relation,
-  layout = "small",
-  editable = false,
-  updateRelation,
-}) {
-  const left = useImageDrag({
-    editable,
-    hasImage: !!relation.leftImage,
-    transform: relation.leftImageTransform,
-    onChange: (t) => updateRelation?.(relation.id, "leftImageTransform", t),
-  });
-
-  const right = useImageDrag({
-    editable,
-    hasImage: !!relation.rightImage,
-    transform: relation.rightImageTransform,
-    onChange: (t) => updateRelation?.(relation.id, "rightImageTransform", t),
-  });
-
+export default function RelationCard({ relation, layout = "small" }) {
   // 左右の写真の大きさの比率（「おまけ」機能）。
   // "left" なら左を大きく／右を小さく、"right" ならその逆、
   // "even"（既定）なら何もしない（現状どおり均等）。
@@ -79,9 +66,6 @@ export default function RelationCard({
             <CharacterImage
               image={relation.leftImage}
               transform={relation.leftImageTransform}
-              editable={editable}
-              dragProps={left.dragHandlers}
-              boxRef={left.boxRef}
               alt=""
             />
 
@@ -126,9 +110,6 @@ export default function RelationCard({
             <CharacterImage
               image={relation.rightImage}
               transform={relation.rightImageTransform}
-              editable={editable}
-              dragProps={right.dragHandlers}
-              boxRef={right.boxRef}
               alt=""
             />
 

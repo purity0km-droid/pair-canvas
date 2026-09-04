@@ -7,7 +7,7 @@ import RelationSheet from "./RelationSheet";
 // .paper の設計上の実寸幅（card.css / preview.css はこの幅を基準に組まれている）
 const DESIGN_WIDTH = 1000;
 
-export default function Preview({ page, relations, updateRelation, previewRef }) {
+export default function Preview({ page, relations, previewRef }) {
   const outerRef = useRef(null);
   const innerRef = useRef(null);
   const [scale, setScale] = useState(1);
@@ -74,8 +74,6 @@ export default function Preview({ page, relations, updateRelation, previewRef })
             ref={previewRef}
             page={page}
             relations={relations}
-            updateRelation={updateRelation}
-            editable
           />
         </div>
       </div>

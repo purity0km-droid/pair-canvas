@@ -16,16 +16,14 @@ import { getRelationLayout } from "../utils/relationLayout";
 // カードの並び（1〜4件時のレイアウト）を変えたい場合は、このファイルだけ直せば
 // 画面表示・PNG書き出しの両方に同じように反映されます。
 //
-// editable=true のときだけ、カード内の画像をドラッグで動かせるようにします
-// （PNG書き出し用の非表示コピーは editable=false のまま、常に静止画として扱う）。
+// シートは画面プレビュー・PNG書き出しのどちらでも「表示専用」です
+// （画像の位置調整はサイドバーの位置調整モーダルだけで行う。RelationCard.jsx参照）。
 // -----------------------------------------------------------------------
 const RelationSheet = forwardRef(function RelationSheet(
-  { page, relations, updateRelation, editable = false, extraClassName = "" },
+  { page, relations, extraClassName = "" },
   ref
 ) {
-  const cls = `paper pattern-${page.backgroundPattern} ${
-    editable ? "editable" : ""
-  } ${extraClassName}`.trim();
+  const cls = `paper pattern-${page.backgroundPattern} ${extraClassName}`.trim();
 
   return (
     <div
@@ -46,8 +44,6 @@ const RelationSheet = forwardRef(function RelationSheet(
             <RelationCard
               relation={relations[0]}
               layout={getRelationLayout(1, 0)}
-              editable={editable}
-              updateRelation={updateRelation}
             />
           </div>
         )}
@@ -60,8 +56,6 @@ const RelationSheet = forwardRef(function RelationSheet(
                 key={relation.id}
                 relation={relation}
                 layout={getRelationLayout(2, index)}
-                editable={editable}
-                updateRelation={updateRelation}
               />
             ))}
           </div>
@@ -74,8 +68,6 @@ const RelationSheet = forwardRef(function RelationSheet(
               <RelationCard
                 relation={relations[0]}
                 layout={getRelationLayout(3, 0)}
-                editable={editable}
-                updateRelation={updateRelation}
               />
             </div>
 
@@ -83,15 +75,11 @@ const RelationSheet = forwardRef(function RelationSheet(
               <RelationCard
                 relation={relations[1]}
                 layout={getRelationLayout(3, 1)}
-                editable={editable}
-                updateRelation={updateRelation}
               />
 
               <RelationCard
                 relation={relations[2]}
                 layout={getRelationLayout(3, 2)}
-                editable={editable}
-                updateRelation={updateRelation}
               />
             </div>
           </>
@@ -105,8 +93,6 @@ const RelationSheet = forwardRef(function RelationSheet(
                 key={relation.id}
                 relation={relation}
                 layout={getRelationLayout(4, index)}
-                editable={editable}
-                updateRelation={updateRelation}
               />
             ))}
           </div>
