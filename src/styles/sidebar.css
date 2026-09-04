@@ -15,6 +15,15 @@
 
 .sidebar{
 
+    /* 【重要】position:relative は必須。
+       ImageUploader.jsx のファイル選択用inputは position:absolute で
+       画面外に隠しているが、position:static の要素は overflow の
+       クリッピング対象にならないため、relative を付けないと
+       このinputだけがサイドバーのスクロール枠を突き抜けて
+       ページ全体の高さを押し広げ、ページごとスクロールしてしまう
+       （＝ヘッダーが流れて左カラムの下が見切れる）。 */
+    position:relative;
+
     height:100%;
     overflow-y:auto;
 
