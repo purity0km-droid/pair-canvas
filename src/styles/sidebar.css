@@ -237,14 +237,12 @@
 
 /* ---------- カラー＋フォント ----------
    背景色・文字色・フォントを1行に並べる。
+   色見本は中身が「色」だけで名前の長さに左右されないので固定幅、
+   フォント名は長いもの（いちばん長いのは「Zen Maru Gothic」）があるので
+   残りの幅を全部フォント選択欄に渡している。
 
-   【カラーコード欄の置き方】
-   カラーコードの入力欄は色見本の「下」に重ねて置き、行の横幅を増やして
-   いない。横に並べると1行に3つ入らなくなり、フォント名（いちばん長い
-   「Zen Maru Gothic」）が切れてしまうため。
-   文字を小さめの等幅にして、色見本と同じ幅（62px）に "#6d5dfc" の
-   7文字が収まるようにしてある。ここの幅や文字サイズを変えるときは、
-   7文字が切れないか必ず確認すること。 */
+   ※フェーズ5で色見本の下にカラーコードの入力欄を置いていたが、
+     ブラウザ標準のカラーピッカーに同じ機能があるためフェーズ7で削除した。 */
 
 .colorRow{
 
@@ -271,50 +269,8 @@
 
 .colorRow .colorField{
 
-    /* 色見本は中身が「色」だけなので、名前の長さに左右されない固定幅でよい。
-       ただし下に置くカラーコード欄が "#6d5dfc" の7文字ぶん必要なので、
-       フェーズ5で 62px → 68px に少しだけ広げている。 */
     flex:none;
-    width:68px;
-
-    /* .panel label の縦並び（項目名 → 色見本 → カラーコード欄）をそのまま使い、
-       色見本とカラーコード欄の間だけ詰める */
-    gap:4px;
-
-}
-
-/* カラーコードの直接入力欄（色見本のすぐ下）。
-
-   【セレクタを .panel .colorRow .colorCode にしている理由】
-   打ち消したい相手は上の
-
-       .panel input[type="text"], .panel textarea, .panel select
-
-   だが、この詳細度は 0,2,1 である。
-   属性セレクタ [type="text"] はクラスと同じ重みで数えるため、
-   「クラス1（.panel）＋属性1（[type=...]）＋要素1（input）」となり、
-   .colorRow .colorCode（0,2,0）では負けてしまう
-   （実際に負けており、font-size も padding も効いていなかった）。
-   クラス3つの 0,3,0 にして確実に勝たせている。 */
-.panel .colorRow .colorCode{
-
-    width:100%;
-
-    padding:3px 2px;
-
-    border-radius:6px;
-
-    text-align:center;
-
-    /* 68px幅に "#6d5dfc"（7文字）を収めるための大きさ。
-       等幅フォントなので、だいたい 11px × 0.6 × 7文字 ＝ 46px。
-       ここを大きくするときは .colorField の width も一緒に広げること
-       （広げすぎるとフォント選択欄が痩せてフォント名が切れる）。 */
-    font-size:11px;
-
-    font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-
-    letter-spacing:0;
+    width:62px;
 
 }
 
@@ -325,15 +281,93 @@
     flex:1;
     min-width:0;
 
-    /* 色見本の側はカラーコード欄のぶん背が高くなるが、フォント選択欄は
-       上端（項目名の行）で揃っていれば十分なので、下は伸ばさない */
+    /* 上端（項目名の行）で揃っていれば十分なので、下は伸ばさない */
     align-self:flex-start;
 
 }
 
-/* 色見本は「今の色が分かれば十分」なので、フェーズ4で高さを半分以下（56px→26px）にした。
-   フェーズ5で同じ行のフォント選択欄(32px)と下端を揃えるため 26px → 32px。
-   行の高さはフォント選択欄で決まるので、この6pxで縦が伸びることはない。 */
+/* ---------- テキスト入力 ----------
+   枠線で囲うのをやめ、薄い塗り＋角丸だけにした（すりガラス寄りの軽い質感） */
+
+.panel input[type="text"],
+.panel textarea,
+.panel select{
+
+    width:100%;
+
+    padding:9px 12px;
+
+    border:none;
+
+    border-radius:12px;
+
+    outline:none;
+
+    background:rgba(109,93,252,.06);
+
+    font-size:13px;
+    font-family:inherit;
+
+    resize:vertical;
+
+    transition:.2s;
+
+}
+
+.panel input[type="text"]:focus,
+.panel textarea:focus,
+.panel select:focus{
+
+    background:rgba(109,93,252,.1);
+
+    box-shadow:0 0 0 2px rgba(109,93,252,.35);
+
+}
+
+/* ---------- フォント選択 ----------
+   選んだフォント自身で表示されるので、下にサンプル表示は出さない
+   （PageSettings.jsx参照）。
+
+   【重要】セレクタは .panel .fontSelect（詳細度 0,2,0）にすること。
+   .fontSelect だけ（0,1,0）だと、上の .panel select（0,1,1）に負けて
+   padding と background-image の指定が一切効かない
+   （フェーズ4まではこの状態で、自前で描いている▼の矢印が表示されず、
+     padding-right も効いていなかった。フェーズ5で修正）。 */
+.panel .fontSelect{
+
+    appearance:none;
+    -webkit-appearance:none;
+
+    height:32px;
+
+    /* 右端に自前の▼を描く（OS標準の矢印を消しているため） */
+    background-image:
+        linear-gradient(45deg, transparent 50%, #8a7f9c 50%),
+        linear-gradient(135deg, #8a7f9c 50%, transparent 50%);
+    background-position:
+        calc(100% - 17px) calc(50% + 1px),
+        calc(100% - 12px) calc(50% + 1px);
+    background-size:5px 5px, 5px 5px;
+    background-repeat:no-repeat;
+
+    /* 【重要】上下のpaddingを .panel select の 9px から 5px に減らしている。
+       高さが32pxなので、9pxのままだと文字の入る領域が
+       32 - 9*2 = 14px しか残らず、行の高さ（13px × 1.5 = 19.5px）が
+       入りきらずに文字の下が切れる。5pxなら 32 - 10 = 22px 確保できる。 */
+    padding-top:5px;
+    padding-bottom:5px;
+    padding-right:30px;
+
+    font-size:13px;
+
+    text-overflow:ellipsis;
+
+    cursor:pointer;
+
+}
+
+/* 色見本は「今の色が分かれば十分」なので、フェーズ4で高さを半分以下（56px→26px）に、
+   フェーズ5でフォント選択欄(32px)と下端を揃えるため32pxにした。 */
 input[type="color"]{
 
     width:100%;
@@ -551,6 +585,12 @@ input[type="color"]{
 
 }
 
+/* 【三角マークについて】
+   <summary> にはブラウザ標準の三角マーカーが最初から付いている。
+   フェーズ6まではそこへ文字としての「▼」も書いていたため、
+   三角が2つ並んで見えていた。
+   ここでは標準マーカーを消し、自前の三角（開くと下向きに回る）を
+   1つだけ描いている。文字側の「▼」は PageSettings.jsx から外した。 */
 .layoutExtra summary{
 
     cursor:pointer;
@@ -560,6 +600,45 @@ input[type="color"]{
     color:#8a7f9c;
 
     user-select:none;
+
+    /* 標準マーカーを消す。Safari は ::-webkit-details-marker で消す必要がある */
+    list-style:none;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:6px;
+
+}
+
+.layoutExtra summary::-webkit-details-marker{
+
+    display:none;
+
+}
+
+/* 自前の三角。閉じているときは右向き、開くと下を向く */
+.layoutExtra summary::before{
+
+    content:"";
+
+    flex:none;
+
+    width:0;
+    height:0;
+
+    border-style:solid;
+    border-width:4px 0 4px 6px;
+    border-color:transparent transparent transparent currentColor;
+
+    transition:transform .15s;
+
+}
+
+.layoutExtra[open] summary::before{
+
+    transform:rotate(90deg);
 
 }
 
@@ -636,53 +715,6 @@ input[type="color"]{
 
     font-size:11px;
     line-height:1.6;
-
-}
-
-.imageRatioButtons{
-
-    display:flex;
-
-    gap:8px;
-
-}
-
-.imageRatioButton{
-
-    flex:1;
-
-    padding:7px 8px;
-
-    border:none;
-    border-radius:999px;
-
-    background:rgba(109,93,252,.06);
-
-    color:#6b6478;
-
-    font-size:12px;
-
-    cursor:pointer;
-
-    transition:.2s;
-
-}
-
-.imageRatioButton:hover{
-
-    background:rgba(109,93,252,.14);
-
-    color:#6D5DFC;
-
-}
-
-.imageRatioButton.active{
-
-    background:#6D5DFC;
-
-    border-color:#6D5DFC;
-
-    color:#fff;
 
 }
 

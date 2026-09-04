@@ -1,6 +1,8 @@
 import { useRef, useState, useEffect } from "react";
 import "../styles/imageUploader.css";
 import { useImageDrag } from "../hooks/useImageDrag";
+import { useImageAspect } from "../hooks/useImageAspect";
+import { buildImageStyle } from "../utils/imageFit";
 
 const DEFAULT_TRANSFORM = { scale: 1, x: 0, y: 0 };
 
@@ -11,9 +13,13 @@ const DEFAULT_TRANSFORM = { scale: 1, x: 0, y: 0 };
 //
 // フェーズ6より前は下限も1で、そこから拡大することしかできなかった。
 // 「枠より小さく表示したい（余白を持たせて全身を入れたい等）」という要望を
-// 受けて、下限を0.3まで下げている。1未満にすると写真が枠の内側に収まり、
+// 受けて下限を下げている。1未満にすると写真が枠の内側に収まり、
 // 余ったところは枠の下地（card.css の .imageBox の背景）が見える。
-const SCALE_MIN = 0.3;
+//
+// フェーズ7で 0.3 → 0.2 に変更。写真と枠の形が大きく違うとき
+// （横長の写真を縦長の枠に入れる等）、写真全体が枠に収まるまで縮小するのに
+// 0.3では届かないことがあるため、余裕をもたせている。
+const SCALE_MIN = 0.2;
 const SCALE_MAX = 3;
 const SCALE_STEP = 0.05;
 
@@ -89,11 +95,19 @@ export default function ImageUploader({
   const [adjusting, setAdjusting] = useState(false);
 
   const currentTransform = transform || DEFAULT_TRANSFORM;
-  const transformStyle = {
-    transform: `translate(${currentTransform.x ?? 0}%, ${
-      currentTransform.y ?? 0
-    }%) scale(${currentTransform.scale ?? 1})`,
-  };
+
+  // 写真そのものの縦横比。カード側(RelationCard)とまったく同じ計算式で
+  // スタイルを組み立てることで、「ここで調整した見た目」と「実際に
+  // 書き出される見た目」が一致するようにしている（utils/imageFit.js）。
+  // サムネイルと位置調整ウインドウは同じ写真・同じ枠の形なので、
+  // 縦横比の取得は1回で足りる。
+  const [imageAspect, handleImageLoad] = useImageAspect(image);
+
+  const transformStyle = buildImageStyle({
+    transform: currentTransform,
+    frameAspect: aspect,
+    imageAspect,
+  });
 
   // 新しい画像に差し替えたら、前の画像用の位置・拡大率を引き継がず、
   // そのまま位置調整ウインドウを開いて調整を促す。
@@ -268,6 +282,7 @@ export default function ImageUploader({
               className="imageThumbImg"
               draggable={false}
               onDragStart={(e) => e.preventDefault()}
+              onLoad={handleImageLoad}
               style={transformStyle}
             />
           </div>
@@ -346,6 +361,7 @@ export default function ImageUploader({
                 className="cropModalImage"
                 draggable={false}
                 onDragStart={(e) => e.preventDefault()}
+                onLoad={handleImageLoad}
                 style={transformStyle}
               />
             </div>

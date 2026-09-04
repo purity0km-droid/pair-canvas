@@ -1,65 +1,18 @@
-import { useState } from "react";
-
 import {
   LAYOUT_PRESETS,
   DEFAULT_LAYOUT_PRESET,
 } from "../utils/relationLayout";
 
-// -----------------------------------------------------------------------
-// カラーコード（#rrggbb）の入力欄つき色見本。
+// 色見本ひとつぶん。
 //
-// 色見本（<input type="color">）だけだと、
-//   - 決まった色を正確に指定できない（OSのカラーピッカーで探すしかない）
-//   - 今どの色なのかを人に伝えられない
-// ので、フェーズ5で「カラーコードを直接打てる欄」を並べた。
-//
-// 入力途中（"#6D" のような状態）でも打てるように、確定した色（page側の値）とは
-// 別に「入力欄に見えている文字」をこのコンポーネントの中で持っている。
-//   - 打っている最中：文字だけ更新し、色は変えない
-//   - 6桁そろった瞬間：正式な色として親へ通知する
-//   - 欄から離れたとき：中途半端な入力なら、確定している色の表記へ戻す
-// -----------------------------------------------------------------------
-function normalizeHex(text) {
-  const body = text.trim().replace(/^#/, "");
-
-  // #abc のような3桁表記も受け付けて、6桁に展開する
-  if (/^[0-9a-fA-F]{3}$/.test(body)) {
-    const [r, g, b] = body;
-    return `#${r}${r}${g}${g}${b}${b}`.toLowerCase();
-  }
-
-  if (/^[0-9a-fA-F]{6}$/.test(body)) {
-    return `#${body}`.toLowerCase();
-  }
-
-  return null;
-}
-
+// フェーズ5で「#rrggbb を直接打てる欄」を色見本の下に並べていたが、
+// ブラウザ標準のカラーピッカー側にカラーコードの入力欄が既にあるため
+// （Chrome/Edgeでは R/G/B 表示の右にある切り替えボタンでHEX表示にできる）、
+// 二重になるのでフェーズ7で削除した。
+// 復活させる場合は、この中に <input type="text"> を足して
+// 「入力途中の文字」と「確定した色」を別々に持つ必要がある
+// （6桁そろった時点で親へ通知し、中途半端なまま欄を離れたら戻す）。
 function ColorField({ label, value, onChange }) {
-  const [draft, setDraft] = useState(value);
-
-  // 色見本側で色を変えたときや、JSON読込・リセットで色が差し替わったときに、
-  // 入力欄の表示も追従させる。
-  // （描画中に前回値と比べて調整する書き方。useEffectでsetStateすると
-  //   描画が1回余分に走るため）
-  const [lastValue, setLastValue] = useState(value);
-  if (lastValue !== value) {
-    setLastValue(value);
-    setDraft(value);
-  }
-
-  function handleTextChange(text) {
-    setDraft(text);
-
-    const hex = normalizeHex(text);
-    if (hex) onChange(hex);
-  }
-
-  function handleBlur() {
-    // 入力しかけのまま欄から離れた場合は、確定している色の表記に戻す
-    if (!normalizeHex(draft)) setDraft(value);
-  }
-
   return (
     <label className="colorField">
 
@@ -69,21 +22,6 @@ function ColorField({ label, value, onChange }) {
         type="color"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-      />
-
-      <input
-        type="text"
-        className="colorCode"
-        value={draft}
-        // スマホで先頭が大文字になったり、勝手に補完されたりしないようにする
-        autoCapitalize="off"
-        autoCorrect="off"
-        spellCheck="false"
-        inputMode="text"
-        maxLength={7}
-        aria-label={`${label}のカラーコード`}
-        onChange={(e) => handleTextChange(e.target.value)}
-        onBlur={handleBlur}
       />
 
     </label>
@@ -249,7 +187,7 @@ export default function PageSettings({ page, updatePage }) {
           別物。役割が混ざらないよう、置き場所も左カラムのページ設定側に
           分けている。 */}
       <details className="layoutExtra">
-        <summary>▼ レイアウト（おまけ）</summary>
+        <summary>レイアウト（おまけ）</summary>
 
         <div className="layoutExtraBody">
           <span>関係性の見せ方</span>
