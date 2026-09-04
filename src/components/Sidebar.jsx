@@ -18,6 +18,9 @@ export default function Sidebar(props) {
 
       <RelationPanel
         relations={props.relations}
+        // 位置調整モーダルのクロップ枠の形は、選んでいるレイアウト
+        // プリセットによって変わるので渡している（フェーズ6）
+        layoutPreset={props.page.layoutPreset}
         selectedRelationId={props.selectedRelationId}
         setSelectedRelationId={props.setSelectedRelationId}
 

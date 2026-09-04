@@ -105,51 +105,56 @@
     color: #888;
 
 }
-/* ===== Large ===== */
+/* ===========================
+   画像枠の実寸（フェーズ6）
 
-.relation-card.large .imageBox{
+   「プリセット × サイズ(large/medium/small)」ごとの実寸を、
+   CSS変数 --img-w / --img-h で1か所にまとめている。
+   各プリセットのCSSはこの変数を参照するだけなので、大きさを変えたいときは
+   下の表だけを直せばよい。
 
-    width:320px;
+   ★ここを変えたら、必ず utils/relationLayout.js の IMAGE_BOX_SIZE も
+     同じ値に直すこと。ズレると、サイドバーの位置調整モーダルで見ている
+     枠の形と、実際に書き出される画像の形が食い違う。
+=========================== */
 
-    height:280px;
+/* 既定（対面）。プリセット指定が無い場合もこれになる */
+.relation-card.large  { --img-w:320px; --img-h:280px; }
+.relation-card.medium { --img-w:320px; --img-h:320px; }
+.relation-card.small  { --img-w:150px; --img-h:200px; }
+
+.relation-card.preset-band.large  { --img-w:460px; --img-h:320px; }
+.relation-card.preset-band.medium { --img-w:460px; --img-h:340px; }
+.relation-card.preset-band.small  { --img-w:223px; --img-h:190px; }
+
+.relation-card.preset-overlap.large  { --img-w:300px; --img-h:330px; }
+.relation-card.preset-overlap.medium { --img-w:300px; --img-h:340px; }
+.relation-card.preset-overlap.small  { --img-w:150px; --img-h:190px; }
+
+.relation-card.preset-headline.large  { --img-w:422px; --img-h:230px; }
+.relation-card.preset-headline.medium { --img-w:422px; --img-h:260px; }
+.relation-card.preset-headline.small  { --img-w:197px; --img-h:150px; }
+
+.relation-card.preset-twoway.large  { --img-w:300px; --img-h:300px; }
+.relation-card.preset-twoway.medium { --img-w:300px; --img-h:320px; }
+.relation-card.preset-twoway.small  { --img-w:130px; --img-h:170px; }
+
+/* 語りだけ丸なので正方形 */
+.relation-card.preset-quote.large  { --img-w:168px; --img-h:168px; }
+.relation-card.preset-quote.medium { --img-w:180px; --img-h:180px; }
+.relation-card.preset-quote.small  { --img-w:110px; --img-h:110px; }
+
+.imageBox{
+
+    width:var(--img-w);
+
+    height:var(--img-h);
 
 }
 
-.relation-card.large .subInfo{
+.subInfo{
 
-    width:320px;
-
-}
-
-/* ===== Medium ===== */
-
-.relation-card.medium .imageBox{
-
-    width:320px;
-
-    height:320px;
-
-}
-
-.relation-card.medium .subInfo{
-
-    width:320px;
-
-}
-
-/* ===== Small ===== */
-
-.relation-card.small .imageBox{
-
-    width:150px;
-
-    height:200px;
-
-}
-
-.relation-card.small .subInfo{
-
-    width:150px;
+    width:var(--img-w);
 
 }
 
@@ -159,55 +164,28 @@
    .character に ratioBig / ratioSmall のどちらかが付く。
    縦横比は変えず、大きさだけ一定倍率（1.2倍／0.8倍）で拡大縮小している
    （縦横比を変えると、位置調整モーダルのクロップ枠とズレてしまうため）。
+
+   フェーズ6でCSS変数(--img-w/--img-h)ベースに書き直したので、
+   プリセットやサイズが増えてもここは触らなくてよくなった
+   （以前はサイズ3種ぶんの実寸を個別に書いていた）。
 =========================== */
 
-/* ---- Large（1.2倍 / 0.8倍） ---- */
-.relation-card.large .character.ratioBig .imageBox{
-    width:384px;
-    height:336px;
+.character.ratioBig .imageBox{
+    width:calc(var(--img-w) * 1.2);
+    height:calc(var(--img-h) * 1.2);
 }
-.relation-card.large .character.ratioBig .subInfo{
-    width:384px;
-}
-.relation-card.large .character.ratioSmall .imageBox{
-    width:256px;
-    height:224px;
-}
-.relation-card.large .character.ratioSmall .subInfo{
-    width:256px;
+.character.ratioBig .subInfo{
+    width:calc(var(--img-w) * 1.2);
 }
 
-/* ---- Medium（1.2倍 / 0.8倍） ---- */
-.relation-card.medium .character.ratioBig .imageBox{
-    width:384px;
-    height:384px;
+.character.ratioSmall .imageBox{
+    width:calc(var(--img-w) * 0.8);
+    height:calc(var(--img-h) * 0.8);
 }
-.relation-card.medium .character.ratioBig .subInfo{
-    width:384px;
-}
-.relation-card.medium .character.ratioSmall .imageBox{
-    width:256px;
-    height:256px;
-}
-.relation-card.medium .character.ratioSmall .subInfo{
-    width:256px;
+.character.ratioSmall .subInfo{
+    width:calc(var(--img-w) * 0.8);
 }
 
-/* ---- Small（1.2倍 / 0.8倍） ---- */
-.relation-card.small .character.ratioBig .imageBox{
-    width:180px;
-    height:240px;
-}
-.relation-card.small .character.ratioBig .subInfo{
-    width:180px;
-}
-.relation-card.small .character.ratioSmall .imageBox{
-    width:120px;
-    height:160px;
-}
-.relation-card.small .character.ratioSmall .subInfo{
-    width:120px;
-}
 .cardImage{
 
     width:100%;
@@ -451,4 +429,600 @@
 .cardImage{
     -webkit-user-drag:none;
     user-select:none;
+}
+
+/* =====================================================================
+   レイアウトプリセット（フェーズ6）
+
+   シート全体で1つ選ぶ「関係性の見せ方」。左カラムの
+   「▼ レイアウト（おまけ）」で切り替える（PageSettings.jsx）。
+
+   画像枠の実寸はこのファイル上部の --img-w / --img-h で
+   「プリセット × サイズ」ごとに与えているので、以下では
+   並べ方・重なり・余白だけを書いている。
+
+   ★プリセットを足すときは utils/relationLayout.js（一覧と実寸）と
+     RelationCard.jsx（組み方）もセットで直すこと。
+===================================================================== */
+
+/* 左右の補足情報を、画像の下ではなくカードの下側にまとめて置く形。
+   帯・交差・語りで使う。 */
+.subInfoRow{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    gap:24px;
+
+}
+
+.subInfoRow .subInfo{
+
+    /* この行では画像枠の幅に合わせる必要が無いので、変数の幅指定を打ち消す */
+    width:auto;
+
+    margin-top:0;
+
+    min-width:0;
+
+}
+
+/* =====================================
+   帯（フルブリード）
+   写真をカード幅いっぱいに2分割し、継ぎ目に関係性を大きく置く。
+   カード自体のpaddingを0にして、写真をカードの縁まで出している。
+===================================== */
+
+.relation-card.preset-band{
+
+    padding:0;
+
+}
+
+.preset-band .bandArea{
+
+    position:relative;
+
+    display:grid;
+
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+
+    gap:0;
+
+}
+
+.preset-band .bandHalf{
+
+    min-width:0;
+
+}
+
+/* 帯では画像枠を「半分の幅いっぱい」に広げる。
+   高さだけ --img-h を使い、幅は枠側に合わせる。 */
+.preset-band .imageBox{
+
+    width:100%;
+
+    height:var(--img-h);
+
+    border-radius:0;
+
+}
+
+.preset-band .nameOverlay{
+
+    bottom:14px;
+
+}
+
+.preset-band .nameOverlay.left{ left:14px; }
+.preset-band .nameOverlay.right{ right:14px; }
+
+/* 継ぎ目に置く関係性。帯では主役なので一回り大きくする */
+.preset-band .relationOverlay.onBand .relationLabel{
+
+    padding:12px 26px;
+
+    font-size:18px;
+    font-weight:700;
+
+    letter-spacing:.05em;
+
+}
+
+.preset-band .relationOverlay.onBand .relationLabelSub{
+
+    padding:7px 16px;
+
+    font-size:13px;
+    font-weight:400;
+
+    letter-spacing:0;
+
+}
+
+.preset-band .relationOverlay.onBand .arrow{
+
+    /* 写真の上に直接乗るので、白抜き＋暗い影にする（既定は逆の組み合わせ）。
+       影のぼかしを大きくすると黒い円形のにじみが見えてしまうので、
+       半径は小さめに抑えること。 */
+    color:#ffffff;
+
+    text-shadow:
+        0 1px 3px rgba(15,13,18,.75),
+        0 0 6px rgba(15,13,18,.5);
+
+}
+
+.preset-band .bandBody{
+
+    padding:26px 28px 28px;
+
+}
+
+.preset-band .storyTitle{
+
+    margin-top:22px;
+
+}
+
+.preset-band .description{
+
+    margin-top:20px;
+
+}
+
+.relation-card.small.preset-band .bandBody{
+
+    padding:16px 18px 18px;
+
+}
+
+.relation-card.small.preset-band .relationOverlay.onBand .relationLabel{
+
+    padding:7px 12px;
+
+    font-size:12px;
+
+}
+
+/* =====================================
+   交差（重ね）
+   2枚を横に重ねて「近さ」そのものを絵にする。
+===================================== */
+
+.preset-overlap .overlapArea{
+
+    position:relative;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:flex-start;
+
+}
+
+.preset-overlap .overlapFront{
+
+    position:relative;
+
+    z-index:2;
+
+}
+
+/* 重なり量は画像幅の25%。実寸で書くとサイズごとに書き分けが必要になるため、
+   --img-w からの割合で出している。 */
+.preset-overlap .overlapBack{
+
+    position:relative;
+
+    z-index:1;
+
+    margin-left:calc(var(--img-w) * -0.25);
+
+    margin-top:calc(var(--img-h) * 0.1);
+
+    box-shadow:-14px 0 30px -18px rgba(20,17,24,.5);
+
+    border-radius:20px;
+
+}
+
+.preset-overlap .relationCenter{
+
+    /* 重なっているところに載せる（上下は画像の少し上寄り） */
+    top:calc(var(--img-h) * 0.45);
+
+}
+
+.preset-overlap .subInfoRow{
+
+    margin-top:16px;
+
+}
+
+/* =====================================
+   見出し
+   関係性の言葉をカードの一番上に大見出しとして出す。
+===================================== */
+
+.preset-headline .headlineBlock{
+
+    display:flex;
+    flex-direction:column;
+
+    align-items:center;
+
+    gap:6px;
+
+    padding:18px 28px;
+
+    /* 名前帯・プロット名と同じ暗色スクリム */
+    background:rgba(15,13,18,.72);
+
+    border-radius:16px;
+
+    color:#fff;
+
+}
+
+.preset-headline .headlineMain{
+
+    font-size:24px;
+    font-weight:700;
+
+    letter-spacing:.1em;
+
+    text-align:center;
+
+    line-height:1.4;
+
+    white-space:pre-wrap;
+
+}
+
+.preset-headline .headlineSub{
+
+    font-size:13px;
+
+    opacity:.82;
+
+    letter-spacing:.04em;
+
+    text-align:center;
+
+    white-space:pre-wrap;
+
+}
+
+/* 見出し型では画像を横長にして左右に敷き詰める。
+
+   【セレクタの詳細度に注意】
+   .headlineArea には .characterArea も付いているため、既定の
+
+       .relation-card.small .characterArea{ grid-template-columns:235px 235px; gap:8px; }
+
+   （クラス3つ＝0,3,0）と競合する。0,2,0 で書くと小サイズのときだけ
+   2列235px固定に戻され、画像がはみ出して崩れる（実際に崩れた）。
+   .relation-card.preset-headline .headlineArea で 0,3,0 にし、
+   さらにこの記述が後ろにあるので確実に勝つ。gapも明示しておく。 */
+.relation-card.preset-headline .headlineArea{
+
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+
+    gap:28px;
+
+    margin-top:24px;
+
+}
+
+.relation-card.small.preset-headline .headlineArea{
+
+    gap:12px;
+
+}
+
+.preset-headline .imageBox{
+
+    width:100%;
+
+}
+
+.preset-headline .subInfo{
+
+    width:100%;
+
+}
+
+.relation-card.small.preset-headline .headlineBlock{
+
+    padding:10px 14px;
+
+}
+
+.relation-card.small.preset-headline .headlineMain{
+
+    font-size:15px;
+
+    letter-spacing:.06em;
+
+}
+
+.relation-card.small.preset-headline .headlineSub{
+
+    font-size:11px;
+
+}
+
+.relation-card.small.preset-headline .headlineArea{
+
+    margin-top:14px;
+
+}
+
+/* =====================================
+   双方向
+   矢印を上下2本に分け、左→右と右→左で別々の言葉を置く。
+===================================== */
+
+/* 【セレクタの詳細度に注意】見出し型と同じ理由で 0,3,0 にしている
+   （.relation-card.small .characterArea に負けると3列にならず、
+     右の画像が2段目へ落ちてカードからはみ出す）。 */
+.relation-card.preset-twoway .twowayArea{
+
+    grid-template-columns:var(--img-w) minmax(0, 1fr) var(--img-w);
+
+    gap:16px;
+
+}
+
+.relation-card.small.preset-twoway .twowayArea{
+
+    gap:8px;
+
+}
+
+.preset-twoway .twowayCenter{
+
+    display:flex;
+    flex-direction:column;
+
+    align-items:center;
+
+    /* 上下2本の矢印が近すぎると「ラベルと矢印の対応」が読み取りにくいので、
+       レーン内(8px)よりレーン間(30px)をはっきり広く取っている */
+    gap:30px;
+
+}
+
+.preset-twoway .twowayLane{
+
+    display:flex;
+    flex-direction:column;
+
+    align-items:center;
+
+    gap:8px;
+
+    width:100%;
+
+}
+
+.preset-twoway .twowayLane .relationLabel{
+
+    max-width:100%;
+
+}
+
+/* 矢印。中央の列いっぱいに伸ばして「向き」をはっきり見せる */
+.preset-twoway .twowayArrow{
+
+    width:100%;
+
+    text-align:center;
+
+    color:#666;
+
+    font-size:26px;
+    font-weight:bold;
+
+    line-height:1;
+
+    letter-spacing:-.1em;
+
+    text-shadow:
+        0 1px 8px rgba(255,255,255,.85),
+        0 0 14px rgba(255,255,255,.5);
+
+}
+
+.relation-card.small.preset-twoway .twowayCenter{
+
+    gap:12px;
+
+}
+
+.relation-card.small.preset-twoway .twowayArrow{
+
+    font-size:18px;
+
+}
+
+.relation-card.small.preset-twoway .twowayLane .relationLabel{
+
+    padding:5px 8px;
+
+    font-size:11px;
+
+}
+
+/* =====================================
+   語り
+   説明文を主役に置き、写真は丸く小さく添える。
+===================================== */
+
+.preset-quote .quotePortraits{
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:flex-start;
+
+}
+
+.preset-quote .imageBox{
+
+    border-radius:50%;
+
+}
+
+.preset-quote .quoteFront{
+
+    position:relative;
+
+    z-index:2;
+
+}
+
+.preset-quote .quoteBack{
+
+    position:relative;
+
+    z-index:1;
+
+    margin-left:calc(var(--img-w) * -0.18);
+
+    border-radius:50%;
+
+    box-shadow:-12px 0 26px -16px rgba(20,17,24,.5);
+
+}
+
+.preset-quote .quoteNames{
+
+    display:flex;
+
+    justify-content:center;
+
+    gap:10px;
+
+    margin-top:-14px;
+
+    position:relative;
+
+    z-index:5;
+
+}
+
+/* 語りでは名前帯を写真の下に並べるので、位置指定(absolute)は打ち消す */
+.preset-quote .quoteNames .nameOverlay{
+
+    position:static;
+
+    max-width:none;
+
+    padding:7px 14px;
+
+}
+
+.preset-quote .quoteRelation{
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    gap:8px;
+
+    margin-top:22px;
+
+}
+
+.preset-quote .quoteRelation .relationLabel{
+
+    font-size:15px;
+    font-weight:700;
+
+    letter-spacing:.04em;
+
+}
+
+.preset-quote .quoteRelation .relationLabelSub{
+
+    font-size:12px;
+    font-weight:400;
+
+    letter-spacing:0;
+
+}
+
+/* 説明文が主役。行間を広く、文字も大きめにする */
+.preset-quote .quoteBody{
+
+    max-width:680px;
+
+    margin:28px auto 0;
+
+}
+
+.preset-quote .quoteBody .description{
+
+    margin-top:0;
+
+    font-size:15px;
+
+    line-height:2.1;
+
+}
+
+.preset-quote .subInfoRow{
+
+    max-width:680px;
+
+    margin:20px auto 0;
+
+}
+
+.preset-quote .storyTitle{
+
+    margin-top:26px;
+
+}
+
+.relation-card.small.preset-quote .quoteRelation{
+
+    margin-top:12px;
+
+}
+
+.relation-card.small.preset-quote .quoteRelation .relationLabel{
+
+    font-size:12px;
+
+}
+
+.relation-card.small.preset-quote .quoteBody{
+
+    margin-top:14px;
+
+}
+
+.relation-card.small.preset-quote .quoteBody .description{
+
+    font-size:12px;
+
+    line-height:1.9;
+
+}
+
+.relation-card.small.preset-quote .quoteNames .nameOverlay{
+
+    padding:5px 9px;
+
+    font-size:11px;
+
 }

@@ -16,6 +16,7 @@ import { MAX_RELATIONS } from "../constants";
 // 渡す形に戻す（RelationAccordion.jsx 側のコメントも参照）。
 export default function RelationPanel({
   relations,
+  layoutPreset,
   selectedRelationId,
   setSelectedRelationId,
   updateRelation,
@@ -75,6 +76,7 @@ export default function RelationPanel({
           relation={relations[selectedIndex]}
           index={selectedIndex}
           totalCount={relations.length}
+          layoutPreset={layoutPreset}
           updateRelation={updateRelation}
           removeRelation={removeRelation}
         />

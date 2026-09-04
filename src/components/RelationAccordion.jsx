@@ -1,5 +1,9 @@
 import ImageUploader from "./ImageUploader";
-import { getRelationLayout, LAYOUT_IMAGE_ASPECT } from "../utils/relationLayout";
+import {
+  getRelationLayout,
+  getImageAspect,
+  DEFAULT_LAYOUT_PRESET,
+} from "../utils/relationLayout";
 
 // 関係性1件ぶんの編集ボックス。
 //
@@ -23,14 +27,18 @@ export default function RelationAccordion({
   relation,
   index,
   totalCount,
+  layoutPreset = DEFAULT_LAYOUT_PRESET,
   updateRelation,
   removeRelation,
 }) {
   // この関係性が実際のカードで表示されるサイズ(large/medium/small)を求め、
   // 画像の位置調整プレビュー枠を「実際に書き出される画像と同じ縦横比」にする。
   // （判定ロジックは RelationSheet.jsx と揃えるため utils/relationLayout.js に集約）
+  //
+  // フェーズ6でレイアウトプリセットが入り、枠の形はサイズだけでなく
+  // プリセットによっても変わるようになったため、両方を渡して求めている。
   const layout = getRelationLayout(totalCount, index);
-  const imageAspect = LAYOUT_IMAGE_ASPECT[layout];
+  const imageAspect = getImageAspect(layoutPreset, layout);
 
   // 左右のキャラクター設定（画像・名前・補足・画像の位置調整）をまとめて入れ替える。
   // 4つのフィールドを個別にupdateRelationしているが、どれも「入れ替え前」の

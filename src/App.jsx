@@ -9,6 +9,7 @@ import Preview from "./components/Preview";
 import ExportPreview from "./components/ExportPreview";
 
 import { createRelation, normalizeRelation } from "./utils/createRelation";
+import { DEFAULT_LAYOUT_PRESET, isLayoutPreset } from "./utils/relationLayout";
 import { MAX_RELATIONS, DRAFT_STORAGE_KEY } from "./constants";
 
 const DEFAULT_PAGE = {
@@ -18,7 +19,18 @@ const DEFAULT_PAGE = {
   textColor: "#3d3d3d",
   backgroundPattern: "solid",
   fontFamily: "Noto Sans JP",
+
+  // レイアウトプリセット（フェーズ6）。シート全体で1つだけ選ぶ。
+  // 一覧は utils/relationLayout.js の LAYOUT_PRESETS。
+  layoutPreset: DEFAULT_LAYOUT_PRESET,
 };
+
+// 下書きや読み込んだJSONに、知らないプリセット名が入っていた場合の保険。
+// （将来プリセットを削除・改名したときに、表示が壊れるのを防ぐ）
+function withValidPreset(page) {
+  if (isLayoutPreset(page.layoutPreset)) return page;
+  return { ...page, layoutPreset: DEFAULT_LAYOUT_PRESET };
+}
 
 // -----------------------------------------------------------------
 // 自動下書き保存（localStorage）
@@ -45,7 +57,7 @@ function loadDraft() {
 function initialPage() {
   const draft = loadDraft();
   if (draft?.page && typeof draft.page === "object") {
-    return { ...DEFAULT_PAGE, ...draft.page };
+    return withValidPreset({ ...DEFAULT_PAGE, ...draft.page });
   }
   return DEFAULT_PAGE;
 }
@@ -185,7 +197,10 @@ function App() {
         }
 
         if (data.page && typeof data.page === "object") {
-          setPage({ ...DEFAULT_PAGE, ...data.page });
+          // 古いJSON（layoutPreset が無いもの）を読み込んでも壊れないよう、
+          // 欠けている項目は DEFAULT_PAGE で埋め、知らないプリセット名は
+          // 既定へ戻している
+          setPage(withValidPreset({ ...DEFAULT_PAGE, ...data.page }));
         }
 
         if (Array.isArray(data.relations) && data.relations.length > 0) {
