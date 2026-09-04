@@ -1,12 +1,20 @@
 import ImageUploader from "./ImageUploader";
+import { getRelationLayout, LAYOUT_IMAGE_ASPECT } from "../utils/relationLayout";
 
 export default function RelationAccordion({
   relation,
+  index,
+  totalCount,
   isOpen,
   onToggle,
   updateRelation,
   removeRelation,
 }) {
+  // この関係性が実際のカードで表示されるサイズ(large/medium/small)を求め、
+  // 画像の位置調整プレビュー枠を「実際に書き出される画像と同じ縦横比」にする。
+  // （判定ロジックは RelationSheet.jsx と揃えるため utils/relationLayout.js に集約）
+  const layout = getRelationLayout(totalCount, index);
+  const imageAspect = LAYOUT_IMAGE_ASPECT[layout];
   return (
     <section className="panel">
 
@@ -65,6 +73,7 @@ export default function RelationAccordion({
                   t
                 )
               }
+              aspect={imageAspect}
             />
 
           </label>
@@ -130,6 +139,7 @@ export default function RelationAccordion({
                   t
                 )
               }
+              aspect={imageAspect}
             />
 
           </label>

@@ -1,6 +1,7 @@
 import { forwardRef } from "react";
 
 import RelationCard from "./RelationCard";
+import { getRelationLayout } from "../utils/relationLayout";
 
 // -----------------------------------------------------------------------
 // RelationSheet
@@ -44,7 +45,7 @@ const RelationSheet = forwardRef(function RelationSheet(
           <div className="cardGrid one">
             <RelationCard
               relation={relations[0]}
-              layout="large"
+              layout={getRelationLayout(1, 0)}
               editable={editable}
               updateRelation={updateRelation}
             />
@@ -54,11 +55,11 @@ const RelationSheet = forwardRef(function RelationSheet(
         {/* 2枚 */}
         {relations.length === 2 && (
           <div className="cardGrid two">
-            {relations.map((relation) => (
+            {relations.map((relation, index) => (
               <RelationCard
                 key={relation.id}
                 relation={relation}
-                layout="medium"
+                layout={getRelationLayout(2, index)}
                 editable={editable}
                 updateRelation={updateRelation}
               />
@@ -72,7 +73,7 @@ const RelationSheet = forwardRef(function RelationSheet(
             <div className="cardGrid threeTop">
               <RelationCard
                 relation={relations[0]}
-                layout="large"
+                layout={getRelationLayout(3, 0)}
                 editable={editable}
                 updateRelation={updateRelation}
               />
@@ -81,14 +82,14 @@ const RelationSheet = forwardRef(function RelationSheet(
             <div className="cardGrid threeBottom">
               <RelationCard
                 relation={relations[1]}
-                layout="small"
+                layout={getRelationLayout(3, 1)}
                 editable={editable}
                 updateRelation={updateRelation}
               />
 
               <RelationCard
                 relation={relations[2]}
-                layout="small"
+                layout={getRelationLayout(3, 2)}
                 editable={editable}
                 updateRelation={updateRelation}
               />
@@ -99,11 +100,11 @@ const RelationSheet = forwardRef(function RelationSheet(
         {/* 4枚 */}
         {relations.length === 4 && (
           <div className="cardGrid four">
-            {relations.map((relation) => (
+            {relations.map((relation, index) => (
               <RelationCard
                 key={relation.id}
                 relation={relation}
-                layout="small"
+                layout={getRelationLayout(4, index)}
                 editable={editable}
                 updateRelation={updateRelation}
               />

@@ -48,11 +48,13 @@ export default function RelationPanel({
 
       </div>
 
-      {relations.map((relation) => (
+      {relations.map((relation, index) => (
 
         <RelationAccordion
           key={relation.id}
           relation={relation}
+          index={index}
+          totalCount={relations.length}
           isOpen={selectedRelationId === relation.id}
           onToggle={() =>
             setSelectedRelationId(relation.id)

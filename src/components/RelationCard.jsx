@@ -1,71 +1,9 @@
-import { useRef } from "react";
-
 import "../styles/card.css";
+import { useImageDrag } from "../hooks/useImageDrag";
 
-function clamp(value, min, max) {
-  return Math.min(max, Math.max(min, value));
-}
-
-// -----------------------------------------------------------------------
-// 画像のドラッグ移動（位置調整）をまとめた小さなフック。
-// 拡大率（scale）はサイドバーのスライダー側で変更する想定なので、
-// ここでは位置（x, y）のドラッグだけを扱っています。
-//
+// 画像のドラッグ移動（位置調整）の処理本体は src/hooks/useImageDrag.js に
+// 共通化しています（サイドバーの範囲調整枠(ImageUploader.jsx)と共有するため）。
 // editable が false（PNG書き出し用の非表示コピー）のときは何もしません。
-// -----------------------------------------------------------------------
-function useImageDrag({ editable, hasImage, transform, onChange }) {
-  const boxRef = useRef(null);
-  const dragState = useRef(null);
-
-  function handlePointerDown(e) {
-    if (!editable || !hasImage) return;
-    const box = boxRef.current;
-    if (!box) return;
-
-    box.setPointerCapture?.(e.pointerId);
-    dragState.current = {
-      pointerId: e.pointerId,
-      startX: e.clientX,
-      startY: e.clientY,
-      startTransform: transform,
-      boxWidth: box.clientWidth || 1,
-      boxHeight: box.clientHeight || 1,
-    };
-  }
-
-  function handlePointerMove(e) {
-    if (!dragState.current) return;
-    const { startX, startY, startTransform, boxWidth, boxHeight } =
-      dragState.current;
-
-    const dxPercent = ((e.clientX - startX) / boxWidth) * 100;
-    const dyPercent = ((e.clientY - startY) / boxHeight) * 100;
-
-    // 動かしすぎて画像が完全に枠外へ消えてしまわないよう、大まかに範囲を制限
-    const nextX = clamp(startTransform.x + dxPercent, -50, 50);
-    const nextY = clamp(startTransform.y + dyPercent, -50, 50);
-
-    onChange({ ...startTransform, x: nextX, y: nextY });
-  }
-
-  function handlePointerUp(e) {
-    if (!dragState.current) return;
-    dragState.current = null;
-    boxRef.current?.releasePointerCapture?.(e.pointerId);
-  }
-
-  return {
-    boxRef,
-    dragHandlers: editable && hasImage
-      ? {
-          onPointerDown: handlePointerDown,
-          onPointerMove: handlePointerMove,
-          onPointerUp: handlePointerUp,
-          onPointerCancel: handlePointerUp,
-        }
-      : {},
-  };
-}
 
 function CharacterImage({ image, transform, editable, dragProps, boxRef, alt }) {
   const { scale = 1, x = 0, y = 0 } = transform || {};

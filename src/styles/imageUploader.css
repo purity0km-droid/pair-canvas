@@ -21,17 +21,6 @@
 
 }
 
-.imagePreview{
-
-    width:100%;
-    height:100%;
-
-    object-fit:cover;
-
-    display:block;
-
-}
-
 .imagePlaceholder{
 
     display:flex;
@@ -98,57 +87,133 @@
         transform .2s;
 
 }
-.removeImageButton{
+/* ==========================
+   クロップ枠(Xのアイコン設定のような、範囲表示＋位置調整UI)
+========================== */
+.cropWrap{
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+
+    gap:10px;
+
+}
+
+.cropStage{
+
+    position:relative;
+
+    margin:0 auto;
+
+    overflow:hidden;
+
+    border-radius:12px;
+
+    background:#1a1a1a;
+
+    cursor:grab;
+
+    touch-action:none; /* ドラッグ中にスマホの画面スクロールが起きないようにする */
+
+    border:2px dashed transparent;
+
+    transition:border-color .2s;
+
+}
+
+.cropStage:active{
+
+    cursor:grabbing;
+
+}
+
+/* 新しい画像をドラッグ＆ドロップで差し替えようとしているとき */
+.cropStage.dragging{
+
+    border-color:#6D5DFC;
+
+}
+
+.cropImage{
 
     position:absolute;
 
-    top:10px;
-    right:10px;
+    /* ブラウザ標準の「画像をドラッグしてコピー/移動」動作を止める */
+    -webkit-user-drag:none;
+    user-select:none;
 
-    width:30px;
-    height:30px;
+    /* ドラッグはcropStage側で受け取るので、img自体はイベントを拾わない */
+    pointer-events:none;
 
-    border:none;
-    border-radius:50%;
+}
 
-    background:rgba(0,0,0,.6);
+/* 実際に切り取られる範囲。box-shadowをステージより十分大きく広げることで
+   「枠の外側だけが暗く見える」状態を作っている（枠の中はそのまま素通し）。 */
+.cropFrame{
 
-    color:#fff;
+    position:absolute;
 
-    font-size:18px;
-    line-height:1;
+    top:50%;
+    left:50%;
+
+    transform:translate(-50%,-50%);
+
+    border:2px solid #fff;
+    border-radius:6px;
+
+    box-shadow:0 0 0 2000px rgba(0,0,0,.55);
+
+    pointer-events:none;
+
+}
+
+.cropToolbar{
 
     display:flex;
-    justify-content:center;
-    align-items:center;
+
+    gap:8px;
+
+}
+
+.cropIconButton{
+
+    padding:6px 12px;
+
+    border:1px solid #ddd;
+    border-radius:999px;
+
+    background:#fff;
+
+    color:#666;
+
+    font-size:12px;
 
     cursor:pointer;
 
-    opacity:0;
-
     transition:.2s;
 
-    backdrop-filter:blur(6px);
+}
+
+.cropIconButton:hover{
+
+    border-color:#6D5DFC;
+
+    color:#6D5DFC;
 
 }
 
-.imageUploader:hover .removeImageButton{
+.cropIconButton.danger:hover{
 
-    opacity:1;
+    border-color:#ff4b5c;
 
-}
-
-.removeImageButton:hover{
-
-    background:#ff4b5c;
-
-    transform:scale(1.08);
+    color:#ff4b5c;
 
 }
 
 /* ==========================
    画像の拡大率調整
-   （位置のドラッグ移動はカード上の画像を直接つまんで行う）
+   （位置のドラッグ移動は上のクロップ枠を直接つまんで行う）
 ========================== */
 .imageAdjust{
 
