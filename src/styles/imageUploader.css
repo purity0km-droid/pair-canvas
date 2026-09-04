@@ -358,15 +358,30 @@
 
 }
 
-.imageAdjustRow{
+/* 【セレクタを .imageAdjust .imageAdjustRow にしている理由】
+   この行は <label> なので、サイドバー側の
+
+       .panel label{ display:flex; flex-direction:column; ... }
+
+   （詳細度 0,1,1）の影響を受ける。位置調整モーダルは
+   .panel の中（関係性の編集ボックスの中）に置かれているため、
+   .imageAdjustRow（0,1,0）では負けて縦積みのままになっていた
+   （「大きさ」→スライダー→「50%」が縦に並んでしまう）。
+   クラス2つの 0,2,0 にして、意図どおり横1行にしている。 */
+.imageAdjust .imageAdjustRow{
 
     flex:1;
 
     display:flex;
 
+    flex-direction:row;
+
     align-items:center;
 
     gap:8px;
+
+    /* .panel label の margin-bottom:14px も一緒に効いてしまうので消す */
+    margin-bottom:0;
 
     font-size:12px;
 
@@ -374,9 +389,29 @@
 
 }
 
-.imageAdjustRow input[type="range"]{
+.imageAdjust .imageAdjustRow input[type="range"]{
 
     flex:1;
+
+    /* 下限を0.3まで下げたぶんスライダーの実用域が広がったので、
+       細くなりすぎないよう最低幅を確保しておく */
+    min-width:90px;
+
+}
+
+/* 現在の倍率（％）。数字が2桁⇔3桁で動いてもスライダーの幅が
+   ガタつかないよう、幅を固定し数字を等幅にしている。 */
+.imageAdjustValue{
+
+    flex:none;
+
+    width:38px;
+
+    text-align:right;
+
+    font-size:11px;
+
+    font-variant-numeric:tabular-nums;
 
 }
 

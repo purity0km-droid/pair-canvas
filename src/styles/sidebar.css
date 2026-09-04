@@ -578,6 +578,67 @@ input[type="color"]{
 
 }
 
+/* レイアウトプリセットの選択（フェーズ6）。
+   6つあるので3列×2段。既定で折りたたまれている <details> の中なので、
+   普段の操作フローには出てこない。 */
+.presetGrid{
+
+    display:grid;
+
+    grid-template-columns:repeat(3, minmax(0, 1fr));
+
+    gap:6px;
+
+}
+
+.presetButton{
+
+    padding:7px 4px;
+
+    border:none;
+    border-radius:999px;
+
+    background:rgba(109,93,252,.06);
+
+    color:#6b6478;
+
+    font-family:inherit;
+    font-size:12px;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+}
+
+.presetButton:hover{
+
+    background:rgba(109,93,252,.14);
+
+    color:#6D5DFC;
+
+}
+
+.presetButton.active{
+
+    background:#6D5DFC;
+
+    color:#fff;
+
+}
+
+/* 選択中のプリセットの説明 */
+.presetNote{
+
+    margin:2px 0 0;
+
+    color:#8a7f9c;
+
+    font-size:11px;
+    line-height:1.6;
+
+}
+
 .imageRatioButtons{
 
     display:flex;

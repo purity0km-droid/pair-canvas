@@ -1,5 +1,10 @@
 import { useState } from "react";
 
+import {
+  LAYOUT_PRESETS,
+  DEFAULT_LAYOUT_PRESET,
+} from "../utils/relationLayout";
+
 // -----------------------------------------------------------------------
 // カラーコード（#rrggbb）の入力欄つき色見本。
 //
@@ -232,6 +237,55 @@ export default function PageSettings({ page, updatePage }) {
         </div>
 
       </label>
+
+      {/* レイアウトプリセット（フェーズ6）。
+
+          要件定義 6-2 で「レイアウトプリセットをチップ形式で前面に並べる
+          構成は主画面に持ち込まず、"おまけ" 機能として既定では折りたたむ」と
+          決めているため、<details> で閉じた状態にしている
+          （関係性ごとの「▼ レイアウト（おまけ）」と同じ扱い）。
+
+          こちらはシート全体に効く設定で、関係性ごとの「写真の大きさ」とは
+          別物。役割が混ざらないよう、置き場所も左カラムのページ設定側に
+          分けている。 */}
+      <details className="layoutExtra">
+        <summary>▼ レイアウト（おまけ）</summary>
+
+        <div className="layoutExtraBody">
+          <span>関係性の見せ方</span>
+
+          <div className="presetGrid">
+            {LAYOUT_PRESETS.map((preset) => (
+              <button
+                key={preset.id}
+                type="button"
+                className={
+                  (page.layoutPreset || DEFAULT_LAYOUT_PRESET) === preset.id
+                    ? "presetButton active"
+                    : "presetButton"
+                }
+                title={preset.description}
+                onClick={() => updatePage("layoutPreset", preset.id)}
+              >
+                {preset.label}
+              </button>
+            ))}
+          </div>
+
+          {/* 選択中のものだけ説明を出す。6つぶん並べると左カラムが
+              説明文で埋まってしまうため。 */}
+          <p className="presetNote">
+            {
+              (
+                LAYOUT_PRESETS.find(
+                  (preset) =>
+                    preset.id === (page.layoutPreset || DEFAULT_LAYOUT_PRESET)
+                ) || LAYOUT_PRESETS[0]
+              ).description
+            }
+          </p>
+        </div>
+      </details>
 
     </section>
   );

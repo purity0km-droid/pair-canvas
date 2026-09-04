@@ -1,7 +1,7 @@
 import { forwardRef } from "react";
 
 import RelationCard from "./RelationCard";
-import { getRelationLayout } from "../utils/relationLayout";
+import { getRelationLayout, DEFAULT_LAYOUT_PRESET } from "../utils/relationLayout";
 
 // -----------------------------------------------------------------------
 // RelationSheet
@@ -25,6 +25,10 @@ const RelationSheet = forwardRef(function RelationSheet(
 ) {
   const cls = `paper pattern-${page.backgroundPattern} ${extraClassName}`.trim();
 
+  // レイアウトプリセットはシート全体で1つ（フェーズ6）。
+  // 全カードに同じ値を渡すので、ここで一度だけ取り出しておく。
+  const preset = page.layoutPreset || DEFAULT_LAYOUT_PRESET;
+
   return (
     <div
       ref={ref}
@@ -44,6 +48,7 @@ const RelationSheet = forwardRef(function RelationSheet(
             <RelationCard
               relation={relations[0]}
               layout={getRelationLayout(1, 0)}
+              preset={preset}
             />
           </div>
         )}
@@ -56,6 +61,7 @@ const RelationSheet = forwardRef(function RelationSheet(
                 key={relation.id}
                 relation={relation}
                 layout={getRelationLayout(2, index)}
+                preset={preset}
               />
             ))}
           </div>
@@ -68,6 +74,7 @@ const RelationSheet = forwardRef(function RelationSheet(
               <RelationCard
                 relation={relations[0]}
                 layout={getRelationLayout(3, 0)}
+                preset={preset}
               />
             </div>
 
@@ -75,11 +82,13 @@ const RelationSheet = forwardRef(function RelationSheet(
               <RelationCard
                 relation={relations[1]}
                 layout={getRelationLayout(3, 1)}
+                preset={preset}
               />
 
               <RelationCard
                 relation={relations[2]}
                 layout={getRelationLayout(3, 2)}
+                preset={preset}
               />
             </div>
           </>
@@ -93,6 +102,7 @@ const RelationSheet = forwardRef(function RelationSheet(
                 key={relation.id}
                 relation={relation}
                 layout={getRelationLayout(4, index)}
+                preset={preset}
               />
             ))}
           </div>
