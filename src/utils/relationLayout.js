@@ -88,7 +88,9 @@ const IMAGE_BOX_SIZE = {
   overlap: { large: [300, 330], medium: [300, 340], small: [150, 190] },
   headline: { large: [422, 230], medium: [422, 260], small: [197, 150] },
   twoway: { large: [300, 300], medium: [300, 320], small: [130, 170] },
-  quote: { large: [168, 168], medium: [180, 180], small: [110, 110] },
+  // 語りは丸い枠。フェーズ8で「もう少し大きく」の要望を受けて
+  // 168/180/110 → 230/240/140 に拡大した。
+  quote: { large: [230, 230], medium: [240, 240], small: [140, 140] },
 };
 
 export function getImageAspect(preset, layout) {

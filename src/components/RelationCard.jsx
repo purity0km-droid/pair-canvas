@@ -348,6 +348,11 @@ export default function RelationCard({
               <div className="nameOverlay">{relation.rightName || "右の名前"}</div>
             </div>
 
+            {/* 補足情報は「その人の情報」なので、名前のすぐ下に置いて
+                2人ぶんの情報をひとまとめに見せる（フェーズ8）。
+                以前は説明文の下（プロット名の直前）にあった。 */}
+            {subInfoRow}
+
             {(relation.relation || relation.relationSub) && (
               <div className="quoteRelation">
                 {relation.relation && (
@@ -365,7 +370,6 @@ export default function RelationCard({
               <Description text={relation.description} />
             </div>
 
-            {subInfoRow}
             <StoryTitle text={relation.storyTitle} />
           </>
         );

@@ -137,6 +137,41 @@ function App() {
     );
   }
 
+  // -----------------------------------------------------------------
+  // 関係性の並び替え（カードの位置を入れ替える）
+  //
+  // 関係性が複数あるときのカードの並び順は relations 配列の順番そのもの
+  // （RelationSheet.jsx が先頭から順に配置する）。そのため、配列の中で
+  // 隣どうしを入れ替えるだけでカードの位置が入れ替わる。
+  //
+  // direction は -1（前へ）／+1（次へ）。端では何もしない。
+  //
+  // 【名前の振り直しについて】
+  // 「関係性1」「関係性2」…という表示名は位置に対して付けているので、
+  // 入れ替えたあとに必ず振り直す（削除時の removeRelation と同じ扱い）。
+  // これをしないと、タブの数字と帯の見出しが食い違う。
+  //
+  // 選択中のIDは変えていないので、動かした関係性を選んだまま続けて
+  // 操作できる（タブの位置だけが移動して見える）。
+  // -----------------------------------------------------------------
+  function moveRelation(id, direction) {
+    setRelations((prev) => {
+      const from = prev.findIndex((relation) => relation.id === id);
+      if (from < 0) return prev;
+
+      const to = from + direction;
+      if (to < 0 || to >= prev.length) return prev;
+
+      const next = [...prev];
+      [next[from], next[to]] = [next[to], next[from]];
+
+      return next.map((relation, index) => ({
+        ...relation,
+        name: `関係性${index + 1}`,
+      }));
+    });
+  }
+
   // -----------------------------
   // 関係性削除
   // -----------------------------
@@ -387,6 +422,7 @@ function App() {
             addRelation={addRelation}
             updateRelation={updateRelation}
             removeRelation={removeRelation}
+            moveRelation={moveRelation}
           />
         </aside>
 

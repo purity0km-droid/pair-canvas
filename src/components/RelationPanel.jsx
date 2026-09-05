@@ -21,6 +21,7 @@ export default function RelationPanel({
   setSelectedRelationId,
   updateRelation,
   removeRelation,
+  moveRelation,
   addRelation,
 }) {
   const selectedIndex = relations.findIndex(
@@ -79,6 +80,7 @@ export default function RelationPanel({
           layoutPreset={layoutPreset}
           updateRelation={updateRelation}
           removeRelation={removeRelation}
+          moveRelation={moveRelation}
         />
 
       )}

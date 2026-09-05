@@ -570,6 +570,70 @@ input[type="color"]{
 
 }
 
+/* カードの並び順の入れ替え（フェーズ8）。
+   「画像位置入替」（1枚のカードの中で左右を入れ替える）とは別物なので、
+   すぐ下に置きつつ「カード位置」という見出しを付けて区別している。 */
+.cardOrderRow{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:6px;
+
+    margin-bottom:18px;
+
+}
+
+.cardOrderRow span{
+
+    flex:none;
+
+    font-size:12px;
+    font-weight:500;
+
+    color:#6b6478;
+
+}
+
+.cardOrderButton{
+
+    flex:1;
+
+    padding:8px 6px;
+
+    border:none;
+    border-radius:999px;
+
+    background:rgba(109,93,252,.06);
+
+    color:#6b6478;
+
+    font-family:inherit;
+    font-size:12px;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+}
+
+.cardOrderButton:hover:not(:disabled){
+
+    background:rgba(109,93,252,.14);
+
+    color:#6D5DFC;
+
+}
+
+.cardOrderButton:disabled{
+
+    opacity:.4;
+
+    cursor:not-allowed;
+
+}
+
 /* =====================================
    「おまけ」機能：レイアウト詳細設定
    既定で折りたたんでおき、普段の操作フローには出さない。
