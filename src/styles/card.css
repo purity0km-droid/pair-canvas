@@ -139,10 +139,10 @@
 .relation-card.preset-twoway.medium { --img-w:300px; --img-h:320px; }
 .relation-card.preset-twoway.small  { --img-w:130px; --img-h:170px; }
 
-/* 語りだけ丸なので正方形 */
-.relation-card.preset-quote.large  { --img-w:168px; --img-h:168px; }
-.relation-card.preset-quote.medium { --img-w:180px; --img-h:180px; }
-.relation-card.preset-quote.small  { --img-w:110px; --img-h:110px; }
+/* 語りだけ丸なので正方形。フェーズ8で一回り大きくした */
+.relation-card.preset-quote.large  { --img-w:230px; --img-h:230px; }
+.relation-card.preset-quote.medium { --img-w:240px; --img-h:240px; }
+.relation-card.preset-quote.small  { --img-w:140px; --img-h:140px; }
 
 .imageBox{
 
@@ -518,14 +518,14 @@
 
 .preset-band .relationOverlay.onBand .arrow{
 
-    /* 写真の上に直接乗るので、白抜き＋暗い影にする（既定は逆の組み合わせ）。
-       影のぼかしを大きくすると黒い円形のにじみが見えてしまうので、
-       半径は小さめに抑えること。 */
-    color:#ffffff;
+    /* フェーズ8で白抜きから黒に変更。
+       写真の上に直接乗るため、暗い写真でも消えないよう白のにじみを
+       添えている（名前帯やラベルの暗色スクリムと同じ色味）。 */
+    color:rgba(15,13,18,.92);
 
     text-shadow:
-        0 1px 3px rgba(15,13,18,.75),
-        0 0 6px rgba(15,13,18,.5);
+        0 1px 6px rgba(255,255,255,.9),
+        0 0 12px rgba(255,255,255,.7);
 
 }
 
@@ -883,7 +883,8 @@
 
     gap:10px;
 
-    margin-top:-14px;
+    /* 丸い写真の下端に少し食い込ませる */
+    margin-top:-16px;
 
     position:relative;
 
@@ -902,6 +903,15 @@
 
 }
 
+/* 補足情報（名前のすぐ下）。左右に振り分けて置く */
+.preset-quote .subInfoRow{
+
+    max-width:680px;
+
+    margin:18px auto 0;
+
+}
+
 .preset-quote .quoteRelation{
 
     display:flex;
@@ -912,7 +922,7 @@
 
     gap:8px;
 
-    margin-top:22px;
+    margin-top:20px;
 
 }
 
@@ -950,14 +960,6 @@
     font-size:15px;
 
     line-height:2.1;
-
-}
-
-.preset-quote .subInfoRow{
-
-    max-width:680px;
-
-    margin:20px auto 0;
 
 }
 

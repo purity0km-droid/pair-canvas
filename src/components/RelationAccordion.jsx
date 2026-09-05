@@ -30,6 +30,7 @@ export default function RelationAccordion({
   layoutPreset = DEFAULT_LAYOUT_PRESET,
   updateRelation,
   removeRelation,
+  moveRelation,
 }) {
   // この関係性が実際のカードで表示されるサイズ(large/medium/small)を求め、
   // 画像の位置調整プレビュー枠を「実際に書き出される画像と同じ縦横比」にする。
@@ -93,6 +94,37 @@ export default function RelationAccordion({
         >
           ⇄ 画像位置入替
         </button>
+
+        {/* カードの並び順の入れ替え（フェーズ8）。
+            関係性が2件以上あるときだけ出す。1件しか無いときに
+            押せないボタンが並んでいても意味が無いため。
+            並び順は relations 配列の順番そのままなので、隣と入れ替えると
+            シート上のカードの位置も入れ替わる（App.jsx の moveRelation）。 */}
+        {totalCount > 1 && (
+          <div className="cardOrderRow">
+            <span>カード位置</span>
+
+            <button
+              type="button"
+              className="cardOrderButton"
+              onClick={() => moveRelation?.(relation.id, -1)}
+              disabled={index === 0}
+              title="ひとつ前の位置へ移動"
+            >
+              ◀ 前へ
+            </button>
+
+            <button
+              type="button"
+              className="cardOrderButton"
+              onClick={() => moveRelation?.(relation.id, 1)}
+              disabled={index === totalCount - 1}
+              title="ひとつ後ろの位置へ移動"
+            >
+              次へ ▶
+            </button>
+          </div>
+        )}
 
         {/* 左画像
             【重要】ここは意図的に<label>ではなく<div>にしています。

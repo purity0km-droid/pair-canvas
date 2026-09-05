@@ -26,6 +26,7 @@ export default function Sidebar(props) {
 
         updateRelation={props.updateRelation}
         removeRelation={props.removeRelation}
+        moveRelation={props.moveRelation}
         addRelation={props.addRelation}
       />
 
