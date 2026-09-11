@@ -770,6 +770,65 @@ input[type="color"]{
 
 }
 
+/* 説明文の文字サイズのスライダー（フェーズ10）。
+
+   【セレクタを .layoutExtraBody .descScaleRow にしている理由】
+   この行は <label> なので、
+
+       .panel label{ display:flex; flex-direction:column; margin-bottom:14px; ... }
+
+   （詳細度 0,1,1）の影響を受ける。単独クラスの .descScaleRow（0,1,0）では
+   負けて「説明の文字サイズ」→スライダー→「100%」が縦に並んでしまう。
+   クラス2つ（0,2,0）にして横1行で勝たせている。
+   位置調整モーダルの .imageAdjust .imageAdjustRow と同じ手口。 */
+.layoutExtraBody .descScaleRow{
+
+    display:flex;
+
+    flex-direction:row;
+
+    align-items:center;
+
+    gap:8px;
+
+    /* .panel label の margin-bottom:14px を打ち消す
+       （.layoutExtraBody 側の gap:8px で間隔を作っているため） */
+    margin-bottom:0;
+
+}
+
+.layoutExtraBody .descScaleRow > span:first-child{
+
+    flex:none;
+
+}
+
+.layoutExtraBody .descScaleRow input[type="range"]{
+
+    flex:1;
+
+    min-width:70px;
+
+}
+
+/* 現在の倍率（％）。数字の桁が変わってもスライダーの幅がガタつかないよう
+   幅を固定している（位置調整モーダルの .imageAdjustValue と同じ考え方）。 */
+.descScaleValue{
+
+    flex:none;
+
+    width:34px;
+
+    text-align:right;
+
+    font-size:11px;
+
+    color:#8a7f9c;
+
+    font-variant-numeric:tabular-nums;
+
+}
+
 /* 選択中のプリセットの説明 */
 .presetNote{
 
