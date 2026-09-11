@@ -1,5 +1,5 @@
 # codemap
-最終更新: 2026-09-11 / フェーズ10作業時点
+最終更新: 2026-09-12 / フェーズ11作業時点
 
 pair-canvas（React19 + Vite8、キャラクター関係性シート作成SPA）の
 「どこに何があるか」のポインタ集。実装の解説は書かない。
@@ -37,7 +37,7 @@ pair-canvas（React19 + Vite8、キャラクター関係性シート作成SPA）
 ## 場所（ドキュメント）
 - docs/handoff-for-code.md — 開発側の引継ぎメモ（内部用。zipには含めない）
 - docs/requirements.md — 全体仕様と設計判断の理由（0〜6章）
-- 修正履歴.md — ユーザー向けの変更履歴。フェーズ1〜10
+- 修正履歴.md — ユーザー向けの変更履歴。フェーズ1〜11
 - 動作確認手順.md — 手動確認の手順。フェーズ4時点のままで古い
 
 ## 場所（配信）
@@ -50,5 +50,6 @@ pair-canvas（React19 + Vite8、キャラクター関係性シート作成SPA）
 - useEffect 内の setState は ESLint（react-hooks/set-state-in-effect）で禁止。サイズ検出は ResizeObserver ＋描画中に前回値と比較する方式
 - relationLayout.js を書き換えると Vite の HMR が「exportが無い」と誤ったエラーを出す。開発サーバーを再起動すれば直る
 - phase系ブランチの親子関係は一直線ではない。mainへのマージは毎回「最新のphaseブランチ1本だけ」
-- 説明文の font-size は「基準px × var(--desc-scale)」。基準pxは card.css 側にレイアウトごとに書いてある（語りだけ 12.75px / 10.2px、他は 12px）。JS側は倍率しか持たない
+- 説明文の font-size は「基準px × var(--desc-scale)」。基準pxは card.css 側が持つ。フェーズ11で全レイアウト 12px に統一（語りの 12.75px / 10.2px をやめた）。JS側は倍率しか持たない
+- 関係性ラベルは「文字幅に合わせて伸びる」。上限は器の幅（.relationCenter の max-width）。word-break:keep-all なので overflow-wrap:break-word と .relationOverlay の min-width:0 が無いとカードの外へ飛び出す
 - 名前タグ／関係性ラベル／プロット名の暗色スクリムは変更しない（背景色・写真が自由なため視認性確保に必須）

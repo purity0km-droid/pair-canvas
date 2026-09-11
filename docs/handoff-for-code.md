@@ -1,6 +1,6 @@
 # 引継ぎメモ（Claude Code 用）
 
-最終更新：2026-09-11（フェーズ10完了時点）
+最終更新：2026-09-12（フェーズ11完了時点）
 
 pair-canvas（React19 + Vite8 + Tailwind v4、キャラクター関係性シート作成SPA）の改修作業の引継ぎメモ。
 
@@ -8,7 +8,7 @@ pair-canvas（React19 + Vite8 + Tailwind v4、キャラクター関係性シー�
 
 - **どのファイルに何があるか → `.claude/codemap.md`**（フェーズ9で新設。Glob/Grepの前にまずこれを読む。探す手がかりだけを1行1件で置いてある）
 - 全体仕様・設計判断の理由 → `docs/requirements.md`（0〜6章）
-- ユーザー向けの変更履歴 → リポジトリ直下の `修正履歴.md`（フェーズ1〜10を平易な日本語でまとめてある。**「何が変わったか」を知りたいときはまずこれ**）
+- ユーザー向けの変更履歴 → リポジトリ直下の `修正履歴.md`（フェーズ1〜11を平易な日本語でまとめてある。**「何が変わったか」を知りたいときはまずこれ**）
 - 各変更の技術的な理由 → 各コミットメッセージ本文（`git log --format="%h %s%n%b"`）。**コード側にも日本語コメントで「なぜそうしたか」「戻すならどこを触るか」を書き込み済み**なので、新しく説明を書き起こす前に、まずコミット本文とコメントを読むこと。
 
 ---
@@ -29,6 +29,7 @@ phase/7-feedback          … 画像の拡大縮小方式の作り直しほか
 phase/8-feedback          … カード位置入替ほか
 phase/9-quote-textsize    … 「語り」の説明文の文字サイズ（大/中/小）
 phase/10-feedback         … 説明文サイズをスライダー化＋全レイアウト対応、ラベル太字解除、帯の矢印を白へ
+phase/11-feedback         … 関係性ラベルを文字幅で伸びる方式へ、語りの説明文サイズを共通12pxへ
 ```
 
 - `main` は **`origin/main` と同期済み**（remote: `https://github.com/purity0km-droid/pair-canvas.git`）。フェーズ9作業時にユーザーの指示で push した。以降も push 前には確認を取ること。
@@ -138,6 +139,16 @@ git archive --format=zip -9 -o "../pair-canvas-main.zip" HEAD -- . ':(exclude).c
 - **関係性ラベルの `font-weight:700` を 400 に揃えた**（帯 / 見出しの `.headlineMain` / 語り）。基準の `.relationLabel` が400だった。※**font-size は各プリセットの持ち味なので変えていない**（帯18px / 見出し24px / 語り15px。関係性1〜2件のとき）
 - **帯の中央の矢印を白基調へ戻した**（フェーズ8で黒にしたもの）。白文字＋暗いにじみ
 - スライダーのCSSは `sidebar.css` の `.layoutExtraBody .descScaleRow`。`<label>` なので `.panel label`（0,1,1）に勝たせるためクラス2つ（0,2,0）にしてある（位置調整モーダルの `.imageAdjust .imageAdjustRow` と同じ手口）
+
+### phase/11-feedback
+- **関係性ラベルを「文字幅に合わせて伸びる」方式に変えた。** `.relationLabel` の `max-width:180px` が原因で、長い文字がラベルからはみ出していた（`word-break:keep-all` ＋ `overflow-wrap:normal` のため日本語には改行できる箇所が1つも無く、180pxを超えたぶんがそのまま外に出ていた）
+- 直したのは `styles/card.css` の3か所。**3つセットで意味を持つので、どれか1つだけ戻さないこと**
+  1. `.relationLabel` … `max-width:100%` ＋ `min-width:0` ＋ `overflow-wrap:break-word`（`word-break:keep-all` は残す。break-word は器に収まらないときだけの逃げ道）
+  2. `.relationCenter` … `width:max-content` ＋ `max-width:calc(100% - 24px)`。位置指定だけの絶対配置は幅の上限が「器の幅 - left(50%)」＝半分になり、余白があるのに折り返してしまう。-24px はカードの縁に文字が貼り付かないための余白（帯はカードの padding が0のため必要）
+  3. `.relationOverlay` … `min-width:0`。**これが無いと帯の小カードでラベルがカードの外へ飛び出す。** `word-break:keep-all` の日本語は min-content が「文字列まるごと」になるため、flexアイテムの `min-width:auto` のままだと器より小さくならない（`overflow-wrap:break-word` は min-content を変えない）
+- `.preset-headline .headlineMain` にも `overflow-wrap:break-word` を保険で追加（器はカード幅いっぱいなので通常は折り返せるが、区切りの無い長い語だけ溢れる）
+- **「語り」の説明文の基準pxを 12.75px / 10.2px → 12px（全レイアウト共通）に統一。** フェーズ9→10の経緯で語りだけ大きい値が残っていた。`line-height`（2.1 / 1.9）は語りの持ち味なので残している
+- 確認は6プリセット × 関係性1/2/4件で、ラベルの `scrollWidth-clientWidth` とカード端からのはみ出し量を測って0であることを見た
 
 ### phase/9-quote-textsize
 - **「語り」の説明文の文字サイズを大/中/小から選べるように**（`page.quoteTextSize`。JSONにも保存される）。倍率は 0.85 / 1 / 1.25。※**フェーズ10でスライダーに置き換え済み**（この節は経緯の記録）
