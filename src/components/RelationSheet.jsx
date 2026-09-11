@@ -1,7 +1,11 @@
 import { forwardRef } from "react";
 
 import RelationCard from "./RelationCard";
-import { getRelationLayout, DEFAULT_LAYOUT_PRESET } from "../utils/relationLayout";
+import {
+  getRelationLayout,
+  DEFAULT_LAYOUT_PRESET,
+  getQuoteTextScale,
+} from "../utils/relationLayout";
 
 // -----------------------------------------------------------------------
 // RelationSheet
@@ -29,12 +33,20 @@ const RelationSheet = forwardRef(function RelationSheet(
   // 全カードに同じ値を渡すので、ここで一度だけ取り出しておく。
   const preset = page.layoutPreset || DEFAULT_LAYOUT_PRESET;
 
+  // 「語り」の説明文の文字サイズ（フェーズ9）。
+  // カードごとにclassを足す代わりに、シート直下のCSS変数として1回だけ渡す。
+  // card.css 側は font-size:calc(既定px * var(--quote-desc-scale)) で参照。
+  // こうしておくと、カードの枚数ぶんある <RelationCard> を触らずに済み、
+  // 画面プレビューとPNG書き出しの両方に同じ値が効く（どちらもこの共通部品）。
+  const quoteDescScale = getQuoteTextScale(page.quoteTextSize);
+
   return (
     <div
       ref={ref}
       className={cls}
       style={{
         "--paper-color": page.backgroundColor,
+        "--quote-desc-scale": quoteDescScale,
         color: page.textColor,
         fontFamily: page.fontFamily,
       }}

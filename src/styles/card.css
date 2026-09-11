@@ -944,7 +944,12 @@
 
 }
 
-/* 説明文が主役。行間を広く、文字も大きめにする */
+/* 説明文が主役。行間を広く、文字も大きめにする。
+
+   文字サイズは --quote-desc-scale（大/中/小 = 1.25/1/0.85）を
+   掛けて決めている。値は RelationSheet.jsx がシート直下に渡し、
+   一覧は utils/relationLayout.js の QUOTE_TEXT_SIZES（フェーズ9）。
+   行間は単位なしの倍数なので、文字サイズに自動で追従する。 */
 .preset-quote .quoteBody{
 
     max-width:680px;
@@ -957,7 +962,7 @@
 
     margin-top:0;
 
-    font-size:15px;
+    font-size:calc(15px * var(--quote-desc-scale, 1));
 
     line-height:2.1;
 
@@ -989,7 +994,7 @@
 
 .relation-card.small.preset-quote .quoteBody .description{
 
-    font-size:12px;
+    font-size:calc(12px * var(--quote-desc-scale, 1));
 
     line-height:1.9;
 

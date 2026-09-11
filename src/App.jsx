@@ -9,7 +9,12 @@ import Preview from "./components/Preview";
 import ExportPreview from "./components/ExportPreview";
 
 import { createRelation, normalizeRelation } from "./utils/createRelation";
-import { DEFAULT_LAYOUT_PRESET, isLayoutPreset } from "./utils/relationLayout";
+import {
+  DEFAULT_LAYOUT_PRESET,
+  isLayoutPreset,
+  DEFAULT_QUOTE_TEXT_SIZE,
+  isQuoteTextSize,
+} from "./utils/relationLayout";
 import { MAX_RELATIONS, DRAFT_STORAGE_KEY } from "./constants";
 
 const DEFAULT_PAGE = {
@@ -23,13 +28,30 @@ const DEFAULT_PAGE = {
   // レイアウトプリセット（フェーズ6）。シート全体で1つだけ選ぶ。
   // 一覧は utils/relationLayout.js の LAYOUT_PRESETS。
   layoutPreset: DEFAULT_LAYOUT_PRESET,
+
+  // 「語り」レイアウトの説明文の文字サイズ（フェーズ9）。大/中/小の3段。
+  // 一覧は utils/relationLayout.js の QUOTE_TEXT_SIZES。
+  // 「語り」以外のプリセットでは使わないが、プリセットを切り替えても
+  // 選んだ値が残るよう、page 側に持たせている。
+  quoteTextSize: DEFAULT_QUOTE_TEXT_SIZE,
 };
 
-// 下書きや読み込んだJSONに、知らないプリセット名が入っていた場合の保険。
+// 下書きや読み込んだJSONに、知らない値（プリセット名・文字サイズ名）が
+// 入っていた場合の保険。
 // （将来プリセットを削除・改名したときに、表示が壊れるのを防ぐ）
 function withValidPreset(page) {
-  if (isLayoutPreset(page.layoutPreset)) return page;
-  return { ...page, layoutPreset: DEFAULT_LAYOUT_PRESET };
+  const fixed = { ...page };
+
+  if (!isLayoutPreset(fixed.layoutPreset)) {
+    fixed.layoutPreset = DEFAULT_LAYOUT_PRESET;
+  }
+
+  // 「語り」の文字サイズも同じ保険をかける（フェーズ9）
+  if (!isQuoteTextSize(fixed.quoteTextSize)) {
+    fixed.quoteTextSize = DEFAULT_QUOTE_TEXT_SIZE;
+  }
+
+  return fixed;
 }
 
 // -----------------------------------------------------------------
