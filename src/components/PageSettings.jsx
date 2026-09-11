@@ -1,6 +1,8 @@
 import {
   LAYOUT_PRESETS,
   DEFAULT_LAYOUT_PRESET,
+  QUOTE_TEXT_SIZES,
+  DEFAULT_QUOTE_TEXT_SIZE,
 } from "../utils/relationLayout";
 
 // 色見本ひとつぶん。
@@ -222,6 +224,36 @@ export default function PageSettings({ page, updatePage }) {
               ).description
             }
           </p>
+
+          {/* 「語り」だけの追加設定（フェーズ9）。
+
+              説明文が主役のレイアウトなので、文章の長さに応じて
+              大/中/小を選べるようにしている。
+              他のプリセットでは説明文の扱いが主役ではないため、
+              選んでいるときだけ出して左カラムを増やさない。
+              （選んだ値自体は page に残るので、行き来しても失われない） */}
+          {(page.layoutPreset || DEFAULT_LAYOUT_PRESET) === "quote" && (
+            <>
+              <span>説明の文字サイズ</span>
+
+              <div className="presetGrid">
+                {QUOTE_TEXT_SIZES.map((size) => (
+                  <button
+                    key={size.id}
+                    type="button"
+                    className={
+                      (page.quoteTextSize || DEFAULT_QUOTE_TEXT_SIZE) === size.id
+                        ? "presetButton active"
+                        : "presetButton"
+                    }
+                    onClick={() => updatePage("quoteTextSize", size.id)}
+                  >
+                    {size.label}
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
         </div>
       </details>
 

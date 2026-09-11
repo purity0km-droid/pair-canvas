@@ -1,13 +1,14 @@
 # 引継ぎメモ（Claude Code 用）
 
-最終更新：2026-09-06（フェーズ8完了時点）
+最終更新：2026-09-11（フェーズ9完了時点）
 
 pair-canvas（React19 + Vite8 + Tailwind v4、キャラクター関係性シート作成SPA）の改修作業の引継ぎメモ。
 
 **トークン節約のため**：このファイルは要点のみ。詳細は重複させず、以下を参照すること。
 
+- **どのファイルに何があるか → `.claude/codemap.md`**（フェーズ9で新設。Glob/Grepの前にまずこれを読む。探す手がかりだけを1行1件で置いてある）
 - 全体仕様・設計判断の理由 → `docs/requirements.md`（0〜6章）
-- ユーザー向けの変更履歴 → リポジトリ直下の `修正履歴.md`（フェーズ1〜8を平易な日本語でまとめてある。**「何が変わったか」を知りたいときはまずこれ**）
+- ユーザー向けの変更履歴 → リポジトリ直下の `修正履歴.md`（フェーズ1〜9を平易な日本語でまとめてある。**「何が変わったか」を知りたいときはまずこれ**）
 - 各変更の技術的な理由 → 各コミットメッセージ本文（`git log --format="%h %s%n%b"`）。**コード側にも日本語コメントで「なぜそうしたか」「戻すならどこを触るか」を書き込み済み**なので、新しく説明を書き起こす前に、まずコミット本文とコメントを読むこと。
 
 ---
@@ -26,9 +27,11 @@ phase/5-ui-feedback       … ユーザーフィードバック対応（1回目�
 phase/6-layout-presets    … 画像の自由縮小＋レイアウトプリセット6種
 phase/7-feedback          … 画像の拡大縮小方式の作り直しほか
 phase/8-feedback          … カード位置入替ほか
+phase/9-quote-textsize    … 「語り」の説明文の文字サイズ（大/中/小）
 ```
 
-- `main` は `origin/main` より **48コミット先行。まだ一度も push していない**（ユーザーの指示：「originへはプッシュしないでいい」）。push する際は必ず確認を取ること。
+- `main` は **`origin/main` と同期済み**（remote: `https://github.com/purity0km-droid/pair-canvas.git`）。フェーズ9作業時にユーザーの指示で push した。以降も push 前には確認を取ること。
+- `origin/gh-pages` は GitHub Pages 用の配信ブランチ。`npm run deploy`（`gh-pages -d dist`）で `dist/` を送る仕組み。**フェーズ9では deploy していない**ので、公開ページは古いままになっている。反映したいときは `npm run build` のあとに `npm run deploy`。
 - `npx eslint src` はクリーン、`npm run build` も通ることを確認済み。
 - **phase系ブランチの親子関係は一直線ではない。** `phase/1-basics` と `phase/2-design` は `phase/5-*` の祖先になっていない（過去のrebase/cherry-pickで同じ変更が別SHAとして重複している）。そのため main へのマージは毎回「最新のphaseブランチ1本だけ」を取り込む方式で行っている。`git merge-base --is-ancestor` で確認してから作業すること。
 
@@ -50,25 +53,25 @@ git archive --format=zip -9 -o "../pair-canvas-main.zip" HEAD -- . ':(exclude).c
 
 すべて `App.jsx` の2つのstateに集約されている。
 
-- `page` … シート全体の設定（`DEFAULT_PAGE` 参照：タイトル表示/文言、背景色、文字色、背景パターン、フォント、**`layoutPreset`**）
+- `page` … シート全体の設定（`DEFAULT_PAGE` 参照：タイトル表示/文言、背景色、文字色、背景パターン、フォント、**`layoutPreset`**、**`quoteTextSize`**）
 - `relations` … 関係性の配列（最大 `MAX_RELATIONS` = 4件）。1件の中身は `utils/createRelation.js` の `createRelation` / `normalizeRelation` が定義
 
 この2つをまとめて localStorage（キー：`DRAFT_STORAGE_KEY` = `pair-canvas-draft`）へ自動保存し、次回起動時に復元している。JSON保存/読込も同じ形。**サーバーへは何も送っていない**（プレビュー下にその旨を明記済み）。
 
-読込時の保険：知らないプリセット名が入っていたら `withValidPreset()` が既定に戻す。
+読込時の保険：知らないプリセット名・文字サイズ名が入っていたら `withValidPreset()` が既定に戻す。
 
 ### 主なファイルと役割
 
 | ファイル | 役割 |
 |---|---|
 | `src/App.jsx` | 状態の唯一の持ち主。PNG書き出し、JSON入出力、`moveRelation`（カード位置入替）もここ |
-| `src/components/RelationSheet.jsx` | カード**並び**レイアウトの唯一の実装（画面表示・書き出し共通＝WYSIWYG） |
+| `src/components/RelationSheet.jsx` | カード**並び**レイアウトの唯一の実装（画面表示・書き出し共通＝WYSIWYG）。シート直下のCSS変数（`--paper-color` / `--quote-desc-scale`）もここ |
 | `src/components/RelationCard.jsx` | カード**1枚の中身**。プリセットごとの組み方を `renderBody()` の `switch` で分岐 |
 | `src/components/Preview.jsx` | 表示倍率の計算とズームUI。`DESIGN_WIDTH = 1000` を実幅に合わせて `transform:scale()` |
 | `src/components/RelationAccordion.jsx` | 関係性1件ぶんの編集ボックス。画像位置入替・カード位置入替ボタン |
 | `src/components/ImageUploader.jsx` | 画像選択と「位置調整ウインドウ」 |
 | `src/components/PageSettings.jsx` | シート全体の設定UI（色・フォント・背景・レイアウトプリセット） |
-| `src/utils/relationLayout.js` | **見た目の決まりごとの中心。** 件数→large/medium/small判定、プリセット一覧、プリセット×サイズごとの画像枠寸法 |
+| `src/utils/relationLayout.js` | **見た目の決まりごとの中心。** 件数→large/medium/small判定、プリセット一覧、プリセット×サイズごとの画像枠寸法、「語り」の文字サイズ表（`QUOTE_TEXT_SIZES`） |
 | `src/utils/imageFit.js` | 画像を枠にどう収めるかの計算（`coverFactor`） |
 | `src/hooks/useImageAspect.js` | 写真そのものの縦横比を `<img>` の load から取得 |
 | `src/hooks/useImageDrag.js` | 画像位置調整の共通フック（**現在はサイドバーのモーダル専用**。プレビューは表示専用） |
@@ -124,6 +127,12 @@ git archive --format=zip -9 -o "../pair-canvas-main.zip" HEAD -- . ':(exclude).c
 - 補足事項が中央寄りになる不具合を修正（`.subInfo` の `width` 指定が2か所にあり後勝ちしていた）
 - カラーコード欄を削除（Chrome標準のHEX切替で足りるとのユーザー判断）、「写真の大きさ（おまけ）」機能を削除、`<details>` の▼重複を解消
 
+### phase/9-quote-textsize
+- **「語り」の説明文の文字サイズを大/中/小から選べるように**（`page.quoteTextSize`。JSONにも保存される）。倍率は `QUOTE_TEXT_SIZES` の 0.85 / 1 / 1.25
+- 実装方式：カードごとにclassを足すのではなく、`RelationSheet.jsx` がシート直下に **`--quote-desc-scale`** を1回だけ渡し、`card.css` の `.preset-quote .quoteBody .description` が `font-size:calc(既定px * var(--quote-desc-scale,1))` で受ける。`RelationSheet.jsx` には枚数ぶん（1〜4件）の `<RelationCard>` 呼び出しがあるので、propsを増やすと直す箇所が増えるのを避けた。画面プレビューと書き出しはどちらも `RelationSheet` なので、この1か所で両方に効く
+- 行間（`line-height`）は単位なしの倍数なので、文字サイズに自動追従する。別途指定は不要
+- UIは `PageSettings.jsx` の「レイアウト（おまけ）」の中。**「語り」を選んでいるときだけ表示**する（他プリセットでは説明文が主役ではないため）。選んだ値は `page` に残るので、プリセットを行き来しても失われない
+
 ### phase/8-feedback
 - **カード位置入替**を追加（`App.jsx` の `moveRelation`）。2件以上あるとき「◀ 前へ / 次へ ▶」を表示。※「画像位置入替」は1枚のカードの中で左右を入れ替えるもので、別物
 - 「語り」レイアウト：補足情報を説明文の下 → **名前のすぐ下**へ移動、丸写真を拡大（168/180/110 → 230/240/140px）
@@ -164,4 +173,4 @@ git archive --format=zip -9 -o "../pair-canvas-main.zip" HEAD -- . ':(exclude).c
 2. **`動作確認手順.md` がフェーズ4時点の内容のまま。** レイアウトプリセット切替・スマホズーム・画像の縮小・カード位置入替の手順が載っていない。追記が必要。
 3. レイアウトプリセットを**実際のキャラクター立ち絵で検証していない**。「帯」は継ぎ目のラベルが顔と重なる可能性、「交差」は後ろ側の写真の左端が隠れる（約76px）。
 4. スマホ幅では左カラムが `max-height:50vh` の内部スクロールで、スクロールする箱が入れ子になっている（フェーズ2からの既存挙動）。全高表示に変えるかはユーザー判断待ち。
-5. `origin` への push、および `docs/handoff-for-code.md` の扱い（現在 main に追跡されているが、ローカルに未コミットの新しい版がある）はユーザー確認待ち。
+5. `修正履歴.md` の「まだ手をつけていないこと」は、上記1〜3と同じ内容をユーザー向けの言葉で書いてある。片方だけ直すとズレるので、解消したら両方直すこと。

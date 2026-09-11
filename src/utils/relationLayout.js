@@ -68,6 +68,38 @@ export const LAYOUT_PRESETS = [
 
 export const DEFAULT_LAYOUT_PRESET = "facing";
 
+// -----------------------------------------------------------------------
+// 「語り」の説明文の文字サイズ（フェーズ9）
+//
+// 「語り」は説明文が主役のレイアウトなので、文章の長さによって
+// 「大きくしたい／小さく詰めたい」が分かれる。そこでシート全体に対して
+// 大/中/小の3段から選べるようにした。
+//
+// scale は card.css 側で --quote-desc-scale として使い、
+// 既定サイズ（中＝1）に掛け算して文字サイズを決めている。
+// 行間(line-height)は単位なしの倍数で指定してあるため、文字サイズに
+// 追従して自動で広がる（ここで別途指定する必要はない）。
+//
+// id はJSONに保存される値なので、一度出したものは変えないでください。
+// -----------------------------------------------------------------------
+export const QUOTE_TEXT_SIZES = [
+  { id: "small", label: "小", scale: 0.85 },
+  { id: "medium", label: "中", scale: 1 },
+  { id: "large", label: "大", scale: 1.25 },
+];
+
+export const DEFAULT_QUOTE_TEXT_SIZE = "medium";
+
+export function isQuoteTextSize(value) {
+  return QUOTE_TEXT_SIZES.some((size) => size.id === value);
+}
+
+// 見つからないときは「中」（=1）を返すので、呼び出し側で保険は不要。
+export function getQuoteTextScale(value) {
+  const found = QUOTE_TEXT_SIZES.find((size) => size.id === value);
+  return (found || QUOTE_TEXT_SIZES.find((s) => s.id === DEFAULT_QUOTE_TEXT_SIZE)).scale;
+}
+
 export function isLayoutPreset(value) {
   return LAYOUT_PRESETS.some((preset) => preset.id === value);
 }
