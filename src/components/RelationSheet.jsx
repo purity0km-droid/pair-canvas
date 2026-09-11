@@ -4,7 +4,8 @@ import RelationCard from "./RelationCard";
 import {
   getRelationLayout,
   DEFAULT_LAYOUT_PRESET,
-  getQuoteTextScale,
+  DEFAULT_DESC_SCALE,
+  clampDescScale,
 } from "../utils/relationLayout";
 
 // -----------------------------------------------------------------------
@@ -33,12 +34,13 @@ const RelationSheet = forwardRef(function RelationSheet(
   // 全カードに同じ値を渡すので、ここで一度だけ取り出しておく。
   const preset = page.layoutPreset || DEFAULT_LAYOUT_PRESET;
 
-  // 「語り」の説明文の文字サイズ（フェーズ9）。
+  // 説明文の文字サイズの倍率（フェーズ9で「語り」限定、フェーズ10で全レイアウトへ）。
   // カードごとにclassを足す代わりに、シート直下のCSS変数として1回だけ渡す。
-  // card.css 側は font-size:calc(既定px * var(--quote-desc-scale)) で参照。
+  // card.css 側は font-size:calc(基準px * var(--desc-scale)) で参照し、
+  // 基準px（=100%のときの実寸）はレイアウトごとにCSS側が持っている。
   // こうしておくと、カードの枚数ぶんある <RelationCard> を触らずに済み、
   // 画面プレビューとPNG書き出しの両方に同じ値が効く（どちらもこの共通部品）。
-  const quoteDescScale = getQuoteTextScale(page.quoteTextSize);
+  const descScale = clampDescScale(page.descTextScale ?? DEFAULT_DESC_SCALE);
 
   return (
     <div
@@ -46,7 +48,7 @@ const RelationSheet = forwardRef(function RelationSheet(
       className={cls}
       style={{
         "--paper-color": page.backgroundColor,
-        "--quote-desc-scale": quoteDescScale,
+        "--desc-scale": descScale,
         color: page.textColor,
         fontFamily: page.fontFamily,
       }}

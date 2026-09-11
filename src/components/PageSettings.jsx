@@ -1,8 +1,10 @@
 import {
   LAYOUT_PRESETS,
   DEFAULT_LAYOUT_PRESET,
-  QUOTE_TEXT_SIZES,
-  DEFAULT_QUOTE_TEXT_SIZE,
+  DESC_SCALE_MIN,
+  DESC_SCALE_MAX,
+  DESC_SCALE_STEP,
+  DEFAULT_DESC_SCALE,
 } from "../utils/relationLayout";
 
 // 色見本ひとつぶん。
@@ -225,35 +227,34 @@ export default function PageSettings({ page, updatePage }) {
             }
           </p>
 
-          {/* 「語り」だけの追加設定（フェーズ9）。
+          {/* 説明文の文字サイズ（フェーズ9で「語り」限定の大/中/小、
+              フェーズ10でスライダー＋全レイアウト対応に作り直した）。
 
-              説明文が主役のレイアウトなので、文章の長さに応じて
-              大/中/小を選べるようにしている。
-              他のプリセットでは説明文の扱いが主役ではないため、
-              選んでいるときだけ出して左カラムを増やさない。
-              （選んだ値自体は page に残るので、行き来しても失われない） */}
-          {(page.layoutPreset || DEFAULT_LAYOUT_PRESET) === "quote" && (
-            <>
-              <span>説明の文字サイズ</span>
+              100%のときの実寸はレイアウトごとに違う。
+              「語り」はフェーズ9の「小」、それ以外は従来のサイズが100%。
+              （utils/relationLayout.js と card.css のコメント参照）
 
-              <div className="presetGrid">
-                {QUOTE_TEXT_SIZES.map((size) => (
-                  <button
-                    key={size.id}
-                    type="button"
-                    className={
-                      (page.quoteTextSize || DEFAULT_QUOTE_TEXT_SIZE) === size.id
-                        ? "presetButton active"
-                        : "presetButton"
-                    }
-                    onClick={() => updatePage("quoteTextSize", size.id)}
-                  >
-                    {size.label}
-                  </button>
-                ))}
-              </div>
-            </>
-          )}
+              シート全体に効く設定で、関係性ごとの設定ではない。 */}
+          <label className="descScaleRow">
+
+            <span>説明の文字サイズ</span>
+
+            <input
+              type="range"
+              min={DESC_SCALE_MIN}
+              max={DESC_SCALE_MAX}
+              step={DESC_SCALE_STEP}
+              value={page.descTextScale ?? DEFAULT_DESC_SCALE}
+              onChange={(e) =>
+                updatePage("descTextScale", parseFloat(e.target.value))
+              }
+            />
+
+            <span className="descScaleValue">
+              {Math.round((page.descTextScale ?? DEFAULT_DESC_SCALE) * 100)}%
+            </span>
+
+          </label>
         </div>
       </details>
 

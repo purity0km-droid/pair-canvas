@@ -383,13 +383,21 @@
    説明
 =========================== */
 
+/* 【文字サイズの倍率について】（フェーズ10）
+   font-size は「基準px × --desc-scale」で決めている。
+   --desc-scale（1.0〜2.0）は RelationSheet.jsx がシート直下に渡す値で、
+   左カラムの「レイアウト（おまけ）」のスライダーで変わる。
+   基準px（=100%のときの実寸）はレイアウトごとに違い、CSS側が持っている。
+   ここが全レイアウト共通の基準＝12px（フェーズ9以前からの値をそのまま）。
+   「語り」だけは別に持っている（下の .preset-quote のセクション参照）。
+   line-height は単位なしの倍数なので、文字サイズに自動で追従する。 */
 .description {
 
     margin-top: 24px;
     line-height: 1.9;
 
     white-space: pre-wrap;
-    font-size: 12px;
+    font-size: calc(12px * var(--desc-scale, 1));
     font-weight: 400;
 
 }
@@ -493,13 +501,17 @@
 .preset-band .nameOverlay.left{ left:14px; }
 .preset-band .nameOverlay.right{ right:14px; }
 
-/* 継ぎ目に置く関係性。帯では主役なので一回り大きくする */
+/* 継ぎ目に置く関係性。帯では主役なので一回り大きくする。
+   太さは他レイアウトに合わせて 400（基準の .relationLabel と同じ）。
+   フェーズ10まで 700 にしていたが、レイアウトによって関係性ラベルの
+   太さが変わるのが不自然、というユーザー指摘で揃えた。
+   大きさ（18px）は「帯は継ぎ目が主役」という意図なので残している。 */
 .preset-band .relationOverlay.onBand .relationLabel{
 
     padding:12px 26px;
 
     font-size:18px;
-    font-weight:700;
+    font-weight:400;
 
     letter-spacing:.05em;
 
@@ -518,14 +530,15 @@
 
 .preset-band .relationOverlay.onBand .arrow{
 
-    /* フェーズ8で白抜きから黒に変更。
-       写真の上に直接乗るため、暗い写真でも消えないよう白のにじみを
-       添えている（名前帯やラベルの暗色スクリムと同じ色味）。 */
-    color:rgba(15,13,18,.92);
+    /* フェーズ8で白抜き→黒にしたが、フェーズ10で白基調へ戻した
+       （ユーザー指示）。写真の上に直接乗るため、明るい写真でも
+       消えないよう暗いにじみを添えている
+       （名前帯やラベルの暗色スクリムと同じ色味）。 */
+    color:rgba(255,255,255,.96);
 
     text-shadow:
-        0 1px 6px rgba(255,255,255,.9),
-        0 0 12px rgba(255,255,255,.7);
+        0 1px 6px rgba(15,13,18,.75),
+        0 0 12px rgba(15,13,18,.55);
 
 }
 
@@ -645,7 +658,10 @@
 .preset-headline .headlineMain{
 
     font-size:24px;
-    font-weight:700;
+
+    /* 太さは他レイアウトの関係性ラベルに合わせて 400（フェーズ10）。
+       大きさ（24px）は「関係性を大見出しにする」プリセットの主旨なので残す。 */
+    font-weight:400;
 
     letter-spacing:.1em;
 
@@ -929,7 +945,9 @@
 .preset-quote .quoteRelation .relationLabel{
 
     font-size:15px;
-    font-weight:700;
+
+    /* 太さは他レイアウトの関係性ラベルに合わせて 400（フェーズ10） */
+    font-weight:400;
 
     letter-spacing:.04em;
 
@@ -946,10 +964,11 @@
 
 /* 説明文が主役。行間を広く、文字も大きめにする。
 
-   文字サイズは --quote-desc-scale（大/中/小 = 1.25/1/0.85）を
-   掛けて決めている。値は RelationSheet.jsx がシート直下に渡し、
-   一覧は utils/relationLayout.js の QUOTE_TEXT_SIZES（フェーズ9）。
-   行間は単位なしの倍数なので、文字サイズに自動で追従する。 */
+   基準px（=--desc-scale が100%のときの実寸）は 12.75px。
+   フェーズ9では「中=15px」を基準に大/中/小の3段にしていたが、
+   フェーズ10で「小を基準にしてスライダーで上へ伸ばす」方式に変えたため、
+   フェーズ9の小（15px × 0.85 = 12.75px）をそのまま基準に置き直している。
+   倍率の考え方は utils/relationLayout.js のコメント参照。 */
 .preset-quote .quoteBody{
 
     max-width:680px;
@@ -962,7 +981,7 @@
 
     margin-top:0;
 
-    font-size:calc(15px * var(--quote-desc-scale, 1));
+    font-size:calc(12.75px * var(--desc-scale, 1));
 
     line-height:2.1;
 
@@ -994,7 +1013,8 @@
 
 .relation-card.small.preset-quote .quoteBody .description{
 
-    font-size:calc(12px * var(--quote-desc-scale, 1));
+    /* 小カードの基準px。フェーズ9の小（12px × 0.85 = 10.2px） */
+    font-size:calc(10.2px * var(--desc-scale, 1));
 
     line-height:1.9;
 

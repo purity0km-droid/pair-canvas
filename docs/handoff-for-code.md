@@ -1,6 +1,6 @@
 # 引継ぎメモ（Claude Code 用）
 
-最終更新：2026-09-11（フェーズ9完了時点）
+最終更新：2026-09-11（フェーズ10完了時点）
 
 pair-canvas（React19 + Vite8 + Tailwind v4、キャラクター関係性シート作成SPA）の改修作業の引継ぎメモ。
 
@@ -8,7 +8,7 @@ pair-canvas（React19 + Vite8 + Tailwind v4、キャラクター関係性シー�
 
 - **どのファイルに何があるか → `.claude/codemap.md`**（フェーズ9で新設。Glob/Grepの前にまずこれを読む。探す手がかりだけを1行1件で置いてある）
 - 全体仕様・設計判断の理由 → `docs/requirements.md`（0〜6章）
-- ユーザー向けの変更履歴 → リポジトリ直下の `修正履歴.md`（フェーズ1〜9を平易な日本語でまとめてある。**「何が変わったか」を知りたいときはまずこれ**）
+- ユーザー向けの変更履歴 → リポジトリ直下の `修正履歴.md`（フェーズ1〜10を平易な日本語でまとめてある。**「何が変わったか」を知りたいときはまずこれ**）
 - 各変更の技術的な理由 → 各コミットメッセージ本文（`git log --format="%h %s%n%b"`）。**コード側にも日本語コメントで「なぜそうしたか」「戻すならどこを触るか」を書き込み済み**なので、新しく説明を書き起こす前に、まずコミット本文とコメントを読むこと。
 
 ---
@@ -28,6 +28,7 @@ phase/6-layout-presets    … 画像の自由縮小＋レイアウトプリセ�
 phase/7-feedback          … 画像の拡大縮小方式の作り直しほか
 phase/8-feedback          … カード位置入替ほか
 phase/9-quote-textsize    … 「語り」の説明文の文字サイズ（大/中/小）
+phase/10-feedback         … 説明文サイズをスライダー化＋全レイアウト対応、ラベル太字解除、帯の矢印を白へ
 ```
 
 - `main` は **`origin/main` と同期済み**（remote: `https://github.com/purity0km-droid/pair-canvas.git`）。フェーズ9作業時にユーザーの指示で push した。以降も push 前には確認を取ること。
@@ -53,25 +54,25 @@ git archive --format=zip -9 -o "../pair-canvas-main.zip" HEAD -- . ':(exclude).c
 
 すべて `App.jsx` の2つのstateに集約されている。
 
-- `page` … シート全体の設定（`DEFAULT_PAGE` 参照：タイトル表示/文言、背景色、文字色、背景パターン、フォント、**`layoutPreset`**、**`quoteTextSize`**）
+- `page` … シート全体の設定（`DEFAULT_PAGE` 参照：タイトル表示/文言、背景色、文字色、背景パターン、フォント、**`layoutPreset`**、**`descTextScale`**）
 - `relations` … 関係性の配列（最大 `MAX_RELATIONS` = 4件）。1件の中身は `utils/createRelation.js` の `createRelation` / `normalizeRelation` が定義
 
 この2つをまとめて localStorage（キー：`DRAFT_STORAGE_KEY` = `pair-canvas-draft`）へ自動保存し、次回起動時に復元している。JSON保存/読込も同じ形。**サーバーへは何も送っていない**（プレビュー下にその旨を明記済み）。
 
-読込時の保険：知らないプリセット名・文字サイズ名が入っていたら `withValidPreset()` が既定に戻す。
+読込時の保険：知らないプリセット名が入っていたら `withValidPreset()` が既定に戻す。倍率が範囲外なら丸める。**フェーズ9の `quoteTextSize`（small/medium/large）を読んだときは、同じ関数が `descTextScale` へ読み替えて古いキーを捨てる**（`LEGACY_QUOTE_TEXT_SCALE`）。
 
 ### 主なファイルと役割
 
 | ファイル | 役割 |
 |---|---|
 | `src/App.jsx` | 状態の唯一の持ち主。PNG書き出し、JSON入出力、`moveRelation`（カード位置入替）もここ |
-| `src/components/RelationSheet.jsx` | カード**並び**レイアウトの唯一の実装（画面表示・書き出し共通＝WYSIWYG）。シート直下のCSS変数（`--paper-color` / `--quote-desc-scale`）もここ |
+| `src/components/RelationSheet.jsx` | カード**並び**レイアウトの唯一の実装（画面表示・書き出し共通＝WYSIWYG）。シート直下のCSS変数（`--paper-color` / `--desc-scale`）もここ |
 | `src/components/RelationCard.jsx` | カード**1枚の中身**。プリセットごとの組み方を `renderBody()` の `switch` で分岐 |
 | `src/components/Preview.jsx` | 表示倍率の計算とズームUI。`DESIGN_WIDTH = 1000` を実幅に合わせて `transform:scale()` |
 | `src/components/RelationAccordion.jsx` | 関係性1件ぶんの編集ボックス。画像位置入替・カード位置入替ボタン |
 | `src/components/ImageUploader.jsx` | 画像選択と「位置調整ウインドウ」 |
-| `src/components/PageSettings.jsx` | シート全体の設定UI（色・フォント・背景・レイアウトプリセット） |
-| `src/utils/relationLayout.js` | **見た目の決まりごとの中心。** 件数→large/medium/small判定、プリセット一覧、プリセット×サイズごとの画像枠寸法、「語り」の文字サイズ表（`QUOTE_TEXT_SIZES`） |
+| `src/components/PageSettings.jsx` | シート全体の設定UI（色・フォント・背景・レイアウトプリセット・説明文の文字サイズ） |
+| `src/utils/relationLayout.js` | **見た目の決まりごとの中心。** 件数→large/medium/small判定、プリセット一覧、プリセット×サイズごとの画像枠寸法、説明文サイズの倍率の範囲（`DESC_SCALE_MIN/MAX/STEP`）とフェーズ9からの移行表 |
 | `src/utils/imageFit.js` | 画像を枠にどう収めるかの計算（`coverFactor`） |
 | `src/hooks/useImageAspect.js` | 写真そのものの縦横比を `<img>` の load から取得 |
 | `src/hooks/useImageDrag.js` | 画像位置調整の共通フック（**現在はサイドバーのモーダル専用**。プレビューは表示専用） |
@@ -127,8 +128,19 @@ git archive --format=zip -9 -o "../pair-canvas-main.zip" HEAD -- . ':(exclude).c
 - 補足事項が中央寄りになる不具合を修正（`.subInfo` の `width` 指定が2か所にあり後勝ちしていた）
 - カラーコード欄を削除（Chrome標準のHEX切替で足りるとのユーザー判断）、「写真の大きさ（おまけ）」機能を削除、`<details>` の▼重複を解消
 
+### phase/10-feedback
+- **説明文の文字サイズをスライダー化し、全レイアウトへ広げた。** `page.quoteTextSize`（3段）→ **`page.descTextScale`**（1.0〜2.0、0.05刻み）に置き換え
+- **100%のときの実寸はレイアウトごとに違う。** 倍率だけをJSで持ち、基準pxはCSS側が持つ形にしてある
+  - 語り … 12.75px（小カードは10.2px）＝フェーズ9の「小」。ユーザー指示「小を基準にしてスライダーで調整」
+  - それ以外 … 12px（`.description` の従来値そのまま）。ユーザー指示「語りの小サイズには合わせない」
+- CSS変数は `--quote-desc-scale` → **`--desc-scale`** に改名（語り専用ではなくなったため）
+- フェーズ9のJSON互換は `LEGACY_QUOTE_TEXT_SCALE`（小100% / 中120% / 大145%）で吸収。`withValidPreset()` が読み替えて `quoteTextSize` を削除するので、新しく保存するJSONに古いキーは残らない
+- **関係性ラベルの `font-weight:700` を 400 に揃えた**（帯 / 見出しの `.headlineMain` / 語り）。基準の `.relationLabel` が400だった。※**font-size は各プリセットの持ち味なので変えていない**（帯18px / 見出し24px / 語り15px。関係性1〜2件のとき）
+- **帯の中央の矢印を白基調へ戻した**（フェーズ8で黒にしたもの）。白文字＋暗いにじみ
+- スライダーのCSSは `sidebar.css` の `.layoutExtraBody .descScaleRow`。`<label>` なので `.panel label`（0,1,1）に勝たせるためクラス2つ（0,2,0）にしてある（位置調整モーダルの `.imageAdjust .imageAdjustRow` と同じ手口）
+
 ### phase/9-quote-textsize
-- **「語り」の説明文の文字サイズを大/中/小から選べるように**（`page.quoteTextSize`。JSONにも保存される）。倍率は `QUOTE_TEXT_SIZES` の 0.85 / 1 / 1.25
+- **「語り」の説明文の文字サイズを大/中/小から選べるように**（`page.quoteTextSize`。JSONにも保存される）。倍率は 0.85 / 1 / 1.25。※**フェーズ10でスライダーに置き換え済み**（この節は経緯の記録）
 - 実装方式：カードごとにclassを足すのではなく、`RelationSheet.jsx` がシート直下に **`--quote-desc-scale`** を1回だけ渡し、`card.css` の `.preset-quote .quoteBody .description` が `font-size:calc(既定px * var(--quote-desc-scale,1))` で受ける。`RelationSheet.jsx` には枚数ぶん（1〜4件）の `<RelationCard>` 呼び出しがあるので、propsを増やすと直す箇所が増えるのを避けた。画面プレビューと書き出しはどちらも `RelationSheet` なので、この1か所で両方に効く
 - 行間（`line-height`）は単位なしの倍数なので、文字サイズに自動追従する。別途指定は不要
 - UIは `PageSettings.jsx` の「レイアウト（おまけ）」の中。**「語り」を選んでいるときだけ表示**する（他プリセットでは説明文が主役ではないため）。選んだ値は `page` に残るので、プリセットを行き来しても失われない

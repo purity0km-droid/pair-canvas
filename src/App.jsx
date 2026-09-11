@@ -12,8 +12,9 @@ import { createRelation, normalizeRelation } from "./utils/createRelation";
 import {
   DEFAULT_LAYOUT_PRESET,
   isLayoutPreset,
-  DEFAULT_QUOTE_TEXT_SIZE,
-  isQuoteTextSize,
+  DEFAULT_DESC_SCALE,
+  clampDescScale,
+  LEGACY_QUOTE_TEXT_SCALE,
 } from "./utils/relationLayout";
 import { MAX_RELATIONS, DRAFT_STORAGE_KEY } from "./constants";
 
@@ -29,16 +30,15 @@ const DEFAULT_PAGE = {
   // 一覧は utils/relationLayout.js の LAYOUT_PRESETS。
   layoutPreset: DEFAULT_LAYOUT_PRESET,
 
-  // 「語り」レイアウトの説明文の文字サイズ（フェーズ9）。大/中/小の3段。
-  // 一覧は utils/relationLayout.js の QUOTE_TEXT_SIZES。
-  // 「語り」以外のプリセットでは使わないが、プリセットを切り替えても
-  // 選んだ値が残るよう、page 側に持たせている。
-  quoteTextSize: DEFAULT_QUOTE_TEXT_SIZE,
+  // 説明文の文字サイズの倍率（フェーズ10）。1.0〜2.0。
+  // 基準(1.0)の実寸はレイアウトごとに違う（utils/relationLayout.js のコメント参照）。
+  // シート全体に効く設定で、どのレイアウトでも使える。
+  descTextScale: DEFAULT_DESC_SCALE,
 };
 
-// 下書きや読み込んだJSONに、知らない値（プリセット名・文字サイズ名）が
-// 入っていた場合の保険。
-// （将来プリセットを削除・改名したときに、表示が壊れるのを防ぐ）
+// 下書きや読み込んだJSONの値をならす場所。
+// - 知らないプリセット名は既定へ戻す（将来プリセットを削除・改名したとき用）
+// - フェーズ9の quoteTextSize は フェーズ10の descTextScale へ読み替える
 function withValidPreset(page) {
   const fixed = { ...page };
 
@@ -46,10 +46,17 @@ function withValidPreset(page) {
     fixed.layoutPreset = DEFAULT_LAYOUT_PRESET;
   }
 
-  // 「語り」の文字サイズも同じ保険をかける（フェーズ9）
-  if (!isQuoteTextSize(fixed.quoteTextSize)) {
-    fixed.quoteTextSize = DEFAULT_QUOTE_TEXT_SIZE;
+  // フェーズ9のJSON（page.quoteTextSize = "small"/"medium"/"large"）を
+  // 読み込んだときは、フェーズ10の倍率へ読み替える。
+  // 読み替え表と理屈は utils/relationLayout.js の LEGACY_QUOTE_TEXT_SCALE 参照。
+  if (fixed.quoteTextSize !== undefined) {
+    const legacy = LEGACY_QUOTE_TEXT_SCALE[fixed.quoteTextSize];
+    if (legacy !== undefined) fixed.descTextScale = legacy;
+    delete fixed.quoteTextSize;
   }
+
+  // 範囲外の倍率は既定へ丸める
+  fixed.descTextScale = clampDescScale(fixed.descTextScale);
 
   return fixed;
 }

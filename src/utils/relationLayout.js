@@ -69,36 +69,53 @@ export const LAYOUT_PRESETS = [
 export const DEFAULT_LAYOUT_PRESET = "facing";
 
 // -----------------------------------------------------------------------
-// 「語り」の説明文の文字サイズ（フェーズ9）
+// 説明文の文字サイズ倍率（フェーズ9 → フェーズ10で作り直し）
 //
-// 「語り」は説明文が主役のレイアウトなので、文章の長さによって
-// 「大きくしたい／小さく詰めたい」が分かれる。そこでシート全体に対して
-// 大/中/小の3段から選べるようにした。
+// フェーズ9では「語り」限定で大/中/小の3段だったが、
+// フェーズ10で「スライダーで細かく決めたい」「他のレイアウトでも使いたい」
+// という要望を受けて、倍率1つ（page.descTextScale）に置き換えた。
 //
-// scale は card.css 側で --quote-desc-scale として使い、
-// 既定サイズ（中＝1）に掛け算して文字サイズを決めている。
+// 【基準（100%）の決め方】
+//   - 「語り」……フェーズ9の「小」を基準にした（12.75px / 小カードは10.2px）。
+//                ユーザー指示：「小を基準にしてスライダーで調整」
+//   - それ以外……各レイアウトの現行サイズがそのまま基準（12px）。
+//                ユーザー指示：「語りの小サイズには合わせない」
+//   基準値そのものは card.css 側に px で書いてある（.description の font-size）。
+//   ここで持っているのは掛け算する倍率だけ。
+//
 // 行間(line-height)は単位なしの倍数で指定してあるため、文字サイズに
 // 追従して自動で広がる（ここで別途指定する必要はない）。
-//
-// id はJSONに保存される値なので、一度出したものは変えないでください。
 // -----------------------------------------------------------------------
-export const QUOTE_TEXT_SIZES = [
-  { id: "small", label: "小", scale: 0.85 },
-  { id: "medium", label: "中", scale: 1 },
-  { id: "large", label: "大", scale: 1.25 },
-];
+export const DESC_SCALE_MIN = 1;
+export const DESC_SCALE_MAX = 2;
+export const DESC_SCALE_STEP = 0.05;
+export const DEFAULT_DESC_SCALE = 1;
 
-export const DEFAULT_QUOTE_TEXT_SIZE = "medium";
-
-export function isQuoteTextSize(value) {
-  return QUOTE_TEXT_SIZES.some((size) => size.id === value);
+// 下書きや読み込んだJSONに範囲外の値・数値でない値が入っていても
+// 表示が壊れないようにする。
+export function clampDescScale(value) {
+  const num = Number(value);
+  if (!Number.isFinite(num)) return DEFAULT_DESC_SCALE;
+  return Math.min(DESC_SCALE_MAX, Math.max(DESC_SCALE_MIN, num));
 }
 
-// 見つからないときは「中」（=1）を返すので、呼び出し側で保険は不要。
-export function getQuoteTextScale(value) {
-  const found = QUOTE_TEXT_SIZES.find((size) => size.id === value);
-  return (found || QUOTE_TEXT_SIZES.find((s) => s.id === DEFAULT_QUOTE_TEXT_SIZE)).scale;
-}
+// -----------------------------------------------------------------------
+// フェーズ9の page.quoteTextSize（"small" / "medium" / "large"）からの移行表。
+//
+// フェーズ9の基準は「中」＝15px で、小0.85倍=12.75px、大1.25倍=18.75px だった。
+// フェーズ10では「小」を100%の基準に置き直したので、同じ見た目を保つには
+// 新しい基準（12.75px）に対する倍率へ読み替える必要がある。
+//   小 12.75 / 12.75 = 1.00
+//   中 15.00 / 12.75 = 1.18 → スライダーの刻み(5%)に合わせて 1.20
+//   大 18.75 / 12.75 = 1.47 → 同じく 1.45
+// フェーズ9のJSONを読んでも文字の大きさがほぼ変わらないようにするための表で、
+// 新しく保存されるJSONには quoteTextSize は入らない。
+// -----------------------------------------------------------------------
+export const LEGACY_QUOTE_TEXT_SCALE = {
+  small: 1,
+  medium: 1.2,
+  large: 1.45,
+};
 
 export function isLayoutPreset(value) {
   return LAYOUT_PRESETS.some((preset) => preset.id === value);
