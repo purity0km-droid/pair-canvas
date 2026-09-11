@@ -282,6 +282,14 @@
 
     transform:translate(-50%,-50%);
 
+    /* 位置指定だけ（幅なし）の絶対配置だと、幅の上限が
+       「器の幅 - left(50%)」＝半分までになり、まだ余白があるのに
+       折り返してしまう。max-content で文字幅ぶん広がれるようにし、
+       上限だけ器の幅に合わせる（-24px はカードの縁に文字が
+       貼り付かないための余白。帯レイアウトはカードのpaddingが0のため）。 */
+    width:max-content;
+    max-width:calc(100% - 24px);
+
     display:flex;
     justify-content:center;
     align-items:center;
@@ -300,11 +308,29 @@
 
     gap: 8px;
 
+    /* 【必須】.relationCenter（横並びのflex）の中で縮めるようにする。
+       word-break:keep-all の日本語は min-content が「文字列まるごと」に
+       なるため、min-width:auto のままだと器より小さくならず、
+       ラベルがカードの外へ飛び出す（帯の小カードで実際に起きた）。 */
+    min-width: 0;
+
 }
 
 .relationLabel {
 
-    max-width: 180px;
+    /* 【幅の決め方】（フェーズ11）
+       以前は max-width:180px で頭打ちにしていた。しかし下の
+       word-break:keep-all と overflow-wrap:normal の組み合わせでは
+       日本語に改行できる場所が1つも無いため、180pxを超えた文字が
+       そのままラベルの外へはみ出していた（全レイアウトで発生）。
+
+       いまは「文字幅に合わせてラベルが伸びる」方式にしてある。
+       上限は器（.relationCenter / .quoteRelation / .twowayLane）の幅で、
+       そこまで伸びきって収まらないときだけ overflow-wrap で折り返す。
+       min-width:0 は、.quoteRelation のように横並びの器の中で
+       ラベルが縮めずに溢れるのを防ぐため。 */
+    max-width: 100%;
+    min-width: 0;
 
     padding: 8px 18px;
 
@@ -322,7 +348,10 @@
     text-align:center;
 
     white-space:pre-wrap;
-    overflow-wrap: normal;
+    /* keep-all は「文節の途中で切らない」ための指定。
+       break-word はそれでも器に収まらないときの最後の逃げ道で、
+       これが無いと文字がラベルの外へ出る。 */
+    overflow-wrap: break-word;
     word-break: keep-all;
     line-height:1.4;
 
@@ -657,6 +686,10 @@
 
 .preset-headline .headlineMain{
 
+    /* 器（.headlineBlock）はカード幅いっぱいなので通常は折り返せるが、
+       区切りの無い長い語だけは溢れるため保険を入れておく（フェーズ11） */
+    overflow-wrap:break-word;
+
     font-size:24px;
 
     /* 太さは他レイアウトの関係性ラベルに合わせて 400（フェーズ10）。
@@ -962,12 +995,14 @@
 
 }
 
-/* 説明文が主役。行間を広く、文字も大きめにする。
+/* 説明文が主役。行間を広く取る。
 
-   基準px（=--desc-scale が100%のときの実寸）は 12.75px。
-   フェーズ9では「中=15px」を基準に大/中/小の3段にしていたが、
-   フェーズ10で「小を基準にしてスライダーで上へ伸ばす」方式に変えたため、
-   フェーズ9の小（15px × 0.85 = 12.75px）をそのまま基準に置き直している。
+   基準px（=--desc-scale が100%のときの実寸）は 12px＝全レイアウト共通。
+   フェーズ9→10の経緯で、ここだけ 12.75px（小カードは 10.2px）という
+   他より大きい値を引きずっていたが、「語りだけ初期サイズが大きい」という
+   ユーザー指摘を受けてフェーズ11で共通の 12px に揃えた。
+   大きくしたいときはスライダー（--desc-scale）で上げる。
+   行間だけは語りの持ち味なので 2.1 / 1.9 のまま残している。
    倍率の考え方は utils/relationLayout.js のコメント参照。 */
 .preset-quote .quoteBody{
 
@@ -981,7 +1016,7 @@
 
     margin-top:0;
 
-    font-size:calc(12.75px * var(--desc-scale, 1));
+    font-size:calc(12px * var(--desc-scale, 1));
 
     line-height:2.1;
 
@@ -1013,8 +1048,8 @@
 
 .relation-card.small.preset-quote .quoteBody .description{
 
-    /* 小カードの基準px。フェーズ9の小（12px × 0.85 = 10.2px） */
-    font-size:calc(10.2px * var(--desc-scale, 1));
+    /* 小カードも全レイアウト共通の 12px（フェーズ11で 10.2px から変更） */
+    font-size:calc(12px * var(--desc-scale, 1));
 
     line-height:1.9;
 
