@@ -32,7 +32,7 @@ export default function PairGlyph({ side }) {
       </defs>
 
       {/* 2つとも淡く塗った上に、該当する部分だけ濃く重ねる。
-          色は sidebar.css の .pairGlyph（左＝藍、右＝山吹、重なり＝本文の色。フェーズ14）。
+          色は sidebar.css の .pairGlyph（左＝墨、右＝ローズ、重なり＝本文の色。フェーズ14）。
           枠線で描いたり2つを大きく重ねたりすると、オン・オフの切り替え
           スイッチに見えてしまったので、円を少し離し、濃い円には
           帯の丸写真（.pairAvatar）と同じ白い縁を付けている */}
