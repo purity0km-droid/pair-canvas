@@ -1,4 +1,5 @@
 import ImageUploader from "./ImageUploader";
+import PairGlyph from "./PairGlyph";
 import {
   getRelationLayout,
   getImageAspect,
@@ -23,6 +24,33 @@ import {
 // 開閉する形に戻すなら、帯を <button onClick={onToggle}> に戻し、
 // isOpen / onToggle を props で受け取って中身を {isOpen && (...)} で囲む。
 // ファイル名は差分を大きくしないため Accordion のままにしてある。
+// 見出しの帯に並べる小さな丸写真（2026-10-29）。
+// 画像があれば写真を、無ければ名前の1文字目（名前も無ければ「？」）を出す。
+// どの関係性を編集しているかが、番号より先に顔で分かるようにしている。
+// 位置調整の値は反映しない（帯の丸は小さすぎて差が見えないため）。
+function PairAvatar({ image, name }) {
+  if (image) {
+    return (
+      <span className="pairAvatar">
+        <img src={image} alt="" draggable={false} />
+      </span>
+    );
+  }
+  // 絵文字などサロゲートペアの文字を半分で切らないよう Array.from で分ける
+  const initial = Array.from(name.trim())[0] ?? "？";
+  return <span className="pairAvatar empty">{initial}</span>;
+}
+
+// 小見出し（左のキャラクター／右のキャラクター／ふたりの関係）
+function FieldSectionTitle({ side, children }) {
+  return (
+    <h3 className="fieldSectionTitle">
+      <PairGlyph side={side} />
+      {children}
+    </h3>
+  );
+}
+
 export default function RelationAccordion({
   relation,
   index,
@@ -55,76 +83,98 @@ export default function RelationAccordion({
     updateRelation(relation.id, "rightSub", relation.leftSub);
   }
 
+  // 【2026-10-29】外側を <section className="panel"> から <div> にした。
+  // RelationPanel.jsx の .panel の中に .panel が入れ子になり、
+  // .panel:first-of-type の余白・罫線の打ち消しにたまたま頼っていたため。
   return (
-    <section className="panel">
+    <div className="relationEditor">
 
       {/* 見出しの帯。クリックしても何も起きない「ラベル」なので、
-          ボタンではなく div にしている（フェーズ5） */}
+          ボタンではなく div にしている（フェーズ5）。
+          2026-10-29 に紫の塗りつぶしをやめて薄い紫の面にし、
+          左にふたりの小さな丸写真を重ねて置いた */}
       <div className="accordionHeader">
 
-        <div className="accordionTitle">
-          <strong>{relation.name}</strong>
+        <div className="pairAvatars">
+          <PairAvatar image={relation.leftImage} name={relation.leftName} />
+          <PairAvatar image={relation.rightImage} name={relation.rightName} />
         </div>
 
-        <div className="accordionSummary">
-          {relation.leftName || "未設定"}
-          {" ⇄ "}
-          {relation.rightName || "未設定"}
-        </div>
+        <div className="accordionText">
 
-        {relation.relation && (
-          <div className="accordionRelation">
-            {relation.relation}
+          <div className="accordionTitle">
+            {relation.name}
           </div>
-        )}
+
+          <div className="accordionSummary">
+            {relation.leftName || "未設定"}
+            {" ⇄ "}
+            {relation.rightName || "未設定"}
+          </div>
+
+          {relation.relation && (
+            <div className="accordionRelation">
+              {relation.relation}
+            </div>
+          )}
+
+        </div>
 
       </div>
 
       <div className="accordionBody">
 
-        {/* 表示名はフェーズ5で「左右を入れ替え」→「画像位置入替」に変更。
-            ※動作は名称変更前と同じで、画像だけでなく名前・補足情報・
-              画像の位置調整もまとめて左右入れ替えている（swapSides参照）。
-              画像だけを入れ替える動作に変えたい場合は、swapSides から
-              leftName/rightName・leftSub/rightSub の行を外す。 */}
-        <button
-          type="button"
-          className="swapSidesButton"
-          onClick={swapSides}
-        >
-          ⇄ 画像位置入替
-        </button>
+        {/* 入れ替えの2つ（このカードの左右／カードの並び順）を1行にまとめた
+            （2026-10-29）。どちらも「並びを変える」操作なので */}
+        <div className="relationTools">
 
-        {/* カードの並び順の入れ替え（フェーズ8）。
-            関係性が2件以上あるときだけ出す。1件しか無いときに
-            押せないボタンが並んでいても意味が無いため。
-            並び順は relations 配列の順番そのままなので、隣と入れ替えると
-            シート上のカードの位置も入れ替わる（App.jsx の moveRelation）。 */}
-        {totalCount > 1 && (
-          <div className="cardOrderRow">
-            <span>カード位置</span>
+          {/* 表示名はフェーズ5で「左右を入れ替え」→「画像位置入替」に変更。
+              ※動作は名称変更前と同じで、画像だけでなく名前・補足情報・
+                画像の位置調整もまとめて左右入れ替えている（swapSides参照）。
+                画像だけを入れ替える動作に変えたい場合は、swapSides から
+                leftName/rightName・leftSub/rightSub の行を外す。 */}
+          <button
+            type="button"
+            className="swapSidesButton"
+            onClick={swapSides}
+          >
+            ⇄ 画像位置入替
+          </button>
 
-            <button
-              type="button"
-              className="cardOrderButton"
-              onClick={() => moveRelation?.(relation.id, -1)}
-              disabled={index === 0}
-              title="ひとつ前の位置へ移動"
-            >
-              ◀ 前へ
-            </button>
+          {/* カードの並び順の入れ替え（フェーズ8）。
+              関係性が2件以上あるときだけ出す。1件しか無いときに
+              押せないボタンが並んでいても意味が無いため。
+              並び順は relations 配列の順番そのままなので、隣と入れ替えると
+              シート上のカードの位置も入れ替わる（App.jsx の moveRelation）。 */}
+          {totalCount > 1 && (
+            <div className="cardOrderRow">
+              <span>カード位置</span>
 
-            <button
-              type="button"
-              className="cardOrderButton"
-              onClick={() => moveRelation?.(relation.id, 1)}
-              disabled={index === totalCount - 1}
-              title="ひとつ後ろの位置へ移動"
-            >
-              次へ ▶
-            </button>
-          </div>
-        )}
+              <button
+                type="button"
+                className="cardOrderButton"
+                onClick={() => moveRelation?.(relation.id, -1)}
+                disabled={index === 0}
+                title="ひとつ前の位置へ移動"
+              >
+                ◀ 前へ
+              </button>
+
+              <button
+                type="button"
+                className="cardOrderButton"
+                onClick={() => moveRelation?.(relation.id, 1)}
+                disabled={index === totalCount - 1}
+                title="ひとつ後ろの位置へ移動"
+              >
+                次へ ▶
+              </button>
+            </div>
+          )}
+
+        </div>
+
+        <FieldSectionTitle side="left">左のキャラクター</FieldSectionTitle>
 
         {/* 左画像
             【重要】ここは意図的に<label>ではなく<div>にしています。
@@ -134,7 +184,7 @@ export default function RelationAccordion({
             二重に開いてしまう不具合の原因になっていました。 */}
         <div className="fieldGroup">
 
-          <span>左画像</span>
+          <span>画像</span>
 
           <ImageUploader
             image={relation.leftImage}
@@ -161,7 +211,7 @@ export default function RelationAccordion({
         {/* 左名前 */}
         <label>
 
-          <span>左の名前</span>
+          <span>名前</span>
 
           <input
             type="text"
@@ -180,7 +230,7 @@ export default function RelationAccordion({
         {/* 左補足 */}
         <label>
 
-          <span>左補足情報</span>
+          <span>補足情報</span>
 
           <textarea
             rows="2"
@@ -197,10 +247,12 @@ export default function RelationAccordion({
 
         </label>
 
+        <FieldSectionTitle side="right">右のキャラクター</FieldSectionTitle>
+
         {/* 右画像（左画像と同じ理由で<label>ではなく<div>にしています） */}
         <div className="fieldGroup">
 
-          <span>右画像</span>
+          <span>画像</span>
 
           <ImageUploader
             image={relation.rightImage}
@@ -227,7 +279,7 @@ export default function RelationAccordion({
         {/* 右名前 */}
         <label>
 
-          <span>右の名前</span>
+          <span>名前</span>
 
           <input
             type="text"
@@ -246,7 +298,7 @@ export default function RelationAccordion({
         {/* 右補足 */}
         <label>
 
-          <span>右補足情報</span>
+          <span>補足情報</span>
 
           <textarea
             rows="2"
@@ -262,6 +314,8 @@ export default function RelationAccordion({
           />
 
         </label>
+
+        <FieldSectionTitle side="both">ふたりの関係</FieldSectionTitle>
 
         {/* 関係性（矢印の上のラベル） */}
         <label>
@@ -341,6 +395,7 @@ export default function RelationAccordion({
         </label>
 
       <button
+        type="button"
         className="deleteButton"
         onClick={() => removeRelation(relation.id)}
       >
@@ -349,6 +404,6 @@ export default function RelationAccordion({
 
       </div>
 
-    </section>
+    </div>
   );
 }

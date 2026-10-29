@@ -256,15 +256,15 @@ export default function ImageUploader({
             const file = e.dataTransfer.files?.[0];
             if (file) handleDropFile(file);
           }}
-          style={{ cursor: "pointer", display: "block" }}
+          aria-label="画像を選ぶ"
         >
+          {/* 2026-10-29：「タップ または ドラッグ＆ドロップ」から、
+              PCでもスマホでも通じる「画像を選ぶ」に替えた。
+              枠と面の見た目は imageUploader.css の .imageUploader */}
           <div className="imagePlaceholder">
-            <div className="plus">＋</div>
-            <div>
-              タップ または
-              <br />
-              ドラッグ＆ドロップ
-            </div>
+            <div className="plus" aria-hidden="true">＋</div>
+            <div className="imagePlaceholderTitle">画像を選ぶ</div>
+            <div>ドラッグ＆ドロップでも入れられます</div>
           </div>
         </div>
       ) : (

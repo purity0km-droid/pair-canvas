@@ -44,24 +44,33 @@ const FONT_OPTIONS = [
   { value: "DotGothic16", label: "DotGothic16" },
 ];
 
-// ページ全体の設定（タイトル・色・背景パターン・フォント）。
-// 「ページ設定」という見出しは、左カラムに他の見出しが1つしか無く
-// 説明として働いていなかったため、フェーズ4で外している。
-export default function PageSettings({ page, updatePage }) {
+// 背景パターンの選択肢。
+// 2026-10-29 にボタンの下の記号（■■■■ や //// など、上の見本と同じ物を
+// 文字でなぞっていただけ）を名前に替えた。
+const PATTERNS = [
+  { id: "solid", label: "無地" },
+  { id: "stripe", label: "斜線" },
+  { id: "check", label: "チェック" },
+  { id: "dot", label: "ドット" },
+  { id: "grid", label: "格子" },
+];
 
-  const patterns = [
-    { id: "solid", label: "■■■■" },
-    { id: "stripe", label: "////" },
-    { id: "check", label: "▦▦▦" },
-    { id: "dot", label: "・・・・" },
-    { id: "grid", label: "＋＋＋" },
-  ];
+// ページ全体の設定（タイトル・色・背景パターン・フォント）。
+// フェーズ4で「ページ設定」の見出しを外していたが、2026-10-29 に
+// 「シート全体」として戻した。下の「関係性」と並べて、左カラムが
+// 「シート全体の設定」と「関係性ごとの設定」の2つでできていると分かるように。
+export default function PageSettings({ page, updatePage }) {
 
   return (
     <section className="panel">
 
+      <h2>シート全体</h2>
+
       <div className="titleRow">
 
+        {/* 以前はチェックボックスだけが置かれていて、何のオン・オフか
+            分からなかったので「タイトル」の文字を添えた（2026-10-29）。
+            文字を押してもオン・オフできる */}
         <label className="checkboxInline">
 
           <input
@@ -72,11 +81,14 @@ export default function PageSettings({ page, updatePage }) {
             }
           />
 
+          <span>タイトル</span>
+
         </label>
 
         <input
           type="text"
           placeholder="タイトルを入力"
+          aria-label="タイトル"
           value={page.title}
           disabled={!page.showTitle}
           onChange={(e) =>
@@ -87,10 +99,7 @@ export default function PageSettings({ page, updatePage }) {
       </div>
 
       {/* 背景色・文字色・フォントの3つを1行に並べる。
-          カラーコードの入力欄は色見本の「下」に置いて、行の横幅を食わない
-          ようにしている（文字を小さめの等幅にして色見本と同じ幅に収めた）。
-          これによりフォント選択欄の幅は従来どおり確保できている。
-          詳しくは sidebar.css の .colorRow / .colorCode を参照。 */}
+          詳しくは sidebar.css の .colorRow を参照。 */}
       <div className="colorRow">
 
         <ColorField
@@ -142,13 +151,22 @@ export default function PageSettings({ page, updatePage }) {
 
       </div>
 
-      <label>
+      {/* 以前は <label> で囲んでいたが、それだと項目名の「背景パターン」の
+          文字を押したときに中の先頭のボタン（無地）が押されてしまうので、
+          div にした（2026-10-29） */}
+      <div className="fieldGroup">
 
         <span>背景パターン</span>
 
-        <div className="patternGrid">
+        {/* 見本は今の背景色で描く（2026-10-29）。シートに出る見た目に
+            近づけて、選ぶ前に仕上がりが分かるように。--swatch-color は
+            sidebar.css の .patternPreview が読む */}
+        <div
+          className="patternGrid"
+          style={{ "--swatch-color": page.backgroundColor }}
+        >
 
-          {patterns.map((pattern) => (
+          {PATTERNS.map((pattern) => (
 
             <button
               key={pattern.id}
@@ -164,6 +182,7 @@ export default function PageSettings({ page, updatePage }) {
                   pattern.id
                 )
               }
+              aria-pressed={page.backgroundPattern === pattern.id}
             >
 
               <div
@@ -178,7 +197,7 @@ export default function PageSettings({ page, updatePage }) {
 
         </div>
 
-      </label>
+      </div>
 
       {/* レイアウトプリセット（フェーズ6）。
 

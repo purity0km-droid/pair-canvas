@@ -30,6 +30,11 @@ import Logo from "./Logo";
 // ボタン自体には常にフルの名称を aria-label / title で付けているので、
 // 短縮表示でも読み上げとマウスオーバーでは正式名称が分かります。
 // ラベルを増減するときは、この2つを必ずセットで書いてください。
+//
+// 【ボタンの区切り（2026-10-29）】
+// 5つのボタンを「リセット｜JSON（読込・保存）｜PNG（保存・高画質）」の
+// 3組に分け、組の間に細い縦線（.headerDivider）を入れています。
+// 同じ見た目のボタンが5つ続くと、どれが書き出しなのか探しにくかったため。
 // -----------------------------------------------------------------------
 export default function AppHeader({
   saveProject,
@@ -57,16 +62,21 @@ export default function AppHeader({
           <span className="labelShort" aria-hidden="true">↺</span>
         </button>
 
+        <span className="headerDivider" aria-hidden="true" />
+
         <label
           className="headerButton importButton"
           title="JSON読込"
         >
           <span className="labelFull">JSON読込</span>
           <span className="labelShort" aria-hidden="true">読込</span>
+          {/* hidden にするとキーボードで選べなくなるので、見えない大きさに
+              してボタンの中に置く（Tab で選んで Enter で開ける）。
+              選ばれているときは .headerButton:focus-within で輪が付く */}
           <input
             type="file"
             accept=".json"
-            hidden
+            className="visuallyHidden"
             aria-label="JSON読込"
             onChange={(e) => {
               loadProject(e.target.files?.[0]);
@@ -86,6 +96,8 @@ export default function AppHeader({
           <span className="labelFull">JSON保存</span>
           <span className="labelShort" aria-hidden="true">保存</span>
         </button>
+
+        <span className="headerDivider" aria-hidden="true" />
 
         <button
           type="button"

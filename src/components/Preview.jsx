@@ -118,8 +118,15 @@ export default function Preview({ page, relations, previewRef }) {
       // 「拡大する → 枠が広がる → もっと拡大できる」という無限ループになる。
       const base = outer.parentElement ?? outer;
       const width = base.clientWidth;
-      setFitScale(width > 0 ? width / DESIGN_WIDTH : 1);
-      setNaturalHeight(inner.scrollHeight);
+
+      // スマホ幅で「編集」を出している間、プレビューは display:none で
+      // 幅も高さも0になる。そこで測り直すと倍率が崩れ、「プレビュー」に
+      // 戻した瞬間に崩れた大きさが一瞬見えるので、0のときは前の値を残す
+      // （2026-10-29。App.jsx の mobileView）。
+      if (width > 0) {
+        setFitScale(width / DESIGN_WIDTH);
+        setNaturalHeight(inner.scrollHeight);
+      }
 
       // スマホ幅かどうかもここで判定する（上のコメント参照）。
       // 同じ値なら React は再描画しないので、呼びっぱなしで問題ない。

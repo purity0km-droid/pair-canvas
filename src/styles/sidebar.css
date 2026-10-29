@@ -15,6 +15,12 @@
    フェーズ4の調整：
    - ロゴとファイル操作ボタンをヘッダー(header.css)へ移し、ここは設定だけに。
    - 色見本・フォント選択・各種ボタンを一回り小さくして、縦の情報量を増やした。
+
+   2026-10-29 の調整（紫・シームレスの方針はそのまま）：
+   - 色は app.css の --pc-* を使う。地を白にして、入力欄の薄い紫が見えるようにした
+   - 「シート全体」「関係性」の2つの見出しで左カラムを分け、関係性の中は
+     「左のキャラクター／右のキャラクター／ふたりの関係」の小見出しでまとめた
+   - 編集中の関係性の帯を紫の塗りつぶしから薄い紫の面にし、ふたりの丸写真を置いた
 ===================================================================== */
 
 .sidebar{
@@ -31,11 +37,11 @@
     height:100%;
     overflow-y:auto;
 
-    padding:26px 26px 40px;
+    padding:24px 24px 40px;
 
-    background:
-        radial-gradient(circle at 10% 0%, rgba(109,93,252,.07), transparent 42%),
-        #f7f6fb;
+    background:var(--pc-surface);
+
+    color:var(--pc-ink);
 
     font-size:14px;
 
@@ -48,9 +54,9 @@
 
 .panel{
 
-    padding:20px 2px;
+    padding:22px 0;
 
-    border-top:1px solid rgba(109,93,252,.14);
+    border-top:1px solid var(--pc-line);
 
 }
 
@@ -62,18 +68,42 @@
 }
 
 /* 左カラムの文字サイズは以下の3段だけに揃えている（フェーズ5）。
-     14px … 見出し（.panel h2）／編集ボックスのタイトル（.accordionTitle）
+     14px … 見出し（.panel h2）／編集中の関係性の帯のふたりの名前（.accordionSummary）
      13px … 入力欄の中身
-     12px … 補助情報（項目名 .panel span／帯の中の要約・関係性）
+     12px … 補助情報（項目名 .panel span／小見出し .fieldSectionTitle／帯の中の番号・関係性）
    ここを増やすと「同じ階層なのに大きさが違う」箇所が生まれるので、
    新しい文字を足すときは上のどれかに合わせること。 */
 .panel h2{
 
-    margin:0 0 16px;
+    margin:0 0 14px;
 
     /* font-family は指定しない＝bodyのNoto Sans JPを継承（フェーズ5で明朝体をやめた） */
     font-size:14px;
     font-weight:700;
+
+    color:var(--pc-ink);
+
+}
+
+/* 見出しと、その右に並べる操作（関係性の番号タブ）の行。
+   .panel h2 と同じ詳細度なので、後ろに書いて margin を打ち消している */
+.panelHead{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    gap:12px;
+
+    margin-bottom:16px;
+
+}
+
+.panelHead h2{
+
+    margin:0;
 
 }
 
@@ -98,7 +128,7 @@
 
     font-size:12px;
     font-weight:500;
-    color:#6b6478;
+    color:var(--pc-muted);
 
 }
 
@@ -112,12 +142,15 @@
 
     gap:10px;
 
-    margin-bottom:16px;
+    margin-bottom:14px;
 
 }
+
 .titleRow input[type="text"]{
 
     flex:1;
+
+    min-width:0;
 
 }
 
@@ -127,32 +160,49 @@
    （詳細度 0,1,0）で margin:0 と書いても .panel label（詳細度 0,1,1）に
    負けて効かない。その結果チェックボックスの下に14pxの余白が残ったまま
    .titleRow の align-items:center で中央揃えされ、入力欄に対して
-   ちょうど余白の半分＝7px 上にずれていた（フェーズ5で修正）。 */
+   ちょうど余白の半分＝7px 上にずれていた（フェーズ5で修正）。
+   2026-10-29 に「タイトル」の文字を添えたので、横並びにもしている
+   （.panel label の flex-direction:column もここで打ち消す）。 */
 .titleRow .checkboxInline{
 
-    display:flex;
+    flex-direction:row;
 
     align-items:center;
 
-    justify-content:center;
+    gap:6px;
 
     margin:0;
 
     flex:none;
 
+    cursor:pointer;
+
+}
+
+.titleRow .checkboxInline span{
+
+    color:var(--pc-ink);
+
 }
 
 .checkboxInline input{
 
-    width:18px;
-    height:18px;
+    width:16px;
+    height:16px;
 
-    accent-color:#6D5DFC;
+    margin:0;
+
+    accent-color:var(--pc-accent);
+
+    cursor:pointer;
 
 }
 
 /* ---------- テキスト入力 ----------
-   枠線で囲うのをやめ、薄い塗り＋角丸だけにした（すりガラス寄りの軽い質感） */
+   枠線で囲うのをやめ、薄い塗り＋角丸だけにした（すりガラス寄りの軽い質感）。
+   選んでいる間だけ白地＋紫の細い線にして、どこに打っているかを分かりやすくする。
+   線は border ではなく box-shadow で描く（border だと高さが2px変わり、
+   下の .fontSelect の高さと padding の計算が狂うため） */
 
 .panel input[type="text"],
 .panel textarea,
@@ -164,18 +214,46 @@
 
     border:none;
 
-    border-radius:12px;
+    border-radius:10px;
 
     outline:none;
 
-    background:rgba(109,93,252,.06);
+    background:var(--pc-accent-wash);
+
+    color:var(--pc-ink);
 
     font-size:13px;
     font-family:inherit;
 
     resize:vertical;
 
-    transition:.2s;
+    transition:background .2s, box-shadow .2s;
+
+}
+
+.panel textarea{
+
+    line-height:1.6;
+
+}
+
+.panel input[type="text"]::placeholder,
+.panel textarea::placeholder{
+
+    color:var(--pc-faint);
+
+}
+
+/* マウスのときだけ。スマホでは指を離したあともホバーの色が残るため */
+@media (hover:hover){
+
+    .panel input[type="text"]:hover,
+    .panel textarea:hover,
+    .panel select:hover{
+
+        background:var(--pc-accent-soft);
+
+    }
 
 }
 
@@ -183,34 +261,43 @@
 .panel textarea:focus,
 .panel select:focus{
 
-    background:rgba(109,93,252,.1);
+    background:#fff;
 
-    box-shadow:0 0 0 2px rgba(109,93,252,.35);
+    box-shadow:
+        inset 0 0 0 1px var(--pc-accent),
+        0 0 0 3px rgba(109,93,252,.14);
+
+}
+
+.panel input[type="text"]:disabled{
+
+    opacity:.5;
+
+    cursor:not-allowed;
 
 }
 
 /* ---------- フォント選択 ----------
    選んだフォント自身で表示されるので、下にサンプル表示は出さない
-   （PageSettings.jsx参照）。少しだけ大きめの文字にして見比べやすくしている。 */
+   （PageSettings.jsx参照）。
 
-/* 【重要】セレクタは .panel .fontSelect（詳細度 0,2,0）にすること。
+   【重要】セレクタは .panel .fontSelect（詳細度 0,2,0）にすること。
    .fontSelect だけ（0,1,0）だと、上の .panel select（0,1,1）に負けて
-   padding と background-image の指定が一切効かない。
+   padding と background-image の指定が一切効かない
    （フェーズ4まではこの状態で、自前で描いている▼の矢印が表示されず、
-     padding-right も効いていなかった。フェーズ5で修正） */
+     padding-right も効いていなかった。フェーズ5で修正）。 */
 .panel .fontSelect{
 
     appearance:none;
     -webkit-appearance:none;
 
-    /* 同じ行に並ぶ色見本(26px)と高さが離れすぎないよう、フェーズ5で
-       40px → 32px に下げた（フォント名は読めるサイズを保つ） */
+    /* 同じ行に並ぶ色見本と高さをそろえる（フェーズ5で 40px → 32px） */
     height:32px;
 
     /* 右端に自前の▼を描く（OS標準の矢印を消しているため） */
     background-image:
-        linear-gradient(45deg, transparent 50%, #8a7f9c 50%),
-        linear-gradient(135deg, #8a7f9c 50%, transparent 50%);
+        linear-gradient(45deg, transparent 50%, var(--pc-faint) 50%),
+        linear-gradient(135deg, var(--pc-faint) 50%, transparent 50%);
     background-position:
         calc(100% - 17px) calc(50% + 1px),
         calc(100% - 12px) calc(50% + 1px);
@@ -218,16 +305,13 @@
     background-repeat:no-repeat;
 
     /* 【重要】上下のpaddingを .panel select の 9px から 5px に減らしている。
-       高さを32pxにしたので、9pxのままだと文字の入る領域が
+       高さが32pxなので、9pxのままだと文字の入る領域が
        32 - 9*2 = 14px しか残らず、行の高さ（13px × 1.5 = 19.5px）が
        入りきらずに文字の下が切れる。5pxなら 32 - 10 = 22px 確保できる。
        高さを変えるときは、この padding も一緒に見直すこと。 */
     padding-top:5px;
     padding-bottom:5px;
     padding-right:30px;
-
-    /* 幅が狭くなったぶん、はみ出さないよう少しだけ小さくする */
-    font-size:13px;
 
     text-overflow:ellipsis;
 
@@ -286,366 +370,204 @@
 
 }
 
-/* ---------- テキスト入力 ----------
-   枠線で囲うのをやめ、薄い塗り＋角丸だけにした（すりガラス寄りの軽い質感） */
-
-.panel input[type="text"],
-.panel textarea,
-.panel select{
-
-    width:100%;
-
-    padding:9px 12px;
-
-    border:none;
-
-    border-radius:12px;
-
-    outline:none;
-
-    background:rgba(109,93,252,.06);
-
-    font-size:13px;
-    font-family:inherit;
-
-    resize:vertical;
-
-    transition:.2s;
-
-}
-
-.panel input[type="text"]:focus,
-.panel textarea:focus,
-.panel select:focus{
-
-    background:rgba(109,93,252,.1);
-
-    box-shadow:0 0 0 2px rgba(109,93,252,.35);
-
-}
-
-/* ---------- フォント選択 ----------
-   選んだフォント自身で表示されるので、下にサンプル表示は出さない
-   （PageSettings.jsx参照）。
-
-   【重要】セレクタは .panel .fontSelect（詳細度 0,2,0）にすること。
-   .fontSelect だけ（0,1,0）だと、上の .panel select（0,1,1）に負けて
-   padding と background-image の指定が一切効かない
-   （フェーズ4まではこの状態で、自前で描いている▼の矢印が表示されず、
-     padding-right も効いていなかった。フェーズ5で修正）。 */
-.panel .fontSelect{
-
-    appearance:none;
-    -webkit-appearance:none;
-
-    height:32px;
-
-    /* 右端に自前の▼を描く（OS標準の矢印を消しているため） */
-    background-image:
-        linear-gradient(45deg, transparent 50%, #8a7f9c 50%),
-        linear-gradient(135deg, #8a7f9c 50%, transparent 50%);
-    background-position:
-        calc(100% - 17px) calc(50% + 1px),
-        calc(100% - 12px) calc(50% + 1px);
-    background-size:5px 5px, 5px 5px;
-    background-repeat:no-repeat;
-
-    /* 【重要】上下のpaddingを .panel select の 9px から 5px に減らしている。
-       高さが32pxなので、9pxのままだと文字の入る領域が
-       32 - 9*2 = 14px しか残らず、行の高さ（13px × 1.5 = 19.5px）が
-       入りきらずに文字の下が切れる。5pxなら 32 - 10 = 22px 確保できる。 */
-    padding-top:5px;
-    padding-bottom:5px;
-    padding-right:30px;
-
-    font-size:13px;
-
-    text-overflow:ellipsis;
-
-    cursor:pointer;
-
-}
-
 /* 色見本は「今の色が分かれば十分」なので、フェーズ4で高さを半分以下（56px→26px）に、
-   フェーズ5でフォント選択欄(32px)と下端を揃えるため32pxにした。 */
+   フェーズ5でフォント選択欄(32px)と下端を揃えるため32pxにした。
+   2026-10-29：ブラウザ標準の色見本の灰色の枠を消し、角丸の色の面だけにした */
 input[type="color"]{
 
     width:100%;
     height:32px;
 
-    padding:2px;
+    padding:3px;
 
     border:none;
 
-    border-radius:8px;
+    border-radius:10px;
 
-    background:rgba(109,93,252,.06);
+    background:var(--pc-accent-wash);
 
     cursor:pointer;
 
 }
 
-/* =====================================
-   Relation Tabs（番号＋「＋追加」を同じ並びに統合）
-===================================== */
-
-.relationTabs{
-
-    display:flex;
-
-    flex-wrap:wrap;
-
-    gap:8px;
-
-    margin:0 0 18px;
-
-}
-
-.relationTab{
-
-    width:34px;
-    height:34px;
+input[type="color"]::-webkit-color-swatch-wrapper{
 
     padding:0;
 
-    flex:none;
+}
 
-    border:1.5px solid rgba(109,93,252,.28);
-    border-radius:50%;
+input[type="color"]::-webkit-color-swatch{
 
-    background:#fff;
+    border:none;
 
-    color:#6D5DFC;
+    border-radius:7px;
 
-    font-size:13px;
-    font-weight:700;
-
-    cursor:pointer;
-
-    transition:.2s;
+    box-shadow:inset 0 0 0 1px rgba(0,0,0,.08);
 
 }
 
-.relationTab:hover{
+input[type="color"]::-moz-color-swatch{
 
-    border-color:#6D5DFC;
+    border:none;
 
-}
-
-.relationTab.active{
-
-    background:#6D5DFC;
-
-    border-color:#6D5DFC;
-
-    color:#fff;
-
-    box-shadow:0 4px 12px rgba(109,93,252,.3);
-
-}
-
-.relationTab.addTab{
-
-    border-style:dashed;
-
-    font-size:16px;
-    font-weight:400;
-
-    color:#6D5DFC;
-
-}
-
-.relationTab.addTab:disabled{
-
-    opacity:.35;
-
-    cursor:not-allowed;
-
-    border-color:rgba(109,93,252,.28);
+    border-radius:7px;
 
 }
 
 /* =====================================
-   関係性の編集ボックスの見出し帯
-   （クラス名は accordion のままだが、フェーズ5で開閉はしなくなった。
-     ①②③のタブで表示するボックスごと切り替わるため、この帯は
-     「今どれを編集しているか」を示すだけのラベルになっている） */
+   背景パターン
+   見本は今の背景色（PageSettings.jsx が --swatch-color で渡す）の上に
+   白い模様を重ねて描く。シートの模様（preview.css の .pattern-*）と
+   同じ考え方だが、見本は小さいので線を太め・間隔を狭めにしている。
+===================================== */
 
-.accordionHeader{
+.patternGrid{
 
-    width:100%;
+    display:grid;
 
-    padding:11px 16px;
-
-    border-radius:16px;
-
-    background:#6D5DFC;
-
-    color:#fff;
-
-    text-align:left;
-
-    /* クリックしても何も起きないので、押せそうに見える cursor:pointer は付けない */
-
-}
-
-.accordionTitle{
-
-    display:flex;
-
-    align-items:center;
-
-    gap:8px;
-
-    /* font-family は指定しない＝bodyのNoto Sans JPを継承（フェーズ5で明朝体をやめた） */
-    font-size:14px;
-    font-weight:700;
-
-}
-
-/* .accordionIcon（▼/▶）はフェーズ5で廃止。
-   開閉しなくなったため、アイコンぶんの字下げ（margin-left:26px）も外している。 */
-
-.accordionSummary{
-
-    margin-top:6px;
-
-    color:rgba(255,255,255,.88);
-
-    font-size:12px;
-
-}
-
-/* 帯の中に出す「関係性」の内容。
-   これまでCSSの指定が無く .sidebar の 14px をそのまま継いでいたため、
-   すぐ上の要約（.accordionSummary＝12px）と大きさが揃っていなかった。
-   同じ補助情報の段として 12px に統一する（フェーズ5）。
-   要約より一段大事な情報なので、色だけ少し強くしている。 */
-.accordionRelation{
-
-    margin-top:4px;
-
-    color:rgba(255,255,255,.96);
-
-    font-size:12px;
-
-}
-
-.accordionBody{
-
-    margin-top:20px;
-
-}
-
-/* 左右のキャラクター設定(画像・名前・補足)をまとめて入れ替えるボタン */
-.swapSidesButton{
-
-    display:block;
-
-    width:100%;
-
-    margin-bottom:18px;
-
-    padding:9px 14px;
-
-    border:none;
-    border-radius:999px;
-
-    background:rgba(109,93,252,.1);
-
-    color:#6D5DFC;
-
-    font-size:13px;
-    font-weight:600;
-
-    cursor:pointer;
-
-    transition:.2s;
-
-}
-
-.swapSidesButton:hover{
-
-    background:rgba(109,93,252,.18);
-
-}
-
-/* カードの並び順の入れ替え（フェーズ8）。
-   「画像位置入替」（1枚のカードの中で左右を入れ替える）とは別物なので、
-   すぐ下に置きつつ「カード位置」という見出しを付けて区別している。 */
-.cardOrderRow{
-
-    display:flex;
-
-    align-items:center;
+    grid-template-columns:repeat(5,minmax(0,1fr));
 
     gap:6px;
 
-    margin-bottom:18px;
+}
+
+.patternButton{
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:stretch;
+
+    gap:5px;
+
+    width:100%;
+
+    padding:5px 5px 6px;
+
+    border:none;
+
+    border-radius:12px;
+
+    background:transparent;
+
+    box-shadow:inset 0 0 0 1px var(--pc-line);
+
+    font-family:inherit;
+
+    cursor:pointer;
+
+    transition:background .2s, box-shadow .2s;
 
 }
 
-.cardOrderRow span{
+.patternButton:hover{
 
-    flex:none;
+    box-shadow:inset 0 0 0 1px var(--pc-accent-line);
+
+}
+
+.patternButton.active{
+
+    background:var(--pc-accent-soft);
+
+    box-shadow:inset 0 0 0 1.5px var(--pc-accent);
+
+}
+
+.patternButton small{
 
     font-size:12px;
     font-weight:500;
 
-    color:#6b6478;
+    line-height:1.2;
+
+    text-align:center;
+
+    color:var(--pc-muted);
+
+    white-space:nowrap;
 
 }
 
-.cardOrderButton{
+.patternButton.active small{
 
-    flex:1;
+    color:var(--pc-accent-ink);
 
-    padding:8px 6px;
-
-    border:none;
-    border-radius:999px;
-
-    background:rgba(109,93,252,.06);
-
-    color:#6b6478;
-
-    font-family:inherit;
-    font-size:12px;
-
-    cursor:pointer;
-
-    transition:.2s;
+    font-weight:700;
 
 }
 
-.cardOrderButton:hover:not(:disabled){
+.patternPreview{
 
-    background:rgba(109,93,252,.14);
+    width:100%;
 
-    color:#6D5DFC;
+    height:26px;
+
+    border-radius:7px;
+
+    background-color:var(--swatch-color, #d8d8d8);
+
+    box-shadow:inset 0 0 0 1px rgba(0,0,0,.06);
 
 }
 
-.cardOrderButton:disabled{
+/* 斜線 */
 
-    opacity:.4;
+.patternPreview.stripe{
 
-    cursor:not-allowed;
+    background-image:
+        repeating-linear-gradient(
+            -45deg,
+            rgba(255,255,255,.5) 0 1.5px,
+            transparent 1.5px 7px
+        );
+
+}
+
+/* チェック */
+
+.patternPreview.check{
+
+    background-image:
+        linear-gradient(rgba(255,255,255,.55) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.55) 1px, transparent 1px);
+
+    background-size:8px 8px;
+
+}
+
+/* ドット */
+
+.patternPreview.dot{
+
+    background-image:
+        radial-gradient(rgba(255,255,255,.75) 1.2px, transparent 1.4px);
+
+    background-size:7px 7px;
+
+}
+
+/* 格子 */
+
+.patternPreview.grid{
+
+    background-image:
+        linear-gradient(rgba(255,255,255,.55) 1.5px, transparent 1.5px),
+        linear-gradient(90deg, rgba(255,255,255,.55) 1.5px, transparent 1.5px);
+
+    background-size:13px 13px;
 
 }
 
 /* =====================================
    「おまけ」機能：レイアウト詳細設定
    既定で折りたたんでおき、普段の操作フローには出さない。
+   2026-10-29：枠で囲うのをやめ、開閉の行だけにした（シームレスの方針に合わせて）
 ===================================== */
 .layoutExtra{
 
-    margin-bottom:18px;
-
-    border:1px solid rgba(109,93,252,.14);
-    border-radius:12px;
-
-    padding:10px 14px;
+    margin-top:2px;
 
 }
 
@@ -657,22 +579,34 @@ input[type="color"]{
    1つだけ描いている。文字側の「▼」は PageSettings.jsx から外した。 */
 .layoutExtra summary{
 
+    display:inline-flex;
+
+    align-items:center;
+
+    gap:6px;
+
+    padding:4px 2px;
+
+    border-radius:6px;
+
     cursor:pointer;
 
     font-size:12px;
 
-    color:#8a7f9c;
+    color:var(--pc-muted);
 
     user-select:none;
 
     /* 標準マーカーを消す。Safari は ::-webkit-details-marker で消す必要がある */
     list-style:none;
 
-    display:flex;
+    transition:color .2s;
 
-    align-items:center;
+}
 
-    gap:6px;
+.layoutExtra summary:hover{
+
+    color:var(--pc-accent-ink);
 
 }
 
@@ -706,18 +640,20 @@ input[type="color"]{
 
 }
 
-.layoutExtra[open] summary{
-
-    margin-bottom:10px;
-
-}
-
 .layoutExtraBody{
 
     display:flex;
     flex-direction:column;
 
     gap:8px;
+
+    margin-top:10px;
+
+    padding:14px;
+
+    border-radius:14px;
+
+    background:var(--pc-accent-wash);
 
 }
 
@@ -741,30 +677,30 @@ input[type="color"]{
     border:none;
     border-radius:999px;
 
-    background:rgba(109,93,252,.06);
+    background:var(--pc-surface);
 
-    color:#6b6478;
+    color:var(--pc-muted);
 
     font-family:inherit;
     font-size:12px;
 
     cursor:pointer;
 
-    transition:.2s;
+    transition:background .2s, color .2s;
 
 }
 
 .presetButton:hover{
 
-    background:rgba(109,93,252,.14);
+    background:var(--pc-accent-soft);
 
-    color:#6D5DFC;
+    color:var(--pc-accent-ink);
 
 }
 
 .presetButton.active{
 
-    background:#6D5DFC;
+    background:var(--pc-accent);
 
     color:#fff;
 
@@ -795,6 +731,8 @@ input[type="color"]{
        （.layoutExtraBody 側の gap:8px で間隔を作っているため） */
     margin-bottom:0;
 
+    margin-top:4px;
+
 }
 
 .layoutExtraBody .descScaleRow > span:first-child{
@@ -808,6 +746,8 @@ input[type="color"]{
     flex:1;
 
     min-width:70px;
+
+    accent-color:var(--pc-accent);
 
 }
 
@@ -823,7 +763,7 @@ input[type="color"]{
 
     font-size:11px;
 
-    color:#8a7f9c;
+    color:var(--pc-faint);
 
     font-variant-numeric:tabular-nums;
 
@@ -834,10 +774,392 @@ input[type="color"]{
 
     margin:2px 0 0;
 
-    color:#8a7f9c;
+    color:var(--pc-muted);
 
     font-size:11px;
     line-height:1.6;
+
+}
+
+/* =====================================
+   Relation Tabs（番号＋「＋追加」を同じ並びに統合）
+   2026-10-29 から「関係性」の見出しと同じ行の右側に置いている（.panelHead）
+===================================== */
+
+.relationTabs{
+
+    display:flex;
+
+    flex-wrap:wrap;
+
+    justify-content:flex-end;
+
+    gap:6px;
+
+}
+
+.relationTab{
+
+    width:32px;
+    height:32px;
+
+    padding:0;
+
+    flex:none;
+
+    border:1.5px solid var(--pc-accent-line);
+    border-radius:50%;
+
+    background:var(--pc-surface);
+
+    color:var(--pc-accent-ink);
+
+    font-family:inherit;
+    font-size:13px;
+    font-weight:700;
+
+    cursor:pointer;
+
+    transition:background .2s, border-color .2s, color .2s;
+
+}
+
+.relationTab:hover{
+
+    border-color:var(--pc-accent);
+
+}
+
+.relationTab.active{
+
+    background:var(--pc-accent);
+
+    border-color:var(--pc-accent);
+
+    color:#fff;
+
+}
+
+.relationTab.addTab{
+
+    border-style:dashed;
+
+    font-size:16px;
+    font-weight:400;
+
+}
+
+.relationTab.addTab:disabled{
+
+    opacity:.35;
+
+    cursor:not-allowed;
+
+    border-color:var(--pc-accent-line);
+
+}
+
+/* =====================================
+   関係性の編集ボックスの見出し帯
+   （クラス名は accordion のままだが、フェーズ5で開閉はしなくなった。
+     ①②③のタブで表示するボックスごと切り替わるため、この帯は
+     「今どれを編集しているか」を示すだけのラベルになっている）
+
+   2026-10-29：紫の塗りつぶしをやめて薄い紫の面にし、左にふたりの
+   小さな丸写真（.pairAvatars）を重ねて置いた。シートの「対面」の
+   重なった丸写真と同じ形で、どの関係性かが顔で分かる。
+===================================== */
+
+.accordionHeader{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    width:100%;
+
+    padding:12px 14px;
+
+    border-radius:16px;
+
+    background:var(--pc-accent-soft);
+
+    color:var(--pc-ink);
+
+    text-align:left;
+
+    /* クリックしても何も起きないので、押せそうに見える cursor:pointer は付けない */
+
+}
+
+.pairAvatars{
+
+    display:flex;
+
+    flex:none;
+
+}
+
+/* 【セレクタを .pairAvatars .pairAvatar にしている理由】
+   丸は <span> なので、.panel span（0,1,1）の 12px・灰色が効いてしまう。
+   クラス2つ（0,2,0）にして勝たせている */
+.pairAvatars .pairAvatar{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    width:40px;
+    height:40px;
+
+    overflow:hidden;
+
+    border:2px solid var(--pc-accent-soft);
+    border-radius:50%;
+
+    background:var(--pc-accent);
+
+    color:#fff;
+
+    font-size:14px;
+    font-weight:700;
+
+}
+
+/* 右の人の丸は左に少し重ねる（シートの「対面」と同じ並び） */
+.pairAvatar + .pairAvatar{
+
+    margin-left:-12px;
+
+}
+
+/* 画像の無い右の人は、左の人と区別が付くように淡い紫にする */
+.pairAvatar.empty + .pairAvatar.empty,
+.pairAvatar + .pairAvatar.empty{
+
+    background:#A99FFF;
+
+}
+
+.pairAvatar img{
+
+    display:block;
+
+    width:100%;
+    height:100%;
+
+    object-fit:cover;
+
+    -webkit-user-drag:none;
+    user-select:none;
+
+}
+
+.accordionText{
+
+    /* 長い名前で帯が横に伸びないよう、flex の中で縮めるのを許す */
+    min-width:0;
+
+}
+
+/* 「関係性N」。名前より一段控えめに（フェーズ5までは14pxの太字だった） */
+.accordionTitle{
+
+    font-size:12px;
+    font-weight:700;
+
+    color:var(--pc-accent-ink);
+
+}
+
+/* .accordionIcon（▼/▶）はフェーズ5で廃止。
+   開閉しなくなったため、アイコンぶんの字下げ（margin-left:26px）も外している。 */
+
+/* ふたりの名前。帯の中でいちばん大事な情報なので14pxの太字 */
+.accordionSummary{
+
+    margin-top:1px;
+
+    color:var(--pc-ink);
+
+    font-size:14px;
+    font-weight:700;
+
+    overflow-wrap:anywhere;
+
+}
+
+/* 帯の中に出す「関係性」の内容（矢印の上の言葉） */
+.accordionRelation{
+
+    margin-top:2px;
+
+    color:var(--pc-muted);
+
+    font-size:12px;
+
+    overflow-wrap:anywhere;
+
+}
+
+.accordionBody{
+
+    margin-top:14px;
+
+}
+
+/* 入れ替えの操作（画像位置入替／カード位置）を1行に並べる。
+   幅が足りないときは折り返す */
+.relationTools{
+
+    display:flex;
+
+    flex-wrap:wrap;
+
+    align-items:center;
+
+    gap:8px 10px;
+
+}
+
+/* 左右のキャラクター設定(画像・名前・補足)をまとめて入れ替えるボタン */
+.swapSidesButton{
+
+    flex:none;
+
+    padding:7px 14px;
+
+    border:none;
+    border-radius:999px;
+
+    background:var(--pc-accent-wash);
+
+    color:var(--pc-accent-ink);
+
+    font-family:inherit;
+    font-size:12px;
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:background .2s;
+
+}
+
+.swapSidesButton:hover{
+
+    background:var(--pc-accent-soft);
+
+}
+
+/* カードの並び順の入れ替え（フェーズ8）。
+   「画像位置入替」（1枚のカードの中で左右を入れ替える）とは別物なので、
+   「カード位置」という見出しを付けて区別している。
+   2026-10-29 から「画像位置入替」と同じ行の右寄せ。 */
+.cardOrderRow{
+
+    flex:1;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:flex-end;
+
+    gap:6px;
+
+}
+
+/* .panel span（0,1,1）と同じ大きさ・色なので、ここでは折り返さない指定だけ */
+.cardOrderRow span{
+
+    flex:none;
+
+    white-space:nowrap;
+
+}
+
+.cardOrderButton{
+
+    flex:none;
+
+    padding:7px 12px;
+
+    border:none;
+    border-radius:999px;
+
+    background:var(--pc-accent-wash);
+
+    color:var(--pc-muted);
+
+    font-family:inherit;
+    font-size:12px;
+
+    white-space:nowrap;
+
+    cursor:pointer;
+
+    transition:background .2s, color .2s;
+
+}
+
+.cardOrderButton:hover:not(:disabled){
+
+    background:var(--pc-accent-soft);
+
+    color:var(--pc-accent-ink);
+
+}
+
+.cardOrderButton:disabled{
+
+    opacity:.4;
+
+    cursor:not-allowed;
+
+}
+
+/* 小見出し（左のキャラクター／右のキャラクター／ふたりの関係）。
+   左の印（PairGlyph.jsx）で、左の人・右の人・ふたりの間のどれかを示し、
+   右へ伸びる線で次の小見出しまでがひとまとまりだと分かるようにしている */
+.fieldSectionTitle{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    margin:24px 0 12px;
+
+    font-size:12px;
+    font-weight:700;
+
+    color:var(--pc-ink);
+
+}
+
+.fieldSectionTitle::after{
+
+    content:"";
+
+    flex:1;
+
+    height:1px;
+
+    background:var(--pc-line);
+
+}
+
+.pairGlyph{
+
+    flex:none;
+
+    color:var(--pc-accent);
 
 }
 
@@ -849,16 +1171,16 @@ input[type="color"]{
 
     width:100%;
 
-    margin-top:20px;
+    margin-top:22px;
 
     padding:9px 14px;
 
     border:none;
     border-radius:999px;
 
-    background:rgba(220,80,110,.09);
+    background:var(--pc-danger-soft);
 
-    color:#c04a68;
+    color:var(--pc-danger);
 
     font-family:inherit;
     font-size:12px;
@@ -866,7 +1188,7 @@ input[type="color"]{
 
     cursor:pointer;
 
-    transition:.2s;
+    transition:background .2s;
 
 }
 
@@ -876,165 +1198,27 @@ input[type="color"]{
 
 }
 
-/* =====================================
-   背景パターン
-===================================== */
-
-.patternGrid{
-
-    display:grid;
-
-    grid-template-columns:repeat(5,minmax(0,1fr));
-
-    gap:6px;
-
-    margin-top:4px;
-
-}
-
-.patternButton{
-
-    display:flex;
-
-    flex-direction:column;
-
-    align-items:center;
-
-    justify-content:center;
-
-    gap:4px;
-
-    width:100%;
-
-    padding:6px 4px;
-
-    border:1.5px solid rgba(109,93,252,.16);
-
-    border-radius:10px;
-
-    background:#fff;
-
-    cursor:pointer;
-
-    transition:.2s;
-
-}
-
-.patternButton:hover{
-
-    border-color:#6D5DFC;
-
-}
-
-.patternButton.active{
-
-    border-color:#6D5DFC;
-
-    box-shadow:0 0 0 2px rgba(109,93,252,.18);
-
-}
-
-.patternButton small{
-
-    font-size:8px;
-
-    color:#666;
-
-    font-weight:600;
-
-    letter-spacing:-.04em;
-
-}
-
-/* ==========================
-   プレビュー
-========================== */
-
-.patternPreview{
-
-    width:100%;
-
-    height:22px;
-
-    border-radius:6px;
-
-    border:1px solid #e7e7e7;
-
-}
-
-/* ベタ */
-
-.patternPreview.solid{
-
-    background:#d8d8d8;
-
-}
-
-/* 斜線 */
-
-.patternPreview.stripe{
-
-    background:
-    repeating-linear-gradient(
-        -45deg,
-        #d8d8d8 0 2px,
-        white 2px 10px
-    );
-
-}
-
-/* チェック */
-
-.patternPreview.check{
-
-    background:
-    linear-gradient(#d8d8d8 1px,transparent 1px),
-    linear-gradient(90deg,#d8d8d8 1px,transparent 1px);
-
-    background-size:10px 10px;
-
-}
-
-/* ドット */
-
-.patternPreview.dot{
-
-    background:
-    radial-gradient(#cfcfcf 1.3px,transparent 1.3px);
-
-    background-size:10px 10px;
-
-}
-
-/* ＋ */
-
-.patternPreview.grid{
-
-    background:
-    linear-gradient(#d8d8d8 1px,transparent 1px),
-    linear-gradient(90deg,#d8d8d8 1px,transparent 1px);
-
-    background-size:18px 18px;
-
-}
-
 /* ==========================
    スマホ対応
    ※ 基準幅は app.css（縦積みに切り替わる幅）と必ず揃えること。
      以前ここだけ900pxになっていたため、768〜900pxの範囲では
      「左カラムのままなのに高さが50vhに制限される」状態になり、
      関係性の設定が見えなくなっていた。
+
+   2026-10-29：高さを画面の半分（max-height:50vh）に制限して中だけ
+   スクロールさせるのをやめた。スマホ幅では「編集／プレビュー」の
+   切り替え（App.jsx の mobileView）でどちらか一方だけを出すので、
+   左カラムはページと一緒にスクロールする。
 ========================== */
 @media (max-width:768px){
 
     .sidebar{
 
         height:auto;
-        max-height:50vh;
 
-        overflow-y:auto;
+        overflow:visible;
 
-        padding:18px 16px 24px;
+        padding:20px 16px 28px;
 
     }
 }

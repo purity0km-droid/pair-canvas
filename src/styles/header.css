@@ -33,11 +33,10 @@
 
     padding:0 24px;
 
-    background:#fff;
+    background:var(--pc-surface);
 
-    border-bottom:1px solid rgba(109,93,252,.14);
-
-    box-shadow:0 2px 20px -16px rgba(60,44,180,.6);
+    /* 影はやめ、線1本で区切る（左カラムとの境目の線と同じ色） */
+    border-bottom:1px solid var(--pc-line);
 
 }
 
@@ -69,7 +68,7 @@
     font-size:21px;
     font-weight:700;
 
-    color:#4c3ce0;
+    color:var(--pc-accent-ink);
 
     letter-spacing:.02em;
 
@@ -81,7 +80,7 @@
 
     margin:0;
 
-    color:#8a7f9c;
+    color:var(--pc-faint);
 
     font-size:10px;
     letter-spacing:.14em;
@@ -108,6 +107,20 @@
 
 }
 
+/* ボタンの組の区切り（AppHeader.jsx のコメント参照） */
+.headerDivider{
+
+    flex:none;
+
+    width:1px;
+    height:18px;
+
+    margin:0 4px;
+
+    background:var(--pc-line);
+
+}
+
 .headerButton{
 
     display:inline-flex;
@@ -119,12 +132,12 @@
 
     padding:0 15px;
 
-    border:1px solid rgba(109,93,252,.3);
+    border:1px solid var(--pc-accent-line);
     border-radius:999px;
 
-    background:#fff;
+    background:var(--pc-surface);
 
-    color:#5b51c9;
+    color:var(--pc-accent-ink);
 
     font-family:inherit;
     font-size:12px;
@@ -134,15 +147,15 @@
 
     cursor:pointer;
 
-    transition:.2s;
+    transition:background .2s, border-color .2s, color .2s;
 
 }
 
 .headerButton:hover{
 
-    border-color:#6D5DFC;
+    border-color:var(--pc-accent);
 
-    background:rgba(109,93,252,.06);
+    background:var(--pc-accent-wash);
 
 }
 
@@ -150,19 +163,19 @@
 
 .headerButton.primary{
 
-    border-color:#6D5DFC;
+    border-color:var(--pc-accent);
 
-    background:#6D5DFC;
+    background:var(--pc-accent);
 
     color:#fff;
-
-    box-shadow:0 8px 18px -12px rgba(109,93,252,.85);
 
 }
 
 .headerButton.primary:hover{
 
-    background:#5d4ef2;
+    border-color:var(--pc-accent-strong);
+
+    background:var(--pc-accent-strong);
 
 }
 
@@ -174,7 +187,7 @@
 
     background:transparent;
 
-    color:#9a93a8;
+    color:var(--pc-faint);
 
     font-weight:500;
 
@@ -184,9 +197,9 @@
 
     border-color:transparent;
 
-    background:rgba(109,93,252,.07);
+    background:var(--pc-accent-wash);
 
-    color:#6b6478;
+    color:var(--pc-muted);
 
 }
 
@@ -213,6 +226,9 @@
 /* <label>をボタンに見せている「JSON読込」用 */
 
 .headerButton.importButton{
+
+    /* 中の見えない input（.visuallyHidden）の置き場所の基準 */
+    position:relative;
 
     text-decoration:none;
 
@@ -267,6 +283,14 @@
         flex-wrap:nowrap;
 
         gap:5px;
+
+    }
+
+    .headerDivider{
+
+        height:16px;
+
+        margin:0 1px;
 
     }
 

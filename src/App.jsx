@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import * as htmlToImage from "html-to-image";
 
 import "./styles/app.css";
@@ -7,6 +7,7 @@ import AppHeader from "./components/AppHeader";
 import Sidebar from "./components/Sidebar";
 import Preview from "./components/Preview";
 import ExportPreview from "./components/ExportPreview";
+import MobileViewSwitch from "./components/MobileViewSwitch";
 
 import { createRelation, normalizeRelation } from "./utils/createRelation";
 import {
@@ -112,6 +113,32 @@ function App() {
 
   const previewRef = useRef(null);
   const exportPreviewRef = useRef(null);
+
+  // -----------------------------
+  // スマホ幅の「編集／プレビュー」切り替え（2026-10-29）
+  //
+  // スマホ幅ではページ全体がスクロールするので、切り替えるたびに
+  // 前の画面のスクロール位置を覚えておき、戻ってきたときにそこへ戻す
+  // （編集欄の途中からプレビューを見て戻ると、同じ場所から続けられる）。
+  // 今出ている方をもう一度押したときは、いちばん上へ戻す。
+  // PC幅ではこの状態を使わない（app.css が両方を並べて出す）。
+  // -----------------------------
+  const [mobileView, setMobileView] = useState("edit");
+  const scrollByView = useRef({ edit: 0, preview: 0 });
+
+  function switchMobileView(next) {
+    if (next === mobileView) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+    scrollByView.current[mobileView] = window.scrollY;
+    setMobileView(next);
+  }
+
+  // 描画の直前に戻すので、一瞬だけ違う位置が見えることはない
+  useLayoutEffect(() => {
+    window.scrollTo(0, scrollByView.current[mobileView]);
+  }, [mobileView]);
 
   // -----------------------------
   // 自動下書き保存：page / relations が変わるたびにlocalStorageへ保存
@@ -427,7 +454,7 @@ function App() {
   );
 
   return (
-    <div className="app">
+    <div className="app" data-mobile-view={mobileView}>
       {/* アプリ名とファイル操作（リセット／JSON／PNG）は上部のヘッダーへ集約。
           左カラムは「作品の設定」だけに絞っている（AppHeader.jsx参照） */}
       <AppHeader
@@ -463,6 +490,8 @@ function App() {
           />
         </main>
       </div>
+
+      <MobileViewSwitch view={mobileView} onChange={switchMobileView} />
 
       {/* 保存専用（画面には表示しない） */}
       <div
