@@ -190,7 +190,7 @@ git archive --format=zip -9 -o "../pair-canvas-main.zip" HEAD -- . ':(exclude).c
 - 無料・軽量方針。追加ライブラリの導入は慎重に。
 - **名前タグ／関係性ラベル／プロット名の暗色スクリムは変更しない。** ユーザーが自由な背景色・写真を選べる仕様のため、文字の視認性確保に必須。
 - 参考にした類似ファンツール（aki-maron.site/jipuro、oshinote.netlify.app）との差別化方針は `docs/requirements.md` 第6章を厳守。プリセット名・カラーテーマ名・固有フィールド構成は流用しない。
-- git commit の author は `junkfood <junkfood.kuitee@gmail.com>`。`E:\000_開発\viewer\pair-canvas` の `.git/config` には入っていない（global は別名義）ので、フェーズ12は `git -c user.name=junkfood -c user.email=junkfood.kuitee@gmail.com commit` で指定した。
+- git commit の author は PC の git 設定のまま（`purity0km-droid`）でよい。フェーズ12までの `junkfood <junkfood.kuitee@gmail.com>` 名義は共同作業していたためで、揃える必要はない（ユーザー確認済み）。`npm run deploy` も `-u` 指定なしでよい。
 - ユーザーは日本語でやり取りする。コード内コメント・ドキュメントも日本語で書くこと。
 
 ---
