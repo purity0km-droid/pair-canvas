@@ -37,7 +37,7 @@ export const LAYOUT_PRESETS = [
   {
     id: "facing",
     label: "対面",
-    description: "左右に並べ、中央に関係性。デザイン変更前からの形。",
+    description: "左右に並べ、中央に関係性を出す。初期設定ではこの形で表示される。",
   },
   {
     id: "band",

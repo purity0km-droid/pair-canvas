@@ -32,24 +32,25 @@ export default function PairGlyph({ side }) {
       </defs>
 
       {/* 2つとも淡く塗った上に、該当する部分だけ濃く重ねる。
+          色は sidebar.css の .pairGlyph（左＝藍、右＝山吹、重なり＝本文の色。フェーズ14）。
           枠線で描いたり2つを大きく重ねたりすると、オン・オフの切り替え
           スイッチに見えてしまったので、円を少し離し、濃い円には
           帯の丸写真（.pairAvatar）と同じ白い縁を付けている */}
-      <circle cx={L} cy="8" r={R} fill="currentColor" opacity=".28" />
-      <circle cx={RIGHT} cy="8" r={R} fill="currentColor" opacity=".28" />
+      <circle className="left" cx={L} cy="8" r={R} opacity=".28" />
+      <circle className="right" cx={RIGHT} cy="8" r={R} opacity=".28" />
 
       {side === "left" && (
-        <circle cx={L} cy="8" r={R} fill="currentColor" stroke="#fff" strokeWidth="1.5" />
+        <circle className="left" cx={L} cy="8" r={R} stroke="#fff" strokeWidth="1.5" />
       )}
       {side === "right" && (
-        <circle cx={RIGHT} cy="8" r={R} fill="currentColor" stroke="#fff" strokeWidth="1.5" />
+        <circle className="right" cx={RIGHT} cy="8" r={R} stroke="#fff" strokeWidth="1.5" />
       )}
       {side === "both" && (
         <circle
+          className="between"
           cx={RIGHT}
           cy="8"
           r={R}
-          fill="currentColor"
           clipPath={`url(#${clipId})`}
         />
       )}

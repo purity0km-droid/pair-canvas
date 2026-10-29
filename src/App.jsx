@@ -22,7 +22,10 @@ import { MAX_RELATIONS, DRAFT_STORAGE_KEY } from "./constants";
 const DEFAULT_PAGE = {
   showTitle: true,
   title: "",
-  backgroundColor: "#6D5DFC",
+  // フェーズ14で zeta の紫（#6D5DFC）から淡い山吹に替えた。編集画面の藍と
+  // 対になる色で、灰色の下地の上でシートが目に入るように。
+  // 文字色（#3d3d3d）のタイトルが読める明るさにしている（比 7.8）
+  backgroundColor: "#F1D7A2",
   textColor: "#3d3d3d",
   backgroundPattern: "solid",
   fontFamily: "Noto Sans JP",

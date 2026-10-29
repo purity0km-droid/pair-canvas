@@ -5,31 +5,51 @@
 }
 
 /* =====================================
-   編集画面の色（2026-10-29 UI調整）
-   紫（#6D5DFC）1色を軸にする方針はそのまま（sidebar.css 冒頭）。
-   これまでファイルごとに少しずつ違う紫・灰色を直書きしていたので、
-   ここに集めて名前を付けた。書き出されるシート（card.css / preview.css の
-   .paper 以下）はユーザーが色を選ぶので、ここの色は使わない。
+   編集画面の色（2026-10-29 UI調整 → フェーズ14で配色を変更）
+   ファイルごとに少しずつ違う色を直書きしていたのを、ここに集めて名前を付けた。
+   書き出されるシート（card.css / preview.css の .paper 以下）は
+   ユーザーが色を選ぶので、ここの色は使わない。
+
+   フェーズ14：最初は zeta 向けだったので、zeta の紫（#6D5DFC）に合わせていた。
+   特定のアプリに寄せない配色にするため、藍（あい）と山吹（やまぶき）の
+   2色に替えた。
+   - 藍 … 主役の色。選択中・主ボタン・入力欄の塗りなど、紫が担っていた所すべて
+   - 山吹 … 「右のキャラクター」の印だけに使う（小見出しの印・帯の丸写真）。
+             左＝藍、右＝山吹で、どちらの人の項目かを色でも見分けられる。
+             ボタンや強調には使わない（2色が同じ重さで並ぶとうるさくなるため）
+   - 灰色は紫みを抜いて、わずかに青みのある灰色にした。プレビューの下地も
+     この灰色なので、ユーザーが選んだシートの色が下地に引っ張られにくい
+   文字の濃さ（白地との比）：accent-ink 8.8、muted 5.9、faint 3.0。
+   藍の上の白い文字は 7.1、山吹の上は白ではなく --pc-ink（5.9）を使う
 ===================================== */
 
 :root {
-  --pc-accent: #6D5DFC;          /* 主役の紫。選択中・主ボタン */
-  --pc-accent-strong: #5546E8;   /* 主ボタンのホバー */
-  --pc-accent-ink: #4c3ce0;      /* 白地の上の紫の文字（ロゴ・ボタンの文字） */
-  --pc-accent-soft: #ECE9FF;     /* 薄い紫の面（ホバー・編集中の帯） */
-  --pc-accent-wash: #F4F2FF;     /* 入力欄の塗り */
-  --pc-accent-line: rgba(109,93,252,.3); /* 白いボタンの枠 */
+  --pc-accent: #2B5C86;          /* 藍。選択中・主ボタン */
+  --pc-accent-strong: #234D73;   /* 主ボタンのホバー */
+  --pc-accent-ink: #234D73;      /* 白地の上の藍の文字（ロゴ・ボタンの文字） */
+  --pc-accent-soft: #E4ECF4;     /* 薄い藍の面（ホバー・編集中の帯） */
+  --pc-accent-wash: #F1F5F9;     /* 入力欄の塗り */
+  --pc-accent-line: rgba(43,92,134,.3);  /* 白いボタンの枠 */
+  --pc-accent-ring: rgba(43,92,134,.16); /* 入力中の欄の外側のにじみ */
+  --pc-accent-scroll: rgba(43,92,134,.26);       /* スクロールバー */
+  --pc-accent-scroll-hover: rgba(43,92,134,.45);
 
-  --pc-ink: #2A2638;             /* 本文 */
-  --pc-muted: #6b6478;           /* 項目名 */
-  --pc-faint: #9a93a8;           /* 補足・控えめなボタン */
-  --pc-line: #E9E6F4;            /* 区切り線 */
+  --pc-pair: #E6A532;            /* 山吹。右のキャラクターの印だけに使う */
+
+  --pc-ink: #2A3441;             /* 本文 */
+  --pc-muted: #5B6672;           /* 項目名 */
+  --pc-faint: #8D96A1;           /* 補足・控えめなボタン */
+  --pc-line: #E3E8EE;            /* 区切り線 */
 
   --pc-surface: #ffffff;         /* ヘッダー・左カラム */
-  --pc-canvas: #EEECF5;          /* プレビューの下地（シートを置く机） */
+  --pc-canvas: #EBEEF1;          /* プレビューの下地（シートを置く机） */
 
-  --pc-danger: #c04a68;
-  --pc-danger-soft: rgba(220,80,110,.09);
+  --pc-scrim: rgba(22,32,46,.58);      /* 位置調整ウインドウの後ろの暗幕 */
+  --pc-scrim-shadow: rgba(22,32,46,.4);
+
+  --pc-danger: #B4473F;
+  --pc-danger-soft: rgba(180,71,63,.09);
+  --pc-danger-hover: rgba(180,71,63,.16);
 
   --pc-switch-h: 56px;           /* スマホ幅の「編集／プレビュー」切り替えの高さ */
 }
@@ -48,7 +68,7 @@ body {
   color: var(--pc-ink);
 }
 
-/* キーボードで操作したときだけ、今どこにいるかを紫の輪で示す */
+/* キーボードで操作したときだけ、今どこにいるかを藍の輪で示す */
 button:focus-visible,
 [role="button"]:focus-visible,
 summary:focus-visible,
@@ -121,7 +141,7 @@ summary:focus-visible,
 .sidebar,
 .preview-area {
     scrollbar-width: thin;
-    scrollbar-color: rgba(109,93,252,.26) transparent;
+    scrollbar-color: var(--pc-accent-scroll) transparent;
 }
 
 .sidebar::-webkit-scrollbar,
@@ -137,7 +157,7 @@ summary:focus-visible,
 .sidebar::-webkit-scrollbar-thumb,
 .preview-area::-webkit-scrollbar-thumb {
     /* 透明のボーダー＋background-clipで、バー本体を細く見せる */
-    background: rgba(109,93,252,.24);
+    background: var(--pc-accent-scroll);
     border: 3px solid transparent;
     background-clip: content-box;
     border-radius: 999px;
@@ -145,7 +165,7 @@ summary:focus-visible,
 
 .sidebar::-webkit-scrollbar-thumb:hover,
 .preview-area::-webkit-scrollbar-thumb:hover {
-    background: rgba(109,93,252,.45);
+    background: var(--pc-accent-scroll-hover);
     background-clip: content-box;
 }
 

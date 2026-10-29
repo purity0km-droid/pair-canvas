@@ -4,8 +4,8 @@
    方針：
    - 各セクションを白い箱＋枠線で仕切るのをやめ、余白と1本の薄い罫線だけで
      区切る「継ぎ目のない」構成にした。
-   - 色は紫（#6D5DFC）1色を軸にする。元実装からの意図的な引き継ぎで、
-     本家zetaのアプリ内配色（黒基調＋紫）に寄せている。
+   - 色は藍1色を軸にし、右のキャラクターの印だけ山吹にする（フェーズ14。
+     それまでは zeta の配色に寄せた紫だった。色の決めごとは app.css の :root）
    - 見出しのフォントは本文と同じ（Noto Sans JP）。フェーズ2では明朝体
      （Shippori Mincho）にしていたが、アプリ内で使うフォントはデザイン変更前の
      原本どおり本文フォントで統一する方針に戻した（フェーズ5のフィードバック反映）。
@@ -265,7 +265,7 @@
 
     box-shadow:
         inset 0 0 0 1px var(--pc-accent),
-        0 0 0 3px rgba(109,93,252,.14);
+        0 0 0 3px var(--pc-accent-ring);
 
 }
 
@@ -937,11 +937,14 @@ input[type="color"]::-moz-color-swatch{
 
 }
 
-/* 画像の無い右の人は、左の人と区別が付くように淡い紫にする */
+/* 画像の無い右の人は山吹にする（左の人の藍と区別する。小見出しの印と同じ色分け）。
+   山吹の上の白い文字は薄くて読めないので、頭文字は本文の色にする */
 .pairAvatar.empty + .pairAvatar.empty,
 .pairAvatar + .pairAvatar.empty{
 
-    background:#A99FFF;
+    background:var(--pc-pair);
+
+    color:var(--pc-ink);
 
 }
 
@@ -1155,16 +1158,34 @@ input[type="color"]::-moz-color-swatch{
 
 }
 
+/* 左の円は藍、右の円は山吹（帯の丸写真と同じ色分け）。
+   ふたりの間を表す重なりは、どちらの人でもないので本文の色で塗る */
 .pairGlyph{
 
     flex:none;
 
-    color:var(--pc-accent);
+}
+
+.pairGlyph .left{
+
+    fill:var(--pc-accent);
+
+}
+
+.pairGlyph .right{
+
+    fill:var(--pc-pair);
+
+}
+
+.pairGlyph .between{
+
+    fill:var(--pc-ink);
 
 }
 
 /* 削除ボタン。押し間違えると内容が消えるので、目立たせず
-   （紫の主UIとは別系統の淡い赤）控えめに置いている。 */
+   （藍の主UIとは別系統の淡い赤）控えめに置いている。 */
 .deleteButton{
 
     display:block;
@@ -1194,7 +1215,7 @@ input[type="color"]::-moz-color-swatch{
 
 .deleteButton:hover{
 
-    background:rgba(220,80,110,.16);
+    background:var(--pc-danger-hover);
 
 }
 
