@@ -1,6 +1,6 @@
 # 引継ぎメモ（Claude Code 用）
 
-最終更新：2026-09-12（フェーズ11完了時点）
+最終更新：2026-10-29（フェーズ12完了時点）
 
 pair-canvas（React19 + Vite8 + Tailwind v4、キャラクター関係性シート作成SPA）の改修作業の引継ぎメモ。
 
@@ -8,7 +8,7 @@ pair-canvas（React19 + Vite8 + Tailwind v4、キャラクター関係性シー�
 
 - **どのファイルに何があるか → `.claude/codemap.md`**（フェーズ9で新設。Glob/Grepの前にまずこれを読む。探す手がかりだけを1行1件で置いてある）
 - 全体仕様・設計判断の理由 → `docs/requirements.md`（0〜6章）
-- ユーザー向けの変更履歴 → リポジトリ直下の `修正履歴.md`（フェーズ1〜11を平易な日本語でまとめてある。**「何が変わったか」を知りたいときはまずこれ**）
+- ユーザー向けの変更履歴 → リポジトリ直下の `修正履歴.md`（フェーズ1〜12を平易な日本語でまとめてある。**「何が変わったか」を知りたいときはまずこれ**）
 - 各変更の技術的な理由 → 各コミットメッセージ本文（`git log --format="%h %s%n%b"`）。**コード側にも日本語コメントで「なぜそうしたか」「戻すならどこを触るか」を書き込み済み**なので、新しく説明を書き起こす前に、まずコミット本文とコメントを読むこと。
 
 ---
@@ -17,7 +17,7 @@ pair-canvas（React19 + Vite8 + Tailwind v4、キャラクター関係性シー�
 
 ```
 tag  baseline-original   … 元の未改修コミット（938a149）。git checkout baseline-original で即座に復元可能
-main                      … フェーズ1〜8をすべてマージ済み（ab33bef）。これが最新
+main                      … フェーズ1〜12をすべてマージ済み。これが最新
 phase/0-baseline          … 未改修の原本
 phase/1-basics            … 内部整理＋基本機能一式
 phase/2-design            … 見た目のシームレス化
@@ -30,10 +30,11 @@ phase/8-feedback          … カード位置入替ほか
 phase/9-quote-textsize    … 「語り」の説明文の文字サイズ（大/中/小）
 phase/10-feedback         … 説明文サイズをスライダー化＋全レイアウト対応、ラベル太字解除、帯の矢印を白へ
 phase/11-feedback         … 関係性ラベルを文字幅で伸びる方式へ、語りの説明文サイズを共通12pxへ
+phase/12-feedback         … 語りの関係性ラベル下段を上段と同じ文字サイズに
 ```
 
-- `main` は **`origin/main` と同期済み**（remote: `https://github.com/purity0km-droid/pair-canvas.git`）。フェーズ9作業時にユーザーの指示で push した。以降も push 前には確認を取ること。
-- `origin/gh-pages` は GitHub Pages 用の配信ブランチ。`npm run deploy`（`gh-pages -d dist`）で `dist/` を送る仕組み。**フェーズ9では deploy していない**ので、公開ページは古いままになっている。反映したいときは `npm run build` のあとに `npm run deploy`。
+- `main` は **`origin/main` と同期済み**（remote: `https://github.com/purity0km-droid/pair-canvas.git`）。フェーズ12でもユーザーの指示で push した。以降も push 前には確認を取ること。**フェーズ10・11は別の環境で push されていた**ので、作業前に `git fetch` して遅れていないか確かめる。
+- `origin/gh-pages` は GitHub Pages 用の配信ブランチ。`npm run deploy`（`gh-pages -d dist`）で `dist/` を送る仕組み。**フェーズ12の時点で公開ページ＝main**（ユーザーの指示で deploy した）。反映したいときは `npm run build` のあとに `npm run deploy`。公開版と手元が同じかは、HEAD をビルドして `assets/index-*.css/js` のファイル名ハッシュを `origin/gh-pages` と比べれば分かる。
 - `npx eslint src` はクリーン、`npm run build` も通ることを確認済み。
 - **phase系ブランチの親子関係は一直線ではない。** `phase/1-basics` と `phase/2-design` は `phase/5-*` の祖先になっていない（過去のrebase/cherry-pickで同じ変更が別SHAとして重複している）。そのため main へのマージは毎回「最新のphaseブランチ1本だけ」を取り込む方式で行っている。`git merge-base --is-ancestor` で確認してから作業すること。
 
@@ -150,6 +151,10 @@ git archive --format=zip -9 -o "../pair-canvas-main.zip" HEAD -- . ':(exclude).c
 - **「語り」の説明文の基準pxを 12.75px / 10.2px → 12px（全レイアウト共通）に統一。** フェーズ9→10の経緯で語りだけ大きい値が残っていた。`line-height`（2.1 / 1.9）は語りの持ち味なので残している
 - 確認は6プリセット × 関係性1/2/4件で、ラベルの `scrollWidth-clientWidth` とカード端からのはみ出し量を測って0であることを見た
 
+### phase/12-feedback
+- **「語り」の関係性ラベル下段（`.relationLabelSub`）を上段と同じ文字サイズ・字間に揃えた。** `card.css` の `.preset-quote .quoteRelation .relationLabelSub`（12px・字間0）を削除しただけ。上段の `.preset-quote .quoteRelation .relationLabel`（15px）と、小カードの `.relation-card.small.preset-quote .quoteRelation .relationLabel`（12px）が下段にもそのまま効く（下段の要素も `.relationLabel` を持つため）
+- ブラウザで実測し、関係性1〜2件で上下とも15px、3〜4件で上下とも12px（高さも一致）を確認
+
 ### phase/9-quote-textsize
 - **「語り」の説明文の文字サイズを大/中/小から選べるように**（`page.quoteTextSize`。JSONにも保存される）。倍率は 0.85 / 1 / 1.25。※**フェーズ10でスライダーに置き換え済み**（この節は経緯の記録）
 - 実装方式：カードごとにclassを足すのではなく、`RelationSheet.jsx` がシート直下に **`--quote-desc-scale`** を1回だけ渡し、`card.css` の `.preset-quote .quoteBody .description` が `font-size:calc(既定px * var(--quote-desc-scale,1))` で受ける。`RelationSheet.jsx` には枚数ぶん（1〜4件）の `<RelationCard>` 呼び出しがあるので、propsを増やすと直す箇所が増えるのを避けた。画面プレビューと書き出しはどちらも `RelationSheet` なので、この1か所で両方に効く
@@ -185,7 +190,7 @@ git archive --format=zip -9 -o "../pair-canvas-main.zip" HEAD -- . ':(exclude).c
 - 無料・軽量方針。追加ライブラリの導入は慎重に。
 - **名前タグ／関係性ラベル／プロット名の暗色スクリムは変更しない。** ユーザーが自由な背景色・写真を選べる仕様のため、文字の視認性確保に必須。
 - 参考にした類似ファンツール（aki-maron.site/jipuro、oshinote.netlify.app）との差別化方針は `docs/requirements.md` 第6章を厳守。プリセット名・カラーテーマ名・固有フィールド構成は流用しない。
-- git commit の author は `junkfood <junkfood.kuitee@gmail.com>`（`.git/config` に設定済み）。
+- git commit の author は `junkfood <junkfood.kuitee@gmail.com>`。`E:\000_開発\viewer\pair-canvas` の `.git/config` には入っていない（global は別名義）ので、フェーズ12は `git -c user.name=junkfood -c user.email=junkfood.kuitee@gmail.com commit` で指定した。
 - ユーザーは日本語でやり取りする。コード内コメント・ドキュメントも日本語で書くこと。
 
 ---

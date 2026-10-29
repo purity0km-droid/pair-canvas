@@ -986,14 +986,10 @@
 
 }
 
-.preset-quote .quoteRelation .relationLabelSub{
-
-    font-size:12px;
-    font-weight:400;
-
-    letter-spacing:0;
-
-}
+/* 矢印の下の段（.relationLabelSub）も、上の段と同じ指定をそのまま使う。
+   以前は下の段だけ 12px・字間0 に縮めていたが、2つ並ぶラベルの大きさが
+   違って見えるという指摘を受けてフェーズ12で揃えた。
+   小カードの 12px も下の .relation-card.small 側の指定が両方に効く。 */
 
 /* 説明文が主役。行間を広く取る。
 
