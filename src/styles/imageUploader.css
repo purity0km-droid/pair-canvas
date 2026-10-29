@@ -73,7 +73,7 @@
 
 }
 
-/* 「画像を選ぶ」。置き場所の中でいちばん大事な言葉なので墨の太字 */
+/* 「画像を選ぶ」。置き場所の中でいちばん大事な言葉なので濃紺の太字 */
 .imagePlaceholderTitle{
 
     color:var(--pc-accent-ink);
@@ -140,7 +140,7 @@
 
     border-radius:12px;
 
-    background:#1a1a1a;
+    background:var(--pc-photo-bg);
 
 }
 
@@ -324,7 +324,7 @@
 
     border-radius:12px;
 
-    background:#1a1a1a;
+    background:var(--pc-photo-bg);
 
     cursor:grab;
 
