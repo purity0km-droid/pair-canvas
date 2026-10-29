@@ -22,3 +22,12 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# 開発メモは公開しない（この PC にだけ置く。他のプロジェクトと同じ扱い）。
+# docs/・.claude/ は引継ぎメモ・codemap・設計の決めごと・手順書、修正履歴.md・動作確認手順.md は開発中の確認用、log/ は整理前の控え
+/docs/
+/.claude/
+/修正履歴.md
+/動作確認手順.md
+/log/
+/.tmp/
